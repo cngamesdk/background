@@ -1,8 +1,26 @@
-## server项目结构
+## 介绍
+
+server为后台中后端目录，涉及的模块主要如下：
+- 运营模块：游戏配置、支付配置等；
+- 市场模块：渠道、广告位配置、投放、媒体授权等；
+- 设计模块：素材上传、素材管理等；
+- 财务模块：财务对账、结算单管理等；
+- 报表模块：数据分析中常见报表，如：基本报表、留存情况、付费情况等；
+- 任务管理：包括任务的可视化操作，如添加、暂停、执行日志等；
+- 系统管理：用户管理、权限管理、日志管理等
+
+## 项目结构
 
 ```shell
 ├── api
 │   └── v1
+│       └── advertising
+│       └── cron_task
+│       └── data_report
+│       └── financial_reconciliation
+│       └── material_management
+│       └── operation_management
+│       └── system_management
 ├── config
 ├── core
 ├── docs
