@@ -7,9 +7,6 @@
 - server：后端接口目录；
 - web：前端接口目录；
 
-# Go版本
-1.22
-
 <div align=center>
 <img src="https://img.shields.io/badge/golang-1.22-blue"/>
 <img src="https://img.shields.io/badge/gin-1.9.1-lightBlue"/>
