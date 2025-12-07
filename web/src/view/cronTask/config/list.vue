@@ -22,7 +22,7 @@
         <el-table-column
             align="left"
             label="名称"
-            min-width="150"
+            min-width="250"
             prop="name"
         />
         <el-table-column
@@ -34,13 +34,13 @@
         <el-table-column
             align="left"
             label="状态"
-            min-width="150"
+            min-width="100"
             prop="status"
         />
         <el-table-column
             align="left"
             label="执行模式"
-            min-width="150"
+            min-width="100"
             prop="execution_mode"
         />
         <el-table-column
@@ -201,6 +201,7 @@
         width="90%"
         :close-on-click-modal="false"
         :close-on-press-escape="false"
+        @close="closeConfigDialog"
     >
       <el-form ref="configForm" :model="configInfo" :rules="rules" label-width="auto">
         <el-form-item label="名称" prop="name">
@@ -300,8 +301,7 @@ const logResultDialog = ref({
   data: {},
 })
 
-//游戏信息
-const configInfo = ref({
+const defaultConfigInfo = {
   id: 0,
   name: '',
   spec: '',
@@ -312,7 +312,10 @@ const configInfo = ref({
   parent_id: 0,
   task_type: '',
   execution_mode: '',
-})
+}
+
+//游戏信息
+const configInfo = ref(defaultConfigInfo)
 
 const statuss = ref([
   {key: 'normal', value: '正常'},
@@ -339,6 +342,7 @@ const openConfigEditDialog = (row) => {
 }
 
 const closeConfigDialog = () => {
+  configInfo.value = defaultConfigInfo
   configDialog.value.show = false
 }
 
