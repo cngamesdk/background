@@ -29,7 +29,11 @@ func (receiver *CronTaskService) ConfigList(ctx context.Context, req *api.CronTa
 		return
 	}
 	var list []cron_task.DimCronTaskConfigModel
-	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1)*req.PageSize).Find(&list).Error; listErr != nil {
+	if listErr := tmpDb.
+		Limit(req.PageSize).
+		Offset((req.Page - 1)*req.PageSize).
+		Order("id DESC").
+		Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取异常", zap.Error(listErr))
 		return
