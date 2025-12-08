@@ -342,7 +342,7 @@ const openConfigEditDialog = (row) => {
 }
 
 const closeConfigDialog = () => {
-  configInfo.value = defaultConfigInfo
+  configInfo.value = Object.assign({}, defaultConfigInfo)
   configDialog.value.show = false
 }
 
