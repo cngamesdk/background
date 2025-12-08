@@ -4,6 +4,7 @@ import (
 	"github.com/cngamesdk/go-core/model/sql/advertising"
 	"github.com/cngamesdk/go-core/model/sql/common"
 	"github.com/cngamesdk/go-core/model/sql/cron_task"
+	"github.com/cngamesdk/go-core/model/sql/log"
 	"github.com/cngamesdk/go-core/model/sql/report"
 	"os"
 
@@ -72,6 +73,10 @@ func RegisterTables() {
 		example.ExaFileChunk{},
 		example.ExaFileUploadAndDownload{},
 		example.ExaAttachmentCategory{},
+
+		log.DwdGameRegLogModel{},
+		log.DwdRootGameRegLogModel{},
+		log.DwdRootGameBackRegLogModel{},
 
 		report.DwsDayRootGameBackLoginActiveLogModel{},
 		report.DwsDayRootGameBackOverviewLogModel{},
