@@ -5,4 +5,5 @@ type PageResult struct {
 	Total    int64       `json:"total"`
 	Page     int         `json:"page"`
 	PageSize int         `json:"pageSize"`
+	Sql      string      `json:"sql"`
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/service/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/cron_task"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/data_report"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/example"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/operation_management"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/system"
@@ -17,5 +18,6 @@ type ServiceGroup struct {
 	OperationManagementServiceGroup operation_management.ServiceGroup
 	SystemManagementServiceGroup    system_management.ServiceGroup
 	AdvertisingServiceGroup         advertising.ServiceGroup
-	CronTaskServiceGroup         cron_task.ServiceGroup
+	CronTaskServiceGroup            cron_task.ServiceGroup
+	DataReportServiceGroup          data_report.ServiceGroup
 }

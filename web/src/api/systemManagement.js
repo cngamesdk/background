@@ -186,3 +186,19 @@ export const searchSettlementType = (data) => {
         data
     })
 }
+
+// getStatisticalCaliber 获取口径
+export const getStatisticalCaliber = () => {
+    return [
+        {key:'root-game-back-30', value: '30天回流'}
+    ]
+}
+
+// getStatisticalCaliber 获取聚合时间
+export const getAggregationTime = () => {
+    return [
+        {key:'day', value: '按日'},
+        {key:'month', value: '按月'},
+        {key:'aggregation', value: '聚合'}
+    ]
+}

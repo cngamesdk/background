@@ -22,6 +22,8 @@
   "/src/view/dashboard/components/table.vue": "Table",
   "/src/view/dashboard/components/wiki.vue": "Wiki",
   "/src/view/dashboard/index.vue": "Dashboard",
+  "/src/view/dataReport/dayOverview/list.vue": "DayOverviewList",
+  "/src/view/dataReport/index.vue": "DataReport",
   "/src/view/error/index.vue": "Error",
   "/src/view/error/reload.vue": "Reload",
   "/src/view/example/breakpoint/breakpoint.vue": "BreakPoint",
