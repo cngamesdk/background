@@ -22,12 +22,7 @@
 
         </el-form-item>
         <el-form-item>
-          <el-date-picker style="width:16rem"
-              v-model="dateRange"
-              type="daterange"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-          />
+          <DateRange v-model="dateRange"></DateRange>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSearchSubmit">
@@ -40,6 +35,9 @@
     <div class="gva-table-box">
       <el-table :data="tableData" stripe row-key="id">
         <el-table-column
+            v-if="firstRowData.hasOwnProperty('stat_date')"
+            align="left" label="日期" prop="stat_date"/>
+        <el-table-column
             v-if="firstRowData.hasOwnProperty('platform_id')"
             align="left" label="平台">
           <template #default="scope">
@@ -47,8 +45,19 @@
           </template>
         </el-table-column>
         <el-table-column
-            v-if="firstRowData.hasOwnProperty('stat_date')"
-            align="left" label="日期" prop="stat_date"/>
+            v-if="firstRowData.hasOwnProperty('root_game_id')"
+            align="left" label="根游戏">
+          <template #default="scope">
+            {{ scope.row.root_game_name }}({{ scope.row.root_game_id }})
+          </template>
+        </el-table-column>
+        <el-table-column
+            v-if="firstRowData.hasOwnProperty('main_game_id')"
+            align="left" label="主游戏">
+          <template #default="scope">
+            {{ scope.row.main_game_name }}({{ scope.row.main_game_id }})
+          </template>
+        </el-table-column>
         <el-table-column
             v-if="firstRowData.hasOwnProperty('game_id')"
             align="left" label="子游戏">
@@ -164,6 +173,7 @@ import Dimensions from '../../../components/dataReport/dimensions.vue'
 import Indicators from '../../../components/dataReport/indicators.vue'
 import StatisticalCaliber from '../../../components/dataReport/statisticalCaliber.vue'
 import AggregationTime from '../../../components/dataReport/aggregationTime.vue'
+import DateRange from '../../../components/dataReport/dateRange.vue'
 
 import { nextTick, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -178,12 +188,14 @@ defineOptions({
     Indicators,
     StatisticalCaliber,
     AggregationTime,
+    DateRange,
   },
 })
 
 const appStore = useAppStore()
 
 const dateRange = ref([new Date(), new Date()])
+
 const searchInfo = ref({
   statistical_caliber : 'root-game-back-30',
   dimension_filter: [],
