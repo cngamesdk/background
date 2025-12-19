@@ -1,7 +1,6 @@
 package api
 
 import (
-	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/data_report"
 	"gorm.io/gorm"
@@ -65,19 +64,19 @@ var (
 	}
 )
 
-type DayRootGameBackOverviewListReq struct {
+type DayOverviewListReq struct {
 	BaseDataReport
 	request.PageInfo
 }
 
-func (receiver *DayRootGameBackOverviewListReq) Format() {
+func (receiver *DayOverviewListReq) Format() {
 	if len(receiver.Indicators) <= 0 {
 		receiver.Indicators = append(receiver.Indicators, "reg")
 	}
 }
 
-func (receiver *DayRootGameBackOverviewListReq) BuildDb() (resp *gorm.DB, err error) {
-	tmpDb := global.GVA_DB
+func (receiver *DayOverviewListReq) BuildDb(tx *gorm.DB) (resp *gorm.DB, err error) {
+	tmpDb := tx
 	tmpDb = tmpDb.Where(aliasOverview+".stat_date BETWEEN ? AND ?", receiver.StartTime, receiver.EndTime)
 	if receiver.StatisticalCaliber == StatisticalCaliberRootGameBack30 {
 		tmpDb = tmpDb.Table(data_report.NewDwsDayRootGameBackOverviewLogModel().TableName() + " as " + aliasOverview)
@@ -92,51 +91,38 @@ func (receiver *DayRootGameBackOverviewListReq) BuildDb() (resp *gorm.DB, err er
 		SetFieldsMap(dayOverviewFieldsMap).
 		SetJoinsMap(dayOverviewJoinsMap).
 		SetWheresMap(dayOverviewWheresMap).
-		SetGroupsMap(dayOverviewGroupsMap)
-
-	if receiver.AggregationTime == AggregationTimeDay {
-		dbBuilder.Selects = append(dbBuilder.Selects, "DATE_FORMAT("+aliasOverview+".stat_date, '%Y-%m-%d') as stat_date")
-		dbBuilder.Groups = append(dbBuilder.Groups, "DATE_FORMAT("+aliasOverview+".stat_date, '%Y-%m-%d')")
-	} else if receiver.AggregationTime == AggregationTimeMonth {
-		dbBuilder.Selects = append(dbBuilder.Selects, "DATE_FORMAT("+aliasOverview+".stat_date, '%Y-%m') as stat_date")
-		dbBuilder.Groups = append(dbBuilder.Groups, "DATE_FORMAT("+aliasOverview+".stat_date, '%Y-%m')")
-	} else if receiver.AggregationTime == AggregationTimeAll {
-
-	}
-	dbBuilder.Build()
-	resp = BuildTemporaryTable("tmp", dbBuilder.Db)
+		SetGroupsMap(dayOverviewGroupsMap).
+		BuildAggregationTime(func(tx *gorm.DB) {
+			if receiver.AggregationTime == AggregationTimeDay {
+				dbBuilder.SelectsContainer = append(dbBuilder.SelectsContainer, "DATE_FORMAT("+aliasOverview+".stat_date, '%Y-%m-%d') as stat_date")
+				dbBuilder.GroupsContainer = append(dbBuilder.GroupsContainer, "DATE_FORMAT("+aliasOverview+".stat_date, '%Y-%m-%d')")
+				dbBuilder.OrdersContainer = append(dbBuilder.OrdersContainer, "stat_date")
+			} else if receiver.AggregationTime == AggregationTimeMonth {
+				dbBuilder.SelectsContainer = append(dbBuilder.SelectsContainer, "DATE_FORMAT("+aliasOverview+".stat_date, '%Y-%m') as stat_date")
+				dbBuilder.GroupsContainer = append(dbBuilder.GroupsContainer, "DATE_FORMAT("+aliasOverview+".stat_date, '%Y-%m')")
+				dbBuilder.OrdersContainer = append(dbBuilder.OrdersContainer, "stat_date")
+			}
+		})
+	resp = BuildTemporaryTable("tmp", dbBuilder.Build())
 	return
 }
 
-type DayRootGameBackOverviewListRespData struct {
-	PlatformId       int64  `json:"platform_id,omitempty"`
-	PlatformName     string `json:"platform_name,omitempty"`
-	StatDate         string `json:"stat_date,omitempty"`
-	RootGameId       int64  `json:"root_game_id,omitempty"`
-	RootGameName     string `json:"root_game_name,omitempty"`
-	MainGameId       int64  `json:"main_game_id,omitempty"`
-	MainGameName     string `json:"main_game_name,omitempty"`
-	GameId           int64  `json:"game_id,omitempty"`
-	GameName         string `json:"game_name,omitempty"`
-	AgentId          int64  `json:"agent_id,omitempty"`
-	AgentName        string `json:"agent_name,omitempty"`
-	SiteId           int64  `json:"site_id,omitempty"`
-	SiteName         string `json:"site_name,omitempty"`
-	Ad3Id            int64  `json:"ad3_id,omitempty"`
-	Activation       int64  `json:"activation,omitempty"`
-	ActivationDevice int64  `json:"activation_device,omitempty"`
-	Launch           int64  `json:"launch,omitempty"`
-	LaunchDevice     int64  `json:"launch_device,omitempty"`
-	Reg              int64  `json:"reg,omitempty"`
-	RegDevice        int64  `json:"reg_device,omitempty"`
-	Login            int64  `json:"login,omitempty"`
-	LoginUser        int64  `json:"login_user,omitempty"`
-	LoginDevice      int64  `json:"login_device,omitempty"`
-	Role             int64  `json:"role,omitempty"`
-	RoleUser         int64  `json:"role_user,omitempty"`
-	RoleDevice       int64  `json:"role_device,omitempty"`
-	Pay              int64  `json:"pay,omitempty"`
-	PayUser          int64  `json:"pay_user,omitempty"`
-	PayDevice        int64  `json:"pay_device,omitempty"`
-	PayMoney         int64  `json:"pay_money,omitempty"`
+type DayOverviewListRespData struct {
+	BaseResp
+	Activation       int `json:"activation,omitempty"`
+	ActivationDevice int `json:"activation_device,omitempty"`
+	Launch           int `json:"launch,omitempty"`
+	LaunchDevice     int `json:"launch_device,omitempty"`
+	Reg              int `json:"reg,omitempty"`
+	RegDevice        int `json:"reg_device,omitempty"`
+	Login            int `json:"login,omitempty"`
+	LoginUser        int `json:"login_user,omitempty"`
+	LoginDevice      int `json:"login_device,omitempty"`
+	Role             int `json:"role,omitempty"`
+	RoleUser         int `json:"role_user,omitempty"`
+	RoleDevice       int `json:"role_device,omitempty"`
+	Pay              int `json:"pay,omitempty"`
+	PayUser          int `json:"pay_user,omitempty"`
+	PayDevice        int `json:"pay_device,omitempty"`
+	PayMoney         int `json:"pay_money,omitempty"`
 }

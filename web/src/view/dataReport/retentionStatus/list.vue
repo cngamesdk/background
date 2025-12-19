@@ -3,23 +3,15 @@
     <div class="gva-search-box">
       <el-form ref="searchForm" :inline="true" :model="searchInfo">
         <el-form-item>
-
-         <dimensionFilter v-model="searchInfo.dimension_filter" :dimensions="['platform_id', 'root_game_id', 'main_game_id', 'game_id', 'agent_id', 'site_id']"></dimensionFilter>
-
+          <dimensionFilter v-model="searchInfo.dimension_filter" :dimensions="['platform_id', 'root_game_id', 'main_game_id', 'game_id', 'agent_id', 'site_id']"></dimensionFilter>
           <Dimensions v-model="searchInfo.dimensions" :dimensions="allDimensions"></Dimensions>
-
           <Indicators v-model="searchInfo.indicators" :indicators="allIndicators"></Indicators>
-
         </el-form-item>
         <el-form-item>
-
           <StatisticalCaliber v-model="searchInfo.statistical_caliber"></StatisticalCaliber>
-
         </el-form-item>
         <el-form-item>
-
           <AggregationTime v-model="searchInfo.aggregation_time"></AggregationTime>
-
         </el-form-item>
         <el-form-item>
           <DateRange v-model="dateRange"></DateRange>
@@ -29,6 +21,16 @@
             查询
           </el-button>
           <el-button icon="refresh" @click="onReset"> 重置 </el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-select style="width:7rem;" v-model="currRetentionOption" placeholder="请选择留存选项">
+            <el-option
+                v-for="item in retentionStatusOptions"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+            />
+          </el-select>
         </el-form-item>
       </el-form>
     </div>
@@ -84,69 +86,16 @@
             align="left" label="广告三级ID" prop="ad3_id"
         />
         <el-table-column
-            v-if="firstRowData.hasOwnProperty('activation')"
-            align="left" label="激活数" prop="activation"
-        />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('activation_device')"
-            align="left" label="激活设备数" prop="activation_device"
-        />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('launch')"
-            align="left" label="启动数" prop="launch"
-        />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('launch_device')"
-            align="left" label="启动设备数" prop="launch_device"
-        />
-        <el-table-column
             v-if="firstRowData.hasOwnProperty('reg')"
             align="left" label="注册数" prop="reg"
         />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('reg_device')"
-            align="left" label="注册设备数" prop="reg_device"
-        />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('login')"
-            align="left" label="登录数" prop="login"
-        />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('login_user')"
-            align="left" label="登录用户数" prop="login_user"
-        />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('login_device')"
-            align="left" label="登录设备数" prop="login_device"
-        />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('role')"
-            align="left" label="创角数" prop="role"
-        />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('role_user')"
-            align="left" label="创角用户数" prop="role_user"
-        />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('role_user')"
-            align="left" label="创角设备数" prop="role_device"
-        />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('pay')"
-            align="left" label="付费数" prop="pay"
-        />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('pay_user')"
-            align="left" label="付费用户数" prop="pay_user"
-        />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('pay_device')"
-            align="left" label="付费设备数" prop="pay_device"
-        />
-        <el-table-column
-            v-if="firstRowData.hasOwnProperty('pay_money')"
-            align="left" label="付费金额" prop="pay_money"
-        />
+        <el-table-column v-for="(item, index) in nDayColumns"
+                         align="left" :label="item + '日'">
+          <template #default="scope">
+            <template v-if="currRetentionOption === 'rate'">{{ scope.row.n_day_container[index].retention_rate_str }}</template>
+            <template v-if="currRetentionOption === 'user'">{{ scope.row.n_day_container[index].retention_data }}</template>
+          </template>
+        </el-table-column>
       </el-table>
       <div class="gva-pagination">
         <el-pagination
@@ -166,7 +115,7 @@
 
 <script setup>
 
-import { dayOverviewList } from '@/api/dataReport'
+import { retentionStatusList } from '@/api/dataReport'
 import DimensionFilter from '../../../components/dataReport/dimensionFilter.vue'
 import Dimensions from '../../../components/dataReport/dimensions.vue'
 import Indicators from '../../../components/dataReport/indicators.vue'
@@ -174,13 +123,12 @@ import StatisticalCaliber from '../../../components/dataReport/statisticalCalibe
 import AggregationTime from '../../../components/dataReport/aggregationTime.vue'
 import DateRange from '../../../components/dataReport/dateRange.vue'
 
-import { nextTick, ref, watch } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ref } from 'vue'
 import { useAppStore } from "@/pinia";
 import { formatTimeToStr } from '@/utils/date'
 
 defineOptions({
-  name: 'DayOverviewList',
+  name: 'RetentionStatus',
   components: {
     DimensionFilter,
     Dimensions,
@@ -192,14 +140,14 @@ defineOptions({
 })
 
 const appStore = useAppStore()
-
 const dateRange = ref([new Date(), new Date()])
+const nDayColumns = ref([])
 
 const searchInfo = ref({
   statistical_caliber : 'root-game-back-30',
   dimension_filter: [],
   dimensions: [],
-  indicators: [],
+  indicators: ['2'],
   aggregation_time: 'day',
   start_time: '',
   end_time: ''
@@ -216,17 +164,27 @@ const allDimensions = [
       {key: 'agent_id', value: '渠道ID', childs: []},
       {key: 'site_id', value: '广告位', childs: []},
     ]},
-    ]
+]
 
 const allIndicators = [
-  {value: '整体情况', childs: [
-      {key: 'reg_device', value: '注册设备数'},
-      {key: 'reg', value: '注册数'},
-      {key: 'login_user', value: '活跃用户数'},
-      {key: 'role', value: '创角数'},
-      {key: 'pay', value: '付费数'},
+  {value: '留存', childs: [
+      {key: '2', value: '2日'},
+      {key: '3', value: '3日'},
+      {key: '4', value: '4日'},
+      {key: '5', value: '5日'},
+      {key: '6', value: '6日'},
+      {key: '7', value: '7日'},
+      {key: '8-14', value: '8-14日'},
+      {key: '15-21', value: '15-21日'},
+      {key: '22-28', value: '22-28日'},
     ]}
 ]
+
+const currRetentionOption = ref('rate')
+const retentionStatusOptions = ref([
+  {key: 'rate', value: '留存率'},
+  {key: 'user', value: '留存数'},
+])
 
 const onSearchSubmit = () => {
   page.value = 1
@@ -261,7 +219,7 @@ const getTableData = async () => {
   const dataRange = dateRange.value
   searchInfo.value.start_time = formatTimeToStr(dataRange[0],'yyyy-MM-dd')
   searchInfo.value.end_time = formatTimeToStr(dataRange[1],'yyyy-MM-dd')
-  const table = await dayOverviewList({
+  const table = await retentionStatusList({
     page: page.value,
     pageSize: pageSize.value,
     ...searchInfo.value
@@ -271,9 +229,13 @@ const getTableData = async () => {
     total.value = table.data.total
     page.value = table.data.page
     pageSize.value = table.data.pageSize
-    
+
     if (table.data.list.length > 0) {
       firstRowData.value = table.data.list[0]
+      nDayColumns.value = []
+      firstRowData.value.n_day_container.forEach(function (item) {
+        nDayColumns.value.push(item.n_day)
+      })
     }
   }
 }

@@ -9,5 +9,6 @@ type RouterGroup struct {
 }
 
 var (
-	dayOverviewApi = api2.ApiGroupApp.DataReportApiGroup.DayOverviewApi
+	dayOverviewApi     = api2.ApiGroupApp.DataReportApiGroup.DayOverviewApi
+	retentionStatusApi = api2.ApiGroupApp.DataReportApiGroup.RetentionStatusApi
 )

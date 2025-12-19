@@ -12,9 +12,14 @@ func (s *DataReportRouter) InitApiRouter(Router *gin.RouterGroup) {
 	apiRouter := Router.Group("data-report")
 	apiRouter.Use(middleware.OperationRecord())
 	{
-		configGroup := apiRouter.Group("day-overview") // 每日总览
+		dayOverviewGroup := apiRouter.Group("day-overview") // 每日总览
 		{
-			configGroup.POST("list", dayOverviewApi.List)
+			dayOverviewGroup.POST("list", dayOverviewApi.List)
+		}
+
+		retentionStatusGroup := apiRouter.Group("retention-status") // 留存情况
+		{
+			retentionStatusGroup.POST("list", retentionStatusApi.List)
 		}
 	}
 }
