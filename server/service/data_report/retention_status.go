@@ -17,7 +17,7 @@ type RetentionStatusService struct {
 func (receiver RetentionStatusService) List(ctx context.Context, req *api.RetentionStatusListReq) (resp response.PageResult, err error) {
 	resp.Page = req.Page
 	resp.PageSize = req.PageSize
-	subQuery, buildErr := req.BuildDb(global.GVA_DB)
+	subQuery, buildErr := req.BuildDb(global.GVA_DB.WithContext(ctx))
 	if buildErr != nil {
 		err = buildErr
 		global.GVA_LOG.Error("构建DB异常", zap.Error(buildErr))
