@@ -100,6 +100,8 @@ const calcSelectedNum = () => {
   selectedNum.value = num
 }
 
+calcSelectedNum()
+
 </script>
 
 <style lang="scss">

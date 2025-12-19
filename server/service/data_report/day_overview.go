@@ -12,10 +12,10 @@ import (
 type DayOverviewService struct {
 }
 
-func (receiver DayOverviewService) List(ctx context.Context, req *api.DayRootGameBackOverviewListReq) (resp response.PageResult, err error) {
+func (receiver *DayOverviewService) List(ctx context.Context, req *api.DayOverviewListReq) (resp response.PageResult, err error) {
 	resp.Page = req.Page
 	resp.PageSize = req.PageSize
-	subQuery, buildErr := req.BuildDb()
+	subQuery, buildErr := req.BuildDb(global.GVA_DB)
 	if buildErr != nil {
 		err = buildErr
 		global.GVA_LOG.Error("构建DB异常", zap.Error(buildErr))
@@ -33,7 +33,7 @@ func (receiver DayOverviewService) List(ctx context.Context, req *api.DayRootGam
 	if total <= 0 {
 		return
 	}
-	var list []api.DayRootGameBackOverviewListRespData
+	var list []api.DayOverviewListRespData
 	tmpListDb := subQuery.Limit(req.PageSize).Offset((req.Page - 1) * req.PageSize)
 
 	resp.Sql = sql.GetFindSql(tmpListDb)

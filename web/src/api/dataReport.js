@@ -8,3 +8,12 @@ export const dayOverviewList = (data) => {
         data
     })
 }
+
+// @Router /data-report/retention-status/list [post]
+export const retentionStatusList = (data) => {
+    return service({
+        url: '/data-report/retention-status/list',
+        method: 'post',
+        data
+    })
+}

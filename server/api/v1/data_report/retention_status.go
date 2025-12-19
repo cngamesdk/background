@@ -8,17 +8,17 @@ import (
 	"go.uber.org/zap"
 )
 
-type DayOverviewApi struct {
+type RetentionStatusApi struct {
 }
 
-func (receiver *DayOverviewApi) List(ctx *gin.Context) {
-	var req api2.DayOverviewListReq
+func (receiver *RetentionStatusApi) List(ctx *gin.Context) {
+	var req api2.RetentionStatusListReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.FailWithMessage(err.Error(), ctx)
 		return
 	}
 	req.Format()
-	resp, respErr := dayOverviewService.List(ctx, &req)
+	resp, respErr := retentionStatusService.List(ctx, &req)
 	if respErr != nil {
 		global.GVA_LOG.Error("获取失败", zap.Error(respErr))
 		response.FailWithDetailed(resp, "获取失败:"+respErr.Error(), ctx)

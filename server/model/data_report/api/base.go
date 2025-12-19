@@ -40,10 +40,12 @@ type DbBuilder struct {
 	wheresMap map[string]string
 	groupsMap map[string]string
 	joinsMap  map[string]func(tx *gorm.DB)
+	ordersMap map[string]string
 	Db        *gorm.DB
 	BaseDataReport
-	Selects []string
-	Groups  []string
+	SelectsContainer []string
+	GroupsContainer  []string
+	OrdersContainer  []string
 }
 
 func (receiver *DbBuilder) SetFieldsMap(req map[string]string) *DbBuilder {
@@ -66,6 +68,11 @@ func (receiver *DbBuilder) SetJoinsMap(req map[string]func(tx *gorm.DB)) *DbBuil
 	return receiver
 }
 
+func (receiver *DbBuilder) SetOrdersMap(req map[string]string) *DbBuilder {
+	receiver.ordersMap = req
+	return receiver
+}
+
 func (receiver *DbBuilder) BuildJoins() *DbBuilder {
 	for item, joinFun := range receiver.joinsMap {
 		if slices.Contains(receiver.Dimensions, item) {
@@ -75,33 +82,46 @@ func (receiver *DbBuilder) BuildJoins() *DbBuilder {
 	return receiver
 }
 
-func (receiver *DbBuilder) BuildDimensions() {
+func (receiver *DbBuilder) BuildDimensions() *DbBuilder {
 	for _, item := range receiver.Dimensions {
 		fieldTmp, fieldTmpOk := receiver.fieldsMap[item]
 		if !fieldTmpOk {
 			fieldTmp = item
 		}
-		receiver.Selects = append(receiver.Selects, fieldTmp)
+		receiver.SelectsContainer = append(receiver.SelectsContainer, fieldTmp)
 
 		groupTmp, groupTmpOk := receiver.groupsMap[item]
 		if !groupTmpOk {
 			groupTmp = item
 		}
-		receiver.Groups = append(receiver.Groups, groupTmp)
+		receiver.GroupsContainer = append(receiver.GroupsContainer, groupTmp)
 	}
+	return receiver
 }
 
-func (receiver *DbBuilder) BuildIndicators() {
+func (receiver *DbBuilder) BuildIndicators() *DbBuilder {
 	for _, item := range receiver.Indicators {
 		fieldTmp, fieldTmpOk := receiver.fieldsMap[item]
 		if !fieldTmpOk {
 			fieldTmp = item
 		}
-		receiver.Selects = append(receiver.Selects, fieldTmp)
+		receiver.SelectsContainer = append(receiver.SelectsContainer, fieldTmp)
 	}
+	return receiver
 }
 
-func (receiver *DbBuilder) BuildDimensionsFilter() {
+func (receiver *DbBuilder) BuildOrders() *DbBuilder {
+	for _, item := range receiver.Orders {
+		tmp, tmpOk := receiver.ordersMap[item]
+		if !tmpOk {
+			tmp = item
+		}
+		receiver.OrdersContainer = append(receiver.OrdersContainer, tmp)
+	}
+	return receiver
+}
+
+func (receiver *DbBuilder) BuildDimensionsFilter() *DbBuilder {
 	for _, item := range receiver.DimensionsFilter {
 		whereColumn, whereColumnOK := receiver.wheresMap[item.Key]
 		tmpColumn := item.Key
@@ -111,25 +131,35 @@ func (receiver *DbBuilder) BuildDimensionsFilter() {
 		args, buildErr := item.GetSqlOperator()
 		if buildErr != nil {
 			global.GVA_LOG.Error("维度筛选异常", zap.Error(buildErr))
-			return
 		} else {
 			receiver.Db.Where(fmt.Sprintf("%s %s", tmpColumn, args), item.Value)
 		}
 	}
+	return receiver
 }
 
-func (receiver *DbBuilder) Build() {
-	receiver.BuildJoins()
+func (receiver *DbBuilder) BuildAggregationTime(req func(tx *gorm.DB)) *DbBuilder {
+	req(receiver.Db)
+	return receiver
+}
+
+func (receiver *DbBuilder) Build() *gorm.DB {
 	receiver.BuildDimensions()
 	receiver.BuildIndicators()
 	receiver.BuildDimensionsFilter()
+	receiver.BuildJoins()
+	receiver.BuildOrders()
 
-	if len(receiver.Selects) > 0 {
-		receiver.Db.Select(strings.Join(receiver.Selects, ","))
+	if len(receiver.SelectsContainer) > 0 {
+		receiver.Db.Select(strings.Join(receiver.SelectsContainer, ","))
 	}
-	if len(receiver.Groups) > 0 {
-		receiver.Db.Group(strings.Join(receiver.Groups, ","))
+	if len(receiver.GroupsContainer) > 0 {
+		receiver.Db.Group(strings.Join(receiver.GroupsContainer, ","))
 	}
+	if len(receiver.OrdersContainer) > 0 {
+		receiver.Db.Order(strings.Join(receiver.OrdersContainer, ","))
+	}
+	return receiver.Db
 }
 
 // BuildTemporaryTable 构建临时表
@@ -142,6 +172,7 @@ type BaseDataReport struct {
 	DimensionsFilter   []DimensionFilter `json:"dimension_filter" form:"dimension_filter"`       // 维度筛选
 	Dimensions         []string          `json:"dimensions" form:"dimensions"`                   // 维度选择
 	Indicators         []string          `json:"indicators" form:"indicators"`                   // 指标
+	Orders             []string          `json:"orders" form:"orders"`                           // 排序字段
 	AggregationTime    string            `json:"aggregation_time" form:"aggregation_time"`       // 聚合时间
 	StartTime          string            `json:"start_time" form:"start_time"`                   // 开始时间
 	EndTime            string            `json:"end_time" form:"start_time"`                     // 结束时间
@@ -186,4 +217,21 @@ func (receiver *DimensionFilter) GetSqlOperator() (resp string, err error) {
 		err = errors2.New("未知操作符")
 		return
 	}
+}
+
+type BaseResp struct {
+	PlatformId   int64  `json:"platform_id,omitempty"`
+	PlatformName string `json:"platform_name,omitempty"`
+	StatDate     string `json:"stat_date,omitempty"`
+	RootGameId   int64  `json:"root_game_id,omitempty"`
+	RootGameName string `json:"root_game_name,omitempty"`
+	MainGameId   int64  `json:"main_game_id,omitempty"`
+	MainGameName string `json:"main_game_name,omitempty"`
+	GameId       int64  `json:"game_id,omitempty"`
+	GameName     string `json:"game_name,omitempty"`
+	AgentId      int64  `json:"agent_id,omitempty"`
+	AgentName    string `json:"agent_name,omitempty"`
+	SiteId       int64  `json:"site_id,omitempty"`
+	SiteName     string `json:"site_name,omitempty"`
+	Ad3Id        int64  `json:"ad3_id,omitempty"`
 }
