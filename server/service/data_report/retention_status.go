@@ -54,7 +54,7 @@ func (receiver RetentionStatusService) List(ctx context.Context, req *api.Retent
 				topItem := tmpRespFormat.NDayContainer[lenNDayContainer-1]
 				existsLastDayRetention := topItem.NDay == (item.ActiveDays - 1)
 				if !existsLastDayRetention {
-					tmpRespFormat.NDayContainer = append(tmpRespFormat.NDayContainer, api.NDayData{
+					tmpRespFormat.NDayContainer = append(tmpRespFormat.NDayContainer, api.RetentionStatusNDayData{
 						NDay:             item.ActiveDays - 1,
 						RetentionRateStr: utils.FloatDecimal2Str(0),
 					})
@@ -66,7 +66,7 @@ func (receiver RetentionStatusService) List(ctx context.Context, req *api.Retent
 		}
 		if item.ActiveDays != 1 {
 			rate := utils.Percent(item.ActiveCount, tmpRespFormat.Reg)
-			tmpRespFormat.NDayContainer = append(tmpRespFormat.NDayContainer, api.NDayData{
+			tmpRespFormat.NDayContainer = append(tmpRespFormat.NDayContainer, api.RetentionStatusNDayData{
 				NDay:             item.ActiveDays,
 				RetentionData:    item.ActiveCount,
 				RetentionRate:    rate,

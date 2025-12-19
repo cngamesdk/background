@@ -101,15 +101,15 @@ func (receiver *RetentionStatusListReq) Format() {
 	}
 
 	if receiver.AggregationTime == AggregationTimeDay {
+		receiver.Dimensions = append(receiver.Dimensions, "stat_date")
+		receiver.Orders = append(receiver.Orders, "stat_date")
 		retentionStatusFieldsMap["stat_date"] = "DATE_FORMAT(" + aliasActive + ".reg_date, '%Y-%m-%d') as stat_date"
 		retentionStatusGroupsMap["stat_date"] = "DATE_FORMAT(" + aliasActive + ".reg_date, '%Y-%m-%d')"
+	} else if receiver.AggregationTime == AggregationTimeMonth {
 		receiver.Dimensions = append(receiver.Dimensions, "stat_date")
 		receiver.Orders = append(receiver.Orders, "stat_date")
-	} else if receiver.AggregationTime == AggregationTimeMonth {
 		retentionStatusFieldsMap["stat_date"] = "DATE_FORMAT(" + aliasActive + ".reg_date, '%Y-%m') as stat_date"
 		retentionStatusGroupsMap["stat_date"] = "DATE_FORMAT(" + aliasActive + ".reg_date, '%Y-%m')"
-		receiver.Dimensions = append(receiver.Dimensions, "stat_date")
-		receiver.Orders = append(receiver.Orders, "stat_date")
 	}
 	receiver.Dimensions = append(receiver.Dimensions, "active_days")
 	receiver.Orders = append(receiver.Orders, "active_days")
@@ -148,18 +148,18 @@ func (receiver *RetentionStatusListReq) BuildDb(tx *gorm.DB) (resp *gorm.DB, err
 
 type RetentionStatusListResp struct {
 	BaseResp
-	Reg         int `json:"reg,omitempty"`
-	ActiveDays  int `json:"active_days,omitempty"`
-	ActiveCount int `json:"active_count,omitempty"`
+	Reg         int `json:"reg"`
+	ActiveDays  int `json:"active_days"`
+	ActiveCount int `json:"active_count"`
 }
 
 type RetentionStatusListRespFormat struct {
 	BaseResp
-	Reg           int        `json:"reg,omitempty"`
-	NDayContainer []NDayData `json:"n_day_container"`
+	Reg           int                       `json:"reg"`
+	NDayContainer []RetentionStatusNDayData `json:"n_day_container"`
 }
 
-type NDayData struct {
+type RetentionStatusNDayData struct {
 	NDay             int     `json:"n_day"`
 	RetentionData    int     `json:"retention_data"`
 	RetentionRate    float64 `json:"retention_rate"`
