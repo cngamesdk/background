@@ -17,3 +17,12 @@ export const retentionStatusList = (data) => {
         data
     })
 }
+
+// @Router /data-report/payment-status/list [post]
+export const paymentStatusList = (data) => {
+    return service({
+        url: '/data-report/payment-status/list',
+        method: 'post',
+        data
+    })
+}

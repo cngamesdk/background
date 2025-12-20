@@ -18,9 +18,14 @@ const (
 )
 
 const (
-	AggregationTimeDay   = "day"         // 按日
-	AggregationTimeMonth = "month"       // 按月
-	AggregationTimeAll   = "aggregation" // 聚合
+	AggregationTimeDay   = "day"                   // 按日
+	AggregationTimeMonth = "month"                 // 按月
+	AggregationTimeAll   = "aggregation"           // 聚合
+	StatDateDay          = "stat_date_day"         //按日统计
+	StatDateWeek         = "stat_date_week"        //按周统计
+	StatDateMonth        = "stat_date_month"       //按月统计
+	StatDateYear         = "stat_date_year"        //按年统计
+	StatDateAggregation  = "stat_date_aggregation" //聚合
 )
 
 const (
@@ -35,6 +40,15 @@ const (
 	OperatorBetween  = "between"   // 之间
 )
 
+var (
+	GameRelationDimensions = []string{"root_game_id", "main_game_id", "game_id"} // 游戏相关维度
+)
+
+type DbBuilderWhere struct {
+	Query interface{}
+	Args  []interface{}
+}
+
 type DbBuilder struct {
 	fieldsMap map[string]string
 	wheresMap map[string]string
@@ -46,6 +60,7 @@ type DbBuilder struct {
 	SelectsContainer []string
 	GroupsContainer  []string
 	OrdersContainer  []string
+	WheresContainer  []DbBuilderWhere
 }
 
 func (receiver *DbBuilder) SetFieldsMap(req map[string]string) *DbBuilder {
@@ -152,6 +167,11 @@ func (receiver *DbBuilder) Build() *gorm.DB {
 
 	if len(receiver.SelectsContainer) > 0 {
 		receiver.Db.Select(strings.Join(receiver.SelectsContainer, ","))
+	}
+	if len(receiver.WheresContainer) > 0 {
+		for _, item := range receiver.WheresContainer {
+			receiver.Db.Where(item.Query, item.Args)
+		}
 	}
 	if len(receiver.GroupsContainer) > 0 {
 		receiver.Db.Group(strings.Join(receiver.GroupsContainer, ","))

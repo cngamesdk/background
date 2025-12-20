@@ -1,7 +1,9 @@
 package api
 
 import (
+	"fmt"
 	"github.com/duke-git/lancet/v2/datetime"
+	"github.com/duke-git/lancet/v2/slice"
 	"github.com/duke-git/lancet/v2/validator"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/data_report"
@@ -19,16 +21,23 @@ const (
 
 var (
 	paymentStatusFieldsMap = map[string]string{
-		"platform_id":  "platform.id as platform_id, platform.platform_name as platform_name",
-		"root_game_id": "root_game.id as root_game_id, root_game.game_name as root_game_name",
-		"main_game_id": "main_game.id as main_game_id, main_game.game_name as main_game_name",
-		"game_id":      "game.id as game_id, game.game_name as game_name",
-		"agent_id":     "agent.id as agent_id, agent.agent_name as agent_name",
-		"site_id":      "site.id as site_id, site.site_name as site_name",
-		"active_days":  aliasPaymentStatus + ".active_days AS active_days",
-		"pay_count":    "SUM( " + aliasPaymentStatus + ".pay_count ) AS pay_count",
-		"active_user":  "SUM( " + aliasPaymentStatus + ".active_user ) AS active_user",
-		"pay_amount":   "SUM( " + aliasPaymentStatus + ".pay_amount ) AS pay_amount",
+		"platform_id":                      "platform.id as platform_id, platform.platform_name as platform_name",
+		"root_game_id":                     "root_game.id as root_game_id, root_game.game_name as root_game_name",
+		"main_game_id":                     "main_game.id as main_game_id, main_game.game_name as main_game_name",
+		"game_id":                          "game.id as game_id, game.game_name as game_name",
+		"agent_id":                         "agent.id as agent_id, agent.agent_name as agent_name",
+		"site_id":                          "site.id as site_id, site.site_name as site_name",
+		"active_days":                      aliasPaymentStatus + ".active_days AS active_days",
+		"reg":                              "SUM( " + aliasOverview + ".reg ) AS reg",
+		"cost":                             "SUM( " + aliasOverview + ".cost ) AS cost",
+		"pay_count":                        "SUM( " + aliasPaymentStatus + ".pay_count ) AS pay_count",
+		"active_user":                      "SUM( " + aliasPaymentStatus + ".active_user ) AS active_user",
+		"pay_amount":                       "SUM( " + aliasPaymentStatus + ".pay_amount ) AS pay_amount",
+		StatDateDay + aliasOverview:        "DATE_FORMAT(" + aliasOverview + ".stat_date, '%Y-%m-%d') as stat_date",
+		StatDateMonth + aliasOverview:      "DATE_FORMAT(" + aliasOverview + ".stat_date, '%Y-%m') as stat_date",
+		StatDateDay + aliasPaymentStatus:   "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m-%d') as stat_date",
+		StatDateMonth + aliasPaymentStatus: "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m') as stat_date",
+		"join_all":                         aliasOverview + ".*,IFNULL(active_days,0) AS active_days,IFNULL(pay_count,0) AS pay_count,IFNULL(active_user,0) AS active_user,IFNULL(pay_amount,0) AS pay_amount",
 	}
 	paymentStatusWheresMap = map[string]string{
 		"platform_id":  aliasPaymentStatus + ".platform_id",
@@ -39,24 +48,17 @@ var (
 		"site_id":      "site.id",
 	}
 	paymentStatusGroupsMap = map[string]string{
-		"platform_id":  "platform.id",
-		"root_game_id": "root_game.id",
-		"main_game_id": "main_game.id",
-		"game_id":      "game.id",
-		"agent_id":     "agent.id",
-		"site_id":      "site.id",
-		"active_days":  aliasPaymentStatus + ".active_days",
-	}
-	paymentStatusJoinsMap = map[string]func(tx *gorm.DB){
-		"platform_id": func(tx *gorm.DB) {
-			tx.Joins("join dim_platform as platform on platform.id = " + aliasPaymentStatus + ".platform_id")
-		},
-		"agent_id": func(tx *gorm.DB) {
-			tx.Joins("join dim_agent as agent on agent.platform_id = " + aliasPaymentStatus + ".platform_id and agent.id = " + aliasPaymentStatus + ".agent_id")
-		},
-		"site_id": func(tx *gorm.DB) {
-			tx.Joins("join dim_site as site on site.platform_id = " + aliasPaymentStatus + ".platform_id and site.id = " + aliasPaymentStatus + ".site_id")
-		},
+		"platform_id":                      "platform.id",
+		"root_game_id":                     "root_game.id",
+		"main_game_id":                     "main_game.id",
+		"game_id":                          "game.id",
+		"agent_id":                         "agent.id",
+		"site_id":                          "site.id",
+		"active_days":                      aliasPaymentStatus + ".active_days",
+		StatDateDay + aliasOverview:        "DATE_FORMAT(" + aliasOverview + ".stat_date, '%Y-%m-%d')",
+		StatDateMonth + aliasOverview:      "DATE_FORMAT(" + aliasOverview + ".stat_date, '%Y-%m')",
+		StatDateDay + aliasPaymentStatus:   "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m-%d')",
+		StatDateMonth + aliasPaymentStatus: "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m')",
 	}
 	paymentStatusOrdersMap = map[string]string{
 		"active_days": "active_days",
@@ -72,7 +74,6 @@ type PaymentStatusListReq struct {
 
 func (receiver *PaymentStatusListReq) Format() {
 	var tmpIndicators []string
-	tmpIndicators = append(tmpIndicators, "pay_count", "active_user", "pay_amount")
 	if len(receiver.Indicators) > 0 {
 		for _, indicator := range receiver.Indicators {
 			isDel := false
@@ -97,63 +98,142 @@ func (receiver *PaymentStatusListReq) Format() {
 			}
 		}
 		receiver.Indicators = tmpIndicators
+
 		//升序
 		sort.Ints(receiver.ActiveDays)
 	}
-
-	if receiver.AggregationTime == AggregationTimeDay {
-		receiver.Dimensions = append(receiver.Dimensions, "stat_date")
-		receiver.Orders = append(receiver.Orders, "stat_date")
-		retentionStatusFieldsMap["stat_date"] = "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m-%d') as stat_date"
-		retentionStatusGroupsMap["stat_date"] = "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m-%d')"
-
-	} else if receiver.AggregationTime == AggregationTimeMonth {
-		receiver.Dimensions = append(receiver.Dimensions, "stat_date")
-		receiver.Orders = append(receiver.Orders, "stat_date")
-		retentionStatusFieldsMap["stat_date"] = "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m') as stat_date"
-		retentionStatusGroupsMap["stat_date"] = "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m')"
-	}
-	receiver.Dimensions = append(receiver.Dimensions, "active_days")
-	receiver.Orders = append(receiver.Orders, "active_days")
 }
 
-func (receiver *PaymentStatusListReq) BuildDb(tx *gorm.DB) (resp *gorm.DB, err error) {
+func (receiver *PaymentStatusListReq) getJoinsMap(alias string) map[string]func(tx *gorm.DB) {
+	return map[string]func(tx *gorm.DB){
+		"platform_id": func(tx *gorm.DB) {
+			tx.Joins("join dim_platform as platform on platform.id = " + alias + ".platform_id")
+		},
+		"agent_id": func(tx *gorm.DB) {
+			tx.Joins("join dim_agent as agent on agent.platform_id = " + alias + ".platform_id and agent.id = " + alias + ".agent_id")
+		},
+		"site_id": func(tx *gorm.DB) {
+			tx.Joins("join dim_site as site on site.platform_id = " + alias + ".platform_id and site.id = " + alias + ".site_id")
+		},
+	}
+}
+
+func (receiver *PaymentStatusListReq) BuildOverviewDb(tx *gorm.DB) (resp *gorm.DB) {
+	tmpDb := tx
+	if receiver.StatisticalCaliber == StatisticalCaliberRootGameBack30 {
+		tmpDb = tmpDb.Table(data_report.NewDwsDayRootGameBackOverviewLogModel().TableName() + " as " + aliasOverview)
+	}
+
+	if slice.ContainAny(GameRelationDimensions, receiver.Dimensions) {
+		tmpDb.Joins("join dim_game as game on game.platform_id = " + aliasOverview + ".platform_id and game.id = " + aliasOverview + ".game_id")
+		tmpDb.Joins("join dim_main_game as main_game on main_game.platform_id = game.platform_id and main_game.id = game.main_id")
+		tmpDb.Joins("join dim_root_game as root_game on root_game.platform_id = main_game.platform_id and root_game.id = main_game.root_game_id")
+	}
+
+	tmpDb.Where(aliasOverview+".stat_date BETWEEN ? AND ?", receiver.StartTime, receiver.EndTime)
+
+	commonReq := receiver.BaseDataReport
+	commonReq.Indicators = append(commonReq.Indicators, "reg")
+	if receiver.AggregationTime == AggregationTimeDay {
+		commonReq.Dimensions = append(commonReq.Dimensions, StatDateDay+aliasOverview)
+	} else if receiver.AggregationTime == AggregationTimeMonth {
+		commonReq.Dimensions = append(commonReq.Dimensions, StatDateMonth+aliasOverview)
+	}
+	dbBuilder := &DbBuilder{Db: tmpDb, BaseDataReport: commonReq}
+	dbBuilder.
+		SetFieldsMap(paymentStatusFieldsMap).
+		SetJoinsMap(receiver.getJoinsMap(aliasOverview)).
+		SetWheresMap(paymentStatusWheresMap).
+		SetGroupsMap(paymentStatusGroupsMap)
+	resp = dbBuilder.Build()
+	return
+}
+
+func (receiver *PaymentStatusListReq) BuildPaymentDb(tx *gorm.DB) (resp *gorm.DB) {
 	tmpDb := tx
 	if receiver.StatisticalCaliber == StatisticalCaliberRootGameBack30 {
 		tmpDb = tmpDb.Table(data_report.NewDwsDayRootGameBackPayActiveLogModel().TableName() + " as " + aliasPaymentStatus)
 	}
 
-	tmpDb.Joins("join dim_game as game on game.platform_id = " + aliasPaymentStatus + ".platform_id and game.id = " + aliasPaymentStatus + ".game_id")
-	tmpDb.Joins("join dim_main_game as main_game on main_game.platform_id = game.platform_id and main_game.id = game.main_id")
-	tmpDb.Joins("join dim_root_game as root_game on root_game.platform_id = main_game.platform_id and root_game.id = main_game.root_game_id")
+	commonBaseReq := receiver.BaseDataReport
+	commonBaseReq.Indicators = append(commonBaseReq.Indicators, "pay_count", "active_user", "pay_amount")
+	commonBaseReq.Dimensions = append(commonBaseReq.Dimensions, "active_days")
+
+	if slice.ContainAny(GameRelationDimensions, receiver.Dimensions) {
+		tmpDb.Joins("join dim_game as game on game.platform_id = " + aliasPaymentStatus + ".platform_id and game.id = " + aliasPaymentStatus + ".game_id")
+		tmpDb.Joins("join dim_main_game as main_game on main_game.platform_id = game.platform_id and main_game.id = game.main_id")
+		tmpDb.Joins("join dim_root_game as root_game on root_game.platform_id = main_game.platform_id and root_game.id = main_game.root_game_id")
+	}
 
 	tmpDb.Where(aliasPaymentStatus+".reg_date BETWEEN ? AND ?", receiver.StartTime, receiver.EndTime)
+
+	if receiver.AggregationTime == AggregationTimeDay {
+		commonBaseReq.Dimensions = append(commonBaseReq.Dimensions, StatDateDay+aliasPaymentStatus)
+	} else if receiver.AggregationTime == AggregationTimeMonth {
+		commonBaseReq.Dimensions = append(commonBaseReq.Dimensions, StatDateMonth+aliasPaymentStatus)
+	}
+
 	loginEndDate, _ := datetime.FormatStrToTime(receiver.EndTime, "yyyy-MM-dd")
 	maxDay := 0
 	if len(receiver.ActiveDays) > 0 {
 		maxDay = receiver.ActiveDays[len(receiver.ActiveDays)-1]
 	}
 	loginEndDateAdd := loginEndDate.Add(time.Duration(maxDay) * 24 * time.Hour)
-	tmpDb.Where(aliasPaymentStatus+".login_date BETWEEN ? AND ?", receiver.StartTime, datetime.FormatTimeToStr(loginEndDateAdd, "yyyy-MM-dd"))
+	tmpDb.Where(aliasPaymentStatus+".pay_date BETWEEN ? AND ?", receiver.StartTime, datetime.FormatTimeToStr(loginEndDateAdd, "yyyy-MM-dd"))
 
-	dbBuilder := &DbBuilder{Db: tmpDb, BaseDataReport: receiver.BaseDataReport}
+	dbBuilder := &DbBuilder{Db: tmpDb, BaseDataReport: commonBaseReq}
 	dbBuilder.
 		SetFieldsMap(paymentStatusFieldsMap).
-		SetJoinsMap(paymentStatusJoinsMap).
+		SetJoinsMap(receiver.getJoinsMap(aliasPaymentStatus)).
 		SetWheresMap(paymentStatusWheresMap).
-		SetGroupsMap(paymentStatusGroupsMap).
-		SetOrdersMap(paymentStatusOrdersMap)
+		SetGroupsMap(paymentStatusGroupsMap)
 
+	paymentStatusDb := dbBuilder.Build()
+	resp = paymentStatusDb
+	return
+}
+
+func (receiver *PaymentStatusListReq) BuildDb(tx *gorm.DB) (resp *gorm.DB, err error) {
+
+	overviewDb := receiver.BuildOverviewDb(tx)
+
+	paymentDb := receiver.BuildPaymentDb(tx)
+
+	var combineOn []string
+	for _, item := range receiver.Dimensions {
+		combineOn = append(combineOn, fmt.Sprintf("%s.%s = %s.%s", aliasOverview, item, aliasPaymentStatus, item))
+	}
+
+	if len(combineOn) <= 0 {
+		combineOn = append(combineOn, " 1 = 1 ")
+	}
+
+	var joinAllOrders []string
+	if receiver.AggregationTime != AggregationTimeAll {
+		joinAllOrders = append(joinAllOrders, "stat_date")
+	}
+	joinAllOrders = append(joinAllOrders, "active_days")
+
+	joinAllDb := BuildTemporaryTable(aliasOverview, overviewDb).
+		Joins("LEFT JOIN (?) as "+aliasPaymentStatus+" ON "+strings.Join(combineOn, " AND "), paymentDb)
+
+	dbBuilder := &DbBuilder{
+		Db:             joinAllDb,
+		BaseDataReport: BaseDataReport{Indicators: []string{"join_all"}, Orders: joinAllOrders}}
+	dbBuilder.SetFieldsMap(paymentStatusFieldsMap)
+	dbBuilder.SetOrdersMap(paymentStatusOrdersMap)
 	resp = dbBuilder.Build()
 	return
 }
 
 type PaymentStatusListResp struct {
 	BaseResp
-	Reg         int `json:"reg"`
-	Cost        int `json:"cost"`
-	ActiveDays  int `json:"active_days"`
-	ActiveCount int `json:"active_count"`
+	Reg        int `json:"reg"`
+	Cost       int `json:"cost"`
+	ActiveDays int `json:"active_days"`
+	PayCount   int `json:"pay_count"`
+	ActiveUser int `json:"active_user"`
+	PayAmount  int `json:"pay_amount"`
 }
 
 type PaymentStatusListRespFormat struct {
