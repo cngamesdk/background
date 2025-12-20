@@ -24,6 +24,7 @@
   "/src/view/dashboard/index.vue": "Dashboard",
   "/src/view/dataReport/dayOverview/list.vue": "DayOverviewList",
   "/src/view/dataReport/index.vue": "DataReport",
+  "/src/view/dataReport/paymentStatus/list.vue": "PaymentStatus",
   "/src/view/dataReport/retentionStatus/list.vue": "RetentionStatus",
   "/src/view/error/index.vue": "Error",
   "/src/view/error/reload.vue": "Reload",

@@ -21,5 +21,10 @@ func (s *DataReportRouter) InitApiRouter(Router *gin.RouterGroup) {
 		{
 			retentionStatusGroup.POST("list", retentionStatusApi.List)
 		}
+
+		paymentStatusGroup := apiRouter.Group("payment-status") // 付费情况
+		{
+			paymentStatusGroup.POST("list", paymentStatusApi.List)
+		}
 	}
 }

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/duke-git/lancet/v2/slice"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/data_report"
 	"gorm.io/gorm"
@@ -82,9 +83,11 @@ func (receiver *DayOverviewListReq) BuildDb(tx *gorm.DB) (resp *gorm.DB, err err
 		tmpDb = tmpDb.Table(data_report.NewDwsDayRootGameBackOverviewLogModel().TableName() + " as " + aliasOverview)
 	}
 
-	tmpDb.Joins("join dim_game as game on game.platform_id = " + aliasOverview + ".platform_id and game.id = " + aliasOverview + ".game_id")
-	tmpDb.Joins("join dim_main_game as main_game on main_game.platform_id = game.platform_id and main_game.id = game.main_id")
-	tmpDb.Joins("join dim_root_game as root_game on root_game.platform_id = main_game.platform_id and root_game.id = main_game.root_game_id")
+	if slice.ContainAny(receiver.Dimensions, GameRelationDimensions) {
+		tmpDb.Joins("join dim_game as game on game.platform_id = " + aliasOverview + ".platform_id and game.id = " + aliasOverview + ".game_id")
+		tmpDb.Joins("join dim_main_game as main_game on main_game.platform_id = game.platform_id and main_game.id = game.main_id")
+		tmpDb.Joins("join dim_root_game as root_game on root_game.platform_id = main_game.platform_id and root_game.id = main_game.root_game_id")
+	}
 
 	dbBuilder := &DbBuilder{Db: tmpDb, BaseDataReport: receiver.BaseDataReport}
 	dbBuilder.
