@@ -89,11 +89,16 @@
             v-if="firstRowData.hasOwnProperty('reg')"
             align="left" label="注册数" prop="reg"
         />
+        <el-table-column
+            v-if="firstRowData.hasOwnProperty('cost')"
+            align="left" label="消耗" prop="cost"
+        />
         <el-table-column v-for="(item, index) in nDayColumns"
                          align="left" :label="item + '日'">
           <template #default="scope">
-            <template v-if="currRetentionOption === 'rate'">{{ scope.row.n_day_container[index].retention_rate_str }}</template>
-            <template v-if="currRetentionOption === 'user'">{{ scope.row.n_day_container[index].retention_data }}</template>
+            <template v-if="currRetentionOption === 'roi'">{{ scope.row.n_day_container[index].roi_rate_str }}</template>
+            <template v-if="currRetentionOption === 'ltv'">{{ scope.row.n_day_container[index].ltv }}</template>
+            <template v-if="currRetentionOption === 'cumulative-payment-amount'">{{ scope.row.n_day_container[index].cumulative_payments }}</template>
           </template>
         </el-table-column>
       </el-table>
@@ -168,6 +173,7 @@ const allDimensions = [
 
 const allIndicators = [
   {value: '留存', childs: [
+      {key: '1', value: '1日'},
       {key: '2', value: '2日'},
       {key: '3', value: '3日'},
       {key: '4', value: '4日'},
@@ -180,10 +186,11 @@ const allIndicators = [
     ]}
 ]
 
-const currRetentionOption = ref('rate')
+const currRetentionOption = ref('roi')
 const retentionStatusOptions = ref([
-  {key: 'rate', value: '留存率'},
-  {key: 'user', value: '留存数'},
+  {key: 'roi', value: '回本率'},
+  {key: 'ltv', value: 'LTV'},
+  {key: 'cumulative-payment-amount', value: '累计付费'},
 ])
 
 const onSearchSubmit = () => {

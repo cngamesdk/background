@@ -4,17 +4,19 @@ import (
 	"context"
 	"fmt"
 	"github.com/cngamesdk/go-core/model/sql"
+	"github.com/duke-git/lancet/v2/datetime"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/data_report/api"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"go.uber.org/zap"
+	"time"
 )
 
 type PaymentStatusService struct {
 }
 
-func (receiver PaymentStatusService) List(ctx context.Context, req *api.PaymentStatusListReq) (resp response.PageResult, err error) {
+func (receiver *PaymentStatusService) List(ctx context.Context, req *api.PaymentStatusListReq) (resp response.PageResult, err error) {
 	resp.Page = req.Page
 	resp.PageSize = req.PageSize
 	subQuery, buildErr := req.BuildDb(global.GVA_DB.WithContext(ctx))
@@ -41,40 +43,65 @@ func (receiver PaymentStatusService) List(ctx context.Context, req *api.PaymentS
 		sameGroup := (fmt.Sprintf("%+v", item.BaseResp) + item.StatDate) == (fmt.Sprintf("%+v", last.BaseResp) + last.StatDate)
 		last = item
 		tmpRespFormat := &api.PaymentStatusListRespFormat{
-			BaseResp: item.BaseResp,
-			Reg:      item.Reg,
+			BaseResp:             item.BaseResp,
+			Reg:                  item.Reg,
+			Cost:                 item.Cost,
+			CumulativePayCount:   item.CumulativePayCount,
+			CumulativeActiveUser: item.CumulativeActiveUser,
+			CumulativePayAmount:  item.CumulativePayAmount,
 		}
 
 		if sameGroup && len(listFormat) > 0 {
 			tmpRespFormat = listFormat[len(listFormat)-1]
-
-			//补全数据
-			lenNDayContainer := len(tmpRespFormat.NDayContainer)
-			if lenNDayContainer >= 1 {
-				topItem := tmpRespFormat.NDayContainer[lenNDayContainer-1]
-				existsLastDayRetention := topItem.NDay == (item.ActiveDays - 1)
-				if !existsLastDayRetention {
-					tmpRespFormat.NDayContainer = append(tmpRespFormat.NDayContainer, api.PaymentStatusNDayData{
-						NDay:       item.ActiveDays - 1,
-						RoiRateStr: utils.FloatDecimal2Str(0),
-					})
-				}
-			}
-
-		} else {
+		} else if item.ActiveDays > 0 {
 			listFormat = append(listFormat, tmpRespFormat)
 		}
-		if item.ActiveDays != 1 {
-			rate := utils.Percent(item.PayAmount, tmpRespFormat.Reg)
-			tmpRespFormat.NDayContainer = append(tmpRespFormat.NDayContainer, api.PaymentStatusNDayData{
-				NDay:         item.ActiveDays,
-				DailyPayment: item.PayAmount,
-				Ltv:          rate,
-				RoiRateStr:   utils.FloatDecimal2Str(rate),
-			})
-		}
+		tmpRespFormat.NDayContainer = append(tmpRespFormat.NDayContainer, api.PaymentStatusNDayData{
+			NDay:                  item.ActiveDays,
+			DailyPayment:          item.PayAmount,
+			DailyPaymentUsers:     item.ActiveUser,
+			DailyPaymentFrequency: item.PayCount,
+		})
+	}
+	maxDay := 0
+	if len(req.ActiveDays) > 0 {
+		maxDay = req.ActiveDays[len(req.ActiveDays)-1]
 	}
 
+	//补全天数
+	for _, item := range listFormat {
+		var tmpNDayContainer []api.PaymentStatusNDayData
+		for index := 1; index <= maxDay; index++ {
+			tmpNDayData := api.PaymentStatusNDayData{
+				NDay: index,
+			}
+			for _, nDayItem := range item.NDayContainer {
+				if nDayItem.NDay == index {
+					tmpNDayData = nDayItem
+					break
+				}
+			}
+			//第一项
+			tmpCumulativePayments := 0
+			tmpCumulativePaymentUsers := 0
+			tmpCumulativePaymentFrequency := 0
+			statDate, _ := datetime.FormatStrToTime(item.StatDate, "yyyy-MM-dd")
+			if len(tmpNDayContainer) > 0 && (statDate.Add(time.Hour*time.Duration(index*24)).Unix()-time.Now().Unix() < 24*3600) {
+				lastItem := tmpNDayContainer[len(tmpNDayContainer)-1]
+				tmpCumulativePayments = lastItem.CumulativePayments
+				tmpCumulativePaymentUsers = lastItem.CumulativePaymentUsers
+				tmpCumulativePaymentFrequency = lastItem.CumulativePaymentFrequency
+			}
+			tmpNDayData.CumulativePayments = tmpCumulativePayments + tmpNDayData.DailyPayment
+			tmpNDayData.CumulativePaymentUsers = tmpCumulativePaymentUsers + tmpNDayData.DailyPaymentUsers
+			tmpNDayData.CumulativePaymentFrequency = tmpCumulativePaymentFrequency + tmpNDayData.DailyPaymentFrequency
+			tmpNDayData.RoiRateStr = utils.FloatDecimal2Str(utils.Percent(tmpNDayData.CumulativePayments, item.Cost))
+			tmpNDayData.Ltv = utils.Percent(tmpNDayData.CumulativePayments, item.Reg)
+
+			tmpNDayContainer = append(tmpNDayContainer, tmpNDayData)
+		}
+		item.NDayContainer = tmpNDayContainer
+	}
 	resp.List = listFormat
 	return
 }
