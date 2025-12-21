@@ -16,7 +16,8 @@ import (
 )
 
 const (
-	aliasPaymentStatus = "payment"
+	aliasPaymentStatus     = "payment"
+	aliasCumulativePayment = "cumulative_payment"
 )
 
 var (
@@ -33,11 +34,12 @@ var (
 		"pay_count":                        "SUM( " + aliasPaymentStatus + ".pay_count ) AS pay_count",
 		"active_user":                      "SUM( " + aliasPaymentStatus + ".active_user ) AS active_user",
 		"pay_amount":                       "SUM( " + aliasPaymentStatus + ".pay_amount ) AS pay_amount",
-		StatDateDay + aliasOverview:        "DATE_FORMAT(" + aliasOverview + ".stat_date, '%Y-%m-%d') as stat_date",
-		StatDateMonth + aliasOverview:      "DATE_FORMAT(" + aliasOverview + ".stat_date, '%Y-%m') as stat_date",
-		StatDateDay + aliasPaymentStatus:   "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m-%d') as stat_date",
-		StatDateMonth + aliasPaymentStatus: "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m') as stat_date",
-		"join_all":                         aliasOverview + ".*,IFNULL(active_days,0) AS active_days,IFNULL(pay_count,0) AS pay_count,IFNULL(active_user,0) AS active_user,IFNULL(pay_amount,0) AS pay_amount",
+		"join_all":                         aliasOverview + ".*,IFNULL(" + aliasPaymentStatus + ".active_days,0) AS active_days,IFNULL(" + aliasPaymentStatus + ".pay_count,0) AS pay_count,IFNULL(" + aliasPaymentStatus + ".active_user,0) AS active_user,IFNULL(" + aliasPaymentStatus + ".pay_amount,0) AS pay_amount",
+		"join_all_cumulative_payment":      "IFNULL(" + aliasCumulativePayment + ".pay_count,0) AS cumulative_pay_count,IFNULL(" + aliasCumulativePayment + ".active_user,0) AS cumulative_active_user,IFNULL(" + aliasCumulativePayment + ".pay_amount,0) AS cumulative_pay_amount",
+		StatDateDay + aliasOverview:        "DATE_FORMAT(" + aliasOverview + ".stat_date, '%Y-%m-%d') AS stat_date",
+		StatDateMonth + aliasOverview:      "DATE_FORMAT(" + aliasOverview + ".stat_date, '%Y-%m') AS stat_date",
+		StatDateDay + aliasPaymentStatus:   "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m-%d') AS stat_date",
+		StatDateMonth + aliasPaymentStatus: "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m') AS stat_date",
 	}
 	paymentStatusWheresMap = map[string]string{
 		"platform_id":  aliasPaymentStatus + ".platform_id",
@@ -149,6 +151,41 @@ func (receiver *PaymentStatusListReq) BuildOverviewDb(tx *gorm.DB) (resp *gorm.D
 	return
 }
 
+// BuildCumulativePayment 构建累计付费
+func (receiver *PaymentStatusListReq) BuildCumulativePayment(tx *gorm.DB) (resp *gorm.DB) {
+	tmpDb := tx
+	if receiver.StatisticalCaliber == StatisticalCaliberRootGameBack30 {
+		tmpDb = tmpDb.Table(data_report.NewDwsDayRootGameBackPayActiveLogModel().TableName() + " as " + aliasPaymentStatus)
+	}
+	commonBaseReq := receiver.BaseDataReport
+	commonBaseReq.Indicators = append(commonBaseReq.Indicators, "pay_count", "active_user", "pay_amount")
+
+	if slice.ContainAny(GameRelationDimensions, receiver.Dimensions) {
+		tmpDb.Joins("join dim_game as game on game.platform_id = " + aliasPaymentStatus + ".platform_id and game.id = " + aliasPaymentStatus + ".game_id")
+		tmpDb.Joins("join dim_main_game as main_game on main_game.platform_id = game.platform_id and main_game.id = game.main_id")
+		tmpDb.Joins("join dim_root_game as root_game on root_game.platform_id = main_game.platform_id and root_game.id = main_game.root_game_id")
+	}
+
+	tmpDb.Where(aliasPaymentStatus+".reg_date BETWEEN ? AND ?", receiver.StartTime, receiver.EndTime)
+
+	if receiver.AggregationTime == AggregationTimeDay {
+		commonBaseReq.Dimensions = append(commonBaseReq.Dimensions, StatDateDay+aliasPaymentStatus)
+	} else if receiver.AggregationTime == AggregationTimeMonth {
+		commonBaseReq.Dimensions = append(commonBaseReq.Dimensions, StatDateMonth+aliasPaymentStatus)
+	}
+
+	dbBuilder := &DbBuilder{Db: tmpDb, BaseDataReport: commonBaseReq}
+	dbBuilder.
+		SetFieldsMap(paymentStatusFieldsMap).
+		SetJoinsMap(receiver.getJoinsMap(aliasPaymentStatus)).
+		SetWheresMap(paymentStatusWheresMap).
+		SetGroupsMap(paymentStatusGroupsMap)
+
+	paymentStatusDb := dbBuilder.Build()
+	resp = paymentStatusDb
+	return
+}
+
 func (receiver *PaymentStatusListReq) BuildPaymentDb(tx *gorm.DB) (resp *gorm.DB) {
 	tmpDb := tx
 	if receiver.StatisticalCaliber == StatisticalCaliberRootGameBack30 {
@@ -178,7 +215,7 @@ func (receiver *PaymentStatusListReq) BuildPaymentDb(tx *gorm.DB) (resp *gorm.DB
 	if len(receiver.ActiveDays) > 0 {
 		maxDay = receiver.ActiveDays[len(receiver.ActiveDays)-1]
 	}
-	loginEndDateAdd := loginEndDate.Add(time.Duration(maxDay) * 24 * time.Hour)
+	loginEndDateAdd := loginEndDate.Add(time.Duration(maxDay-1) * 24 * time.Hour)
 	tmpDb.Where(aliasPaymentStatus+".pay_date BETWEEN ? AND ?", receiver.StartTime, datetime.FormatTimeToStr(loginEndDateAdd, "yyyy-MM-dd"))
 
 	dbBuilder := &DbBuilder{Db: tmpDb, BaseDataReport: commonBaseReq}
@@ -193,20 +230,26 @@ func (receiver *PaymentStatusListReq) BuildPaymentDb(tx *gorm.DB) (resp *gorm.DB
 	return
 }
 
-func (receiver *PaymentStatusListReq) BuildDb(tx *gorm.DB) (resp *gorm.DB, err error) {
-
-	overviewDb := receiver.BuildOverviewDb(tx)
-
-	paymentDb := receiver.BuildPaymentDb(tx)
-
+func (receiver *PaymentStatusListReq) BuildCombineJoinOn(alias1, alias2 string) string {
+	if len(receiver.Dimensions) <= 0 && receiver.AggregationTime != AggregationTimeAll {
+		receiver.Dimensions = append(receiver.Dimensions, "stat_date")
+	}
 	var combineOn []string
 	for _, item := range receiver.Dimensions {
-		combineOn = append(combineOn, fmt.Sprintf("%s.%s = %s.%s", aliasOverview, item, aliasPaymentStatus, item))
+		combineOn = append(combineOn, fmt.Sprintf("%s.%s = %s.%s", alias1, item, alias2, item))
 	}
 
 	if len(combineOn) <= 0 {
 		combineOn = append(combineOn, " 1 = 1 ")
 	}
+	return strings.Join(combineOn, " AND ")
+}
+
+func (receiver *PaymentStatusListReq) BuildDb(tx *gorm.DB) (resp *gorm.DB, err error) {
+
+	overviewDb := receiver.BuildOverviewDb(tx)
+	paymentDb := receiver.BuildPaymentDb(tx)
+	cumulativePaymentDb := receiver.BuildCumulativePayment(tx)
 
 	var joinAllOrders []string
 	if receiver.AggregationTime != AggregationTimeAll {
@@ -215,11 +258,12 @@ func (receiver *PaymentStatusListReq) BuildDb(tx *gorm.DB) (resp *gorm.DB, err e
 	joinAllOrders = append(joinAllOrders, "active_days")
 
 	joinAllDb := BuildTemporaryTable(aliasOverview, overviewDb).
-		Joins("LEFT JOIN (?) as "+aliasPaymentStatus+" ON "+strings.Join(combineOn, " AND "), paymentDb)
+		Joins("LEFT JOIN (?) as "+aliasPaymentStatus+" ON "+receiver.BuildCombineJoinOn(aliasOverview, aliasPaymentStatus), paymentDb).
+		Joins("LEFT JOIN (?) as "+aliasCumulativePayment+" ON "+receiver.BuildCombineJoinOn(aliasOverview, aliasCumulativePayment), cumulativePaymentDb)
 
 	dbBuilder := &DbBuilder{
 		Db:             joinAllDb,
-		BaseDataReport: BaseDataReport{Indicators: []string{"join_all"}, Orders: joinAllOrders}}
+		BaseDataReport: BaseDataReport{Indicators: []string{"join_all", "join_all_cumulative_payment"}, Orders: joinAllOrders}}
 	dbBuilder.SetFieldsMap(paymentStatusFieldsMap)
 	dbBuilder.SetOrdersMap(paymentStatusOrdersMap)
 	resp = dbBuilder.Build()
@@ -228,19 +272,25 @@ func (receiver *PaymentStatusListReq) BuildDb(tx *gorm.DB) (resp *gorm.DB, err e
 
 type PaymentStatusListResp struct {
 	BaseResp
-	Reg        int `json:"reg"`
-	Cost       int `json:"cost"`
-	ActiveDays int `json:"active_days"`
-	PayCount   int `json:"pay_count"`
-	ActiveUser int `json:"active_user"`
-	PayAmount  int `json:"pay_amount"`
+	Reg                  int `json:"reg"`
+	Cost                 int `json:"cost"`
+	ActiveDays           int `json:"active_days"`
+	CumulativePayCount   int `json:"cumulative_pay_count"`
+	CumulativeActiveUser int `json:"cumulative_active_user"`
+	CumulativePayAmount  int `json:"cumulative_pay_amount"`
+	PayCount             int `json:"pay_count"`
+	ActiveUser           int `json:"active_user"`
+	PayAmount            int `json:"pay_amount"`
 }
 
 type PaymentStatusListRespFormat struct {
 	BaseResp
-	Reg           int                     `json:"reg"`
-	Cost          int                     `json:"cost"`
-	NDayContainer []PaymentStatusNDayData `json:"n_day_container"`
+	Reg                  int                     `json:"reg"`
+	Cost                 int                     `json:"cost"`
+	CumulativePayCount   int                     `json:"cumulative_pay_count"`
+	CumulativeActiveUser int                     `json:"cumulative_active_user"`
+	CumulativePayAmount  int                     `json:"cumulative_pay_amount"`
+	NDayContainer        []PaymentStatusNDayData `json:"n_day_container"`
 }
 
 type PaymentStatusNDayData struct {
