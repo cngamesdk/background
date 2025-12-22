@@ -6,14 +6,11 @@
           <dimensionFilter v-model="searchInfo.dimension_filter" :dimensions="['platform_id', 'root_game_id', 'main_game_id', 'game_id', 'agent_id', 'site_id']"></dimensionFilter>
           <Dimensions v-model="searchInfo.dimensions" :dimensions="allDimensions"></Dimensions>
           <Indicators v-model="searchInfo.indicators" :indicators="allIndicators"></Indicators>
-        </el-form-item>
-        <el-form-item>
+          &nbsp;&nbsp;
           <StatisticalCaliber v-model="searchInfo.statistical_caliber"></StatisticalCaliber>
-        </el-form-item>
-        <el-form-item>
+          &nbsp;&nbsp;
           <AggregationTime v-model="searchInfo.aggregation_time"></AggregationTime>
-        </el-form-item>
-        <el-form-item>
+          &nbsp;&nbsp;
           <DateRange v-model="dateRange"></DateRange>
         </el-form-item>
         <el-form-item>
@@ -23,9 +20,9 @@
           <el-button icon="refresh" @click="onReset"> 重置 </el-button>
         </el-form-item>
         <el-form-item>
-          <el-select style="width:7rem;" v-model="currRetentionOption" placeholder="请选择留存选项">
+          <el-select style="width:8rem;" v-model="currPaymentOption" placeholder="请选择选项">
             <el-option
-                v-for="item in retentionStatusOptions"
+                v-for="item in paymentStatusOptions"
                 :key="item.key"
                 :label="item.value"
                 :value="item.key"
@@ -93,14 +90,27 @@
             v-if="firstRowData.hasOwnProperty('cost')"
             align="left" label="消耗" prop="cost"
         />
-        <el-table-column v-for="(item, index) in nDayColumns"
-                         align="left" :label="item + '日'">
-          <template #default="scope">
-            <template v-if="currRetentionOption === 'roi'">{{ scope.row.n_day_container[index].roi_rate_str }}</template>
-            <template v-if="currRetentionOption === 'ltv'">{{ scope.row.n_day_container[index].ltv }}</template>
-            <template v-if="currRetentionOption === 'cumulative-payment-amount'">{{ scope.row.n_day_container[index].cumulative_payments }}</template>
-          </template>
-        </el-table-column>
+        <el-table-column
+            v-if="currPaymentOption === 'roi'"
+            align="left" label="当前回本率" prop="roi_rate_str"
+        />
+        <el-table-column
+            v-if="currPaymentOption === 'ltv'"
+            align="left" label="当前LTV" prop="ltv"
+        />
+        <el-table-column
+            v-if="currPaymentOption === 'cumulative-payment-amount'"
+            align="left" label="当前累计付费" prop="cumulative_pay_amount"
+        />
+        <template v-for="(item, index) in nDayColumns" :key="index">
+          <el-table-column v-if="item.show" align="left" :label="item.day + '日' ">
+            <template #default="scope">
+              <template v-if="currPaymentOption === 'roi'">{{ scope.row.n_day_container[index].roi_rate_str }}</template>
+              <template v-if="currPaymentOption === 'ltv'">{{ scope.row.n_day_container[index].ltv }}</template>
+              <template v-if="currPaymentOption === 'cumulative-payment-amount'">{{ scope.row.n_day_container[index].cumulative_payments }}</template>
+            </template>
+          </el-table-column>
+        </template>
       </el-table>
       <div class="gva-pagination">
         <el-pagination
@@ -186,8 +196,8 @@ const allIndicators = [
     ]}
 ]
 
-const currRetentionOption = ref('roi')
-const retentionStatusOptions = ref([
+const currPaymentOption = ref('roi')
+const paymentStatusOptions = ref([
   {key: 'roi', value: '回本率'},
   {key: 'ltv', value: 'LTV'},
   {key: 'cumulative-payment-amount', value: '累计付费'},
@@ -241,7 +251,7 @@ const getTableData = async () => {
       firstRowData.value = table.data.list[0]
       nDayColumns.value = []
       firstRowData.value.n_day_container.forEach(function (item) {
-        nDayColumns.value.push(item.n_day)
+        nDayColumns.value.push({day:item.n_day, show: item.show})
       })
     }
   }

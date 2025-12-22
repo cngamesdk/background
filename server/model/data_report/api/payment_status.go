@@ -41,14 +41,6 @@ var (
 		StatDateDay + aliasPaymentStatus:   "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m-%d') AS stat_date",
 		StatDateMonth + aliasPaymentStatus: "DATE_FORMAT(" + aliasPaymentStatus + ".reg_date, '%Y-%m') AS stat_date",
 	}
-	paymentStatusWheresMap = map[string]string{
-		"platform_id":  aliasPaymentStatus + ".platform_id",
-		"root_game_id": "root_game.id",
-		"main_game_id": "main_game.id",
-		"game_id":      "game.id",
-		"agent_id":     "agent.id",
-		"site_id":      "site.id",
-	}
 	paymentStatusGroupsMap = map[string]string{
 		"platform_id":                      "platform.id",
 		"root_game_id":                     "root_game.id",
@@ -120,6 +112,17 @@ func (receiver *PaymentStatusListReq) getJoinsMap(alias string) map[string]func(
 	}
 }
 
+func (receiver *PaymentStatusListReq) getWheresMap(alias string) map[string]string {
+	return map[string]string{
+		"platform_id":  alias + ".platform_id",
+		"root_game_id": "root_game.id",
+		"main_game_id": "main_game.id",
+		"game_id":      "game.id",
+		"agent_id":     "agent.id",
+		"site_id":      "site.id",
+	}
+}
+
 func (receiver *PaymentStatusListReq) BuildOverviewDb(tx *gorm.DB) (resp *gorm.DB) {
 	tmpDb := tx
 	if receiver.StatisticalCaliber == StatisticalCaliberRootGameBack30 {
@@ -145,7 +148,7 @@ func (receiver *PaymentStatusListReq) BuildOverviewDb(tx *gorm.DB) (resp *gorm.D
 	dbBuilder.
 		SetFieldsMap(paymentStatusFieldsMap).
 		SetJoinsMap(receiver.getJoinsMap(aliasOverview)).
-		SetWheresMap(paymentStatusWheresMap).
+		SetWheresMap(receiver.getWheresMap(aliasOverview)).
 		SetGroupsMap(paymentStatusGroupsMap)
 	resp = dbBuilder.Build()
 	return
@@ -178,7 +181,7 @@ func (receiver *PaymentStatusListReq) BuildCumulativePayment(tx *gorm.DB) (resp 
 	dbBuilder.
 		SetFieldsMap(paymentStatusFieldsMap).
 		SetJoinsMap(receiver.getJoinsMap(aliasPaymentStatus)).
-		SetWheresMap(paymentStatusWheresMap).
+		SetWheresMap(receiver.getWheresMap(aliasPaymentStatus)).
 		SetGroupsMap(paymentStatusGroupsMap)
 
 	paymentStatusDb := dbBuilder.Build()
@@ -222,7 +225,7 @@ func (receiver *PaymentStatusListReq) BuildPaymentDb(tx *gorm.DB) (resp *gorm.DB
 	dbBuilder.
 		SetFieldsMap(paymentStatusFieldsMap).
 		SetJoinsMap(receiver.getJoinsMap(aliasPaymentStatus)).
-		SetWheresMap(paymentStatusWheresMap).
+		SetWheresMap(receiver.getWheresMap(aliasPaymentStatus)).
 		SetGroupsMap(paymentStatusGroupsMap)
 
 	paymentStatusDb := dbBuilder.Build()
@@ -290,11 +293,14 @@ type PaymentStatusListRespFormat struct {
 	CumulativePayCount   int                     `json:"cumulative_pay_count"`
 	CumulativeActiveUser int                     `json:"cumulative_active_user"`
 	CumulativePayAmount  int                     `json:"cumulative_pay_amount"`
+	RoiRateStr           string                  `json:"roi_rate_str"` // 当前回本率
+	Ltv                  float64                 `json:"ltv"`          //当前LTV
 	NDayContainer        []PaymentStatusNDayData `json:"n_day_container"`
 }
 
 type PaymentStatusNDayData struct {
-	NDay                          int     `json:"n_day"`
+	Show                          bool    `json:"show"`                              //是否展示
+	NDay                          int     `json:"n_day"`                             // N日
 	RoiRateStr                    string  `json:"roi_rate_str"`                      //回本率。如：60%;用户在首日新增后的累计付费总额/广告消耗成本
 	Ltv                           float64 `json:"ltv"`                               //ltv。如：9.8;用户在首日新增后的累计付费总额/新增用户总户数
 	CumulativePayments            int     `json:"cumulative_payments"`               //累计付费。用户在首日新增后的累计付费总额
