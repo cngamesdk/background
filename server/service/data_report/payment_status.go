@@ -10,6 +10,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/data_report/api"
 	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"go.uber.org/zap"
+	"slices"
 	"time"
 )
 
@@ -49,6 +50,8 @@ func (receiver *PaymentStatusService) List(ctx context.Context, req *api.Payment
 			CumulativePayCount:   item.CumulativePayCount,
 			CumulativeActiveUser: item.CumulativeActiveUser,
 			CumulativePayAmount:  item.CumulativePayAmount,
+			RoiRateStr:           utils.FloatDecimal2Str(utils.Percent(item.CumulativePayAmount, item.Cost)),
+			Ltv:                  utils.Percent(item.CumulativePayAmount, item.Reg),
 		}
 
 		if sameGroup && len(listFormat) > 0 {
@@ -85,7 +88,12 @@ func (receiver *PaymentStatusService) List(ctx context.Context, req *api.Payment
 			tmpCumulativePayments := 0
 			tmpCumulativePaymentUsers := 0
 			tmpCumulativePaymentFrequency := 0
-			statDate, _ := datetime.FormatStrToTime(item.StatDate, "yyyy-MM-dd")
+
+			tmpStatDate := req.EndTime
+			if req.AggregationTime != api.AggregationTimeAll {
+				tmpStatDate = item.StatDate
+			}
+			statDate, _ := datetime.FormatStrToTime(tmpStatDate, "yyyy-MM-dd")
 			if len(tmpNDayContainer) > 0 && (statDate.Add(time.Hour*time.Duration(index*24)).Unix()-time.Now().Unix() < 24*3600) {
 				lastItem := tmpNDayContainer[len(tmpNDayContainer)-1]
 				tmpCumulativePayments = lastItem.CumulativePayments
@@ -97,7 +105,7 @@ func (receiver *PaymentStatusService) List(ctx context.Context, req *api.Payment
 			tmpNDayData.CumulativePaymentFrequency = tmpCumulativePaymentFrequency + tmpNDayData.DailyPaymentFrequency
 			tmpNDayData.RoiRateStr = utils.FloatDecimal2Str(utils.Percent(tmpNDayData.CumulativePayments, item.Cost))
 			tmpNDayData.Ltv = utils.Percent(tmpNDayData.CumulativePayments, item.Reg)
-
+			tmpNDayData.Show = slices.Contains(req.ActiveDays, tmpNDayData.NDay)
 			tmpNDayContainer = append(tmpNDayContainer, tmpNDayData)
 		}
 		item.NDayContainer = tmpNDayContainer
