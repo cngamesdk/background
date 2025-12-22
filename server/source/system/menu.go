@@ -54,14 +54,19 @@ func (i *initMenu) InitializeData(ctx context.Context) (next context.Context, er
 	// 定义所有菜单
 	allMenus := []SysBaseMenu{
 		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "dashboard", Name: "dashboard", Component: "view/dashboard/index.vue", Sort: 1, Meta: Meta{Title: "仪表盘", Icon: "odometer"}},
-		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "about", Name: "about", Component: "view/about/index.vue", Sort: 9, Meta: Meta{Title: "关于我们", Icon: "info-filled"}},
-		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "admin", Name: "superAdmin", Component: "view/superAdmin/index.vue", Sort: 3, Meta: Meta{Title: "超级管理员", Icon: "user"}},
-		{MenuLevel: 0, Hidden: true, ParentId: 0, Path: "person", Name: "person", Component: "view/person/person.vue", Sort: 4, Meta: Meta{Title: "个人信息", Icon: "message"}},
-		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "example", Name: "example", Component: "view/example/index.vue", Sort: 7, Meta: Meta{Title: "示例文件", Icon: "management"}},
-		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "systemTools", Name: "systemTools", Component: "view/systemTools/index.vue", Sort: 5, Meta: Meta{Title: "系统工具", Icon: "tools"}},
-		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "https://www.gin-vue-admin.com", Name: "https://www.gin-vue-admin.com", Component: "/", Sort: 0, Meta: Meta{Title: "官方网站", Icon: "customer-gva"}},
-		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "state", Name: "state", Component: "view/system/state.vue", Sort: 8, Meta: Meta{Title: "服务器状态", Icon: "cloudy"}},
-		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "plugin", Name: "plugin", Component: "view/routerHolder.vue", Sort: 6, Meta: Meta{Title: "插件系统", Icon: "cherry"}},
+
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "operationManagement", Name: "operationManagement", Component: "view/operationManagement/index.vue", Sort: 10, Meta: Meta{Title: "运营管理", Icon: "aim"}},
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "advertising", Name: "advertising", Component: "view/advertising/index.vue", Sort: 11, Meta: Meta{Title: "广告管理", Icon: "add-location"}},
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "cronTask", Name: "cronTask", Component: "view/cronTask/index.vue", Sort: 12, Meta: Meta{Title: "定时任务", Icon: "timer"}},
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "dataReport", Name: "dataReport", Component: "view/dataReport/index.vue", Sort: 13, Meta: Meta{Title: "数据报表", Icon: "data-analysis"}},
+
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "admin", Name: "superAdmin", Component: "view/superAdmin/index.vue", Sort: 30, Meta: Meta{Title: "超级管理员", Icon: "user"}},
+		{MenuLevel: 0, Hidden: true, ParentId: 0, Path: "person", Name: "person", Component: "view/person/person.vue", Sort: 40, Meta: Meta{Title: "个人信息", Icon: "message"}},
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "systemTools", Name: "systemTools", Component: "view/systemTools/index.vue", Sort: 50, Meta: Meta{Title: "系统工具", Icon: "tools"}},
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "plugin", Name: "plugin", Component: "view/routerHolder.vue", Sort: 60, Meta: Meta{Title: "插件系统", Icon: "cherry"}},
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "example", Name: "example", Component: "view/example/index.vue", Sort: 70, Meta: Meta{Title: "示例文件", Icon: "management"}},
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "state", Name: "state", Component: "view/system/state.vue", Sort: 80, Meta: Meta{Title: "服务器状态", Icon: "cloudy"}},
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "about", Name: "about", Component: "view/about/index.vue", Sort: 90, Meta: Meta{Title: "关于我们", Icon: "info-filled"}},
 	}
 
 	// 先创建父级菜单（ParentId = 0 的菜单）
@@ -104,11 +109,36 @@ func (i *initMenu) InitializeData(ctx context.Context) (next context.Context, er
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["systemTools"], Path: "mcpTest", Name: "mcpTest", Component: "view/systemTools/autoCode/mcpTest.vue", Sort: 7, Meta: Meta{Title: "Mcp Tools测试", Icon: "partly-cloudy"}},
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["systemTools"], Path: "sysVersion", Name: "sysVersion", Component: "view/systemTools/version/version.vue", Sort: 8, Meta: Meta{Title: "版本管理", Icon: "server"}},
 
-		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["plugin"], Path: "https://plugin.gin-vue-admin.com/", Name: "https://plugin.gin-vue-admin.com/", Component: "https://plugin.gin-vue-admin.com/", Sort: 0, Meta: Meta{Title: "插件市场", Icon: "shop"}},
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["plugin"], Path: "installPlugin", Name: "installPlugin", Component: "view/systemTools/installPlugin/index.vue", Sort: 1, Meta: Meta{Title: "插件安装", Icon: "box"}},
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["plugin"], Path: "pubPlug", Name: "pubPlug", Component: "view/systemTools/pubPlug/pubPlug.vue", Sort: 3, Meta: Meta{Title: "打包插件", Icon: "files"}},
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["plugin"], Path: "plugin-email", Name: "plugin-email", Component: "plugin/email/view/index.vue", Sort: 4, Meta: Meta{Title: "邮件插件", Icon: "message"}},
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["plugin"], Path: "anInfo", Name: "anInfo", Component: "plugin/announcement/view/info.vue", Sort: 5, Meta: Meta{Title: "公告管理[示例]", Icon: "scaleToOriginal"}},
+
+		// 「运营管理」子菜单
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "PlatformList", Name: "PlatformList", Component: "view/operationManagement/platformManagement/platform/list.vue", Sort: 1, Meta: Meta{Title: "平台"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "companyList", Name: "companyList", Component: "view/operationManagement/companyManagement/company/list.vue", Sort: 2, Meta: Meta{Title: "主体"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "RootGameList", Name: "RootGameList", Component: "view/operationManagement/gameManage/rootGame/list.vue", Sort: 3, Meta: Meta{Title: "根游戏"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "MainGameList", Name: "MainGameList", Component: "view/operationManagement/gameManage/mainGame/list.vue", Sort: 4, Meta: Meta{Title: "主游戏"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "subGame", Name: "subGame", Component: "view/operationManagement/gameManage/subGame/list.vue", Sort: 5, Meta: Meta{Title: "子游戏"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "ProductCommonConfigurationList", Name: "ProductCommonConfigurationList", Component: "view/operationManagement/productConfigManagement/productCommon/list.vue", Sort: 6, Meta: Meta{Title: "产品配置"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "GameAppVersionConfigurationList", Name: "GameAppVersionConfigurationList", Component: "view/operationManagement/productConfigManagement/gameAppVersion/list.vue", Sort: 7, Meta: Meta{Title: "版本配置"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "payChannelList", Name: "payChannelList", Component: "view/operationManagement/payChannelManagement/payChannel/list.vue", Sort: 8, Meta: Meta{Title: "支付渠道"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "channelList", Name: "channelList", Component: "view/operationManagement/publishingManagement/channel/list.vue", Sort: 9, Meta: Meta{Title: "联运渠道"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "channelGameList", Name: "channelGameList", Component: "view/operationManagement/publishingManagement/channelGame/list.vue", Sort: 10, Meta: Meta{Title: "联运游戏"}},
+
+		// 「广告管理」子菜单
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "advertisingMediaList", Name: "advertisingMediaList", Component: "view/advertising/advertisingMedia/media/list.vue", Sort: 1, Meta: Meta{Title: "媒体"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "channelGroupList", Name: "channelGroupList", Component: "view/advertising/channelGroup/channelGroup/list.vue", Sort: 2, Meta: Meta{Title: "渠道组"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "agentList", Name: "agentList", Component: "view/advertising/agent/agent/list.vue", Sort: 3, Meta: Meta{Title: "渠道"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "siteList", Name: "siteList", Component: "view/advertising/site/site/list.vue", Sort: 4, Meta: Meta{Title: "广告位"}},
+
+		// 「定时任务」子菜单
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["cronTask"], Path: "cronTaskConfigList", Name: "cronTaskConfigList", Component: "view/cronTask/config/list.vue", Sort: 1, Meta: Meta{Title: "任务列表"}},
+
+		// 「数据报表」子菜单
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["dataReport"], Path: "dayOverviewList", Name: "dayOverviewList", Component: "view/dataReport/dayOverview/list.vue", Sort: 1, Meta: Meta{Title: "每日总览"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["dataReport"], Path: "retentionStatus", Name: "retentionStatus", Component: "view/dataReport/retentionStatus/list.vue", Sort: 1, Meta: Meta{Title: "留存情况"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["dataReport"], Path: "paymentStatus", Name: "paymentStatus", Component: "view/dataReport/paymentStatus/list.vue", Sort: 1, Meta: Meta{Title: "付费情况"}},
 	}
 
 	// 创建子菜单
