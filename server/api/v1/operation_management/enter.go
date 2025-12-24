@@ -14,16 +14,18 @@ type ApiGroup struct {
 	PlatformApi
 	GameAppVersionConfigurationApi
 	ProductCommonConfigurationApi
+	GlobalCommonConfigApi
 }
 
 var (
-	subGameService = service.ServiceGroupApp.OperationManagementServiceGroup.SubGameService
-	mainGameService = service.ServiceGroupApp.OperationManagementServiceGroup.MainGameService
-	rootGameService = service.ServiceGroupApp.OperationManagementServiceGroup.RootGameService
-	companyService = service.ServiceGroupApp.OperationManagementServiceGroup.CompanyService
-	payChannelService = service.ServiceGroupApp.OperationManagementServiceGroup.PayChannelService
-	publishingService = service.ServiceGroupApp.OperationManagementServiceGroup.PublishingService
-	platformService = service.ServiceGroupApp.OperationManagementServiceGroup.PlatformService
+	subGameService                     = service.ServiceGroupApp.OperationManagementServiceGroup.SubGameService
+	mainGameService                    = service.ServiceGroupApp.OperationManagementServiceGroup.MainGameService
+	rootGameService                    = service.ServiceGroupApp.OperationManagementServiceGroup.RootGameService
+	companyService                     = service.ServiceGroupApp.OperationManagementServiceGroup.CompanyService
+	payChannelService                  = service.ServiceGroupApp.OperationManagementServiceGroup.PayChannelService
+	publishingService                  = service.ServiceGroupApp.OperationManagementServiceGroup.PublishingService
+	platformService                    = service.ServiceGroupApp.OperationManagementServiceGroup.PlatformService
 	gameAppVersionConfigurationService = service.ServiceGroupApp.OperationManagementServiceGroup.GameAppVersionConfigurationService
-	productCommonConfigurationService = service.ServiceGroupApp.OperationManagementServiceGroup.ProductCommonConfigurationService
+	productCommonConfigurationService  = service.ServiceGroupApp.OperationManagementServiceGroup.ProductCommonConfigurationService
+	globalCommonConfigService          = service.ServiceGroupApp.OperationManagementServiceGroup.GlobalCommonConfigService
 )
