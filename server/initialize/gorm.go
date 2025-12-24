@@ -77,6 +77,7 @@ func RegisterTables() {
 		log.DwdGameRegLogModel{},
 		log.DwdRootGameRegLogModel{},
 		log.DwdRootGameBackRegLogModel{},
+		log.OdsGamePackagingLogModel{},
 
 		report.DwsDayRootGameBackLoginActiveLogModel{},
 		report.DwsDayRootGameBackOverviewLogModel{},
@@ -89,6 +90,16 @@ func RegisterTables() {
 
 		common.DimAgentModel{},
 		common.DimSiteModel{},
+		common.DimCompanyModel{},
+		common.DimGameModel{},
+		common.DimGameAppVersionConfiguration{},
+		common.GamePackagingConfigModel{},
+		common.GlobalCommonConfigModel{},
+		common.DimMainGameModel{},
+		common.DimPayChannelModel{},
+		common.DimPlatformModel{},
+		common.DimProductCommonConfigurationModel{},
+		common.DimRootGameModel{},
 
 		cron_task.DimCronTaskConfigModel{},
 		cron_task.OdsCronTaskLogModel{},
