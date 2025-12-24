@@ -10,4 +10,5 @@ type ServiceGroup struct {
 	PlatformService
 	GameAppVersionConfigurationService
 	ProductCommonConfigurationService
+	GlobalCommonConfigService
 }

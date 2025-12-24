@@ -6,7 +6,6 @@ import (
 )
 
 type OperationManagementRouter struct {
-
 }
 
 func (s *OperationManagementRouter) InitApiRouter(Router *gin.RouterGroup) {
@@ -94,6 +93,13 @@ func (s *OperationManagementRouter) InitApiRouter(Router *gin.RouterGroup) {
 				channelGameManageRouter.POST("add", publishingApi.ChannelGameConfigAdd)       // 发行渠道游戏添加
 				channelGameManageRouter.POST("modify", publishingApi.ChannelGameConfigModify) // 发行渠道游戏修改
 			}
+		}
+
+		globalCommonConfigRouter := apiRouter.Group("global-common-config")
+		{
+			globalCommonConfigRouter.POST("list", globalCommonConfigApi.List)     // 全局配置列表
+			globalCommonConfigRouter.POST("add", globalCommonConfigApi.Add)       // 全局配置添加
+			globalCommonConfigRouter.POST("modify", globalCommonConfigApi.Modify) // 全局配置修改
 		}
 	}
 }
