@@ -125,6 +125,7 @@ func (i *initMenu) InitializeData(ctx context.Context) (next context.Context, er
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "payChannelList", Name: "payChannelList", Component: "view/operationManagement/payChannelManagement/payChannel/list.vue", Sort: 8, Meta: Meta{Title: "支付渠道"}},
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "channelList", Name: "channelList", Component: "view/operationManagement/publishingManagement/channel/list.vue", Sort: 9, Meta: Meta{Title: "联运渠道"}},
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "channelGameList", Name: "channelGameList", Component: "view/operationManagement/publishingManagement/channelGame/list.vue", Sort: 10, Meta: Meta{Title: "联运游戏"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "globalCommonConfigList", Name: "globalCommonConfigList", Component: "view/operationManagement/globalCommonConfig/list/list.vue", Sort: 11, Meta: Meta{Title: "全局通用配置", Icon: "list"}},
 
 		// 「广告管理」子菜单
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "advertisingMediaList", Name: "advertisingMediaList", Component: "view/advertising/advertisingMedia/media/list.vue", Sort: 1, Meta: Meta{Title: "媒体"}},

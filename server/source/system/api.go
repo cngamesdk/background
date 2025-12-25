@@ -253,6 +253,10 @@ func (i *initApi) InitializeData(ctx context.Context) (context.Context, error) {
 		{ApiGroup: "游戏管理", Method: "POST", Path: "/operation_management/game_manage/main_game/list", Description: "主游戏列表"},
 		{ApiGroup: "游戏管理", Method: "POST", Path: "/operation_management/game_manage/main_game/add", Description: "主游戏新增"},
 		{ApiGroup: "游戏管理", Method: "POST", Path: "/operation_management/game_manage/main_game/modify", Description: "主游戏修改"},
+		{ApiGroup: "全局通用配置", Method: "POST", Path: "/operation_management/global-common-config/list", Description: "列表"},
+		{ApiGroup: "全局通用配置", Method: "POST", Path: "/operation_management/global-common-config/add", Description: "新增"},
+		{ApiGroup: "全局通用配置", Method: "POST", Path: "/operation_management/global-common-config/modify", Description: "修改"},
+
 		{ApiGroup: "系统管理", Method: "POST", Path: "/system_management/search/search", Description: "维度搜索"},
 	}
 	if err := db.Create(&entities).Error; err != nil {
