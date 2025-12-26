@@ -101,5 +101,12 @@ func (s *OperationManagementRouter) InitApiRouter(Router *gin.RouterGroup) {
 			globalCommonConfigRouter.POST("add", globalCommonConfigApi.Add)       // 全局配置添加
 			globalCommonConfigRouter.POST("modify", globalCommonConfigApi.Modify) // 全局配置修改
 		}
+
+		gamePackagingConfigRouter := apiRouter.Group("game-packaging-config")
+		{
+			gamePackagingConfigRouter.POST("list", gamePackagingConfigApi.List)     // 游戏打包配置列表
+			gamePackagingConfigRouter.POST("add", gamePackagingConfigApi.Add)       // 游戏打包配置添加
+			gamePackagingConfigRouter.POST("modify", gamePackagingConfigApi.Modify) // 游戏打包配置修改
+		}
 	}
 }

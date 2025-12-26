@@ -19,4 +19,5 @@ var (
 	gameAppVersionConfigurationApi = api2.ApiGroupApp.OperationManagementApiGroup.GameAppVersionConfigurationApi
 	productCommonConfigurationApi  = api2.ApiGroupApp.OperationManagementApiGroup.ProductCommonConfigurationApi
 	globalCommonConfigApi          = api2.ApiGroupApp.OperationManagementApiGroup.GlobalCommonConfigApi
+	gamePackagingConfigApi         = api2.ApiGroupApp.OperationManagementApiGroup.GamePackagingConfigApi
 )
