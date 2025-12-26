@@ -15,6 +15,7 @@ type ApiGroup struct {
 	GameAppVersionConfigurationApi
 	ProductCommonConfigurationApi
 	GlobalCommonConfigApi
+	GamePackagingConfigApi
 }
 
 var (
@@ -28,4 +29,5 @@ var (
 	gameAppVersionConfigurationService = service.ServiceGroupApp.OperationManagementServiceGroup.GameAppVersionConfigurationService
 	productCommonConfigurationService  = service.ServiceGroupApp.OperationManagementServiceGroup.ProductCommonConfigurationService
 	globalCommonConfigService          = service.ServiceGroupApp.OperationManagementServiceGroup.GlobalCommonConfigService
+	gamePackagingConfigService         = service.ServiceGroupApp.OperationManagementServiceGroup.GamePackagingConfigService
 )
