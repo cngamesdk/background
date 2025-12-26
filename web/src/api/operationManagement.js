@@ -278,3 +278,30 @@ export const publishingChannelGameModify = (data) => {
         data
     })
 }
+
+// @Router /operation_management/global-common-config/list [post]
+export const globalCommonConfigList = (data) => {
+    return service({
+        url: '/operation_management/global-common-config/list',
+        method: 'post',
+        data
+    })
+}
+
+// @Router /operation_management/global-common-config/add [post]
+export const globalCommonConfigAdd = (data) => {
+    return service({
+        url: '/operation_management/global-common-config/add',
+        method: 'post',
+        data
+    })
+}
+
+// @Router /operation_management/global-common-config/modify [post]
+export const globalCommonConfigModify = (data) => {
+    return service({
+        url: '/operation_management/global-common-config/modify',
+        method: 'post',
+        data
+    })
+}
