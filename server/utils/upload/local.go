@@ -2,6 +2,7 @@ package upload
 
 import (
 	"errors"
+	"github.com/duke-git/lancet/v2/cryptor"
 	"io"
 	"mime/multipart"
 	"os"
@@ -28,7 +29,7 @@ type Local struct{}
 //@param: file *multipart.FileHeader
 //@return: string, string, error
 
-func (*Local) UploadFile(file *multipart.FileHeader) (string, string, error) {
+func (*Local) UploadFile(file *multipart.FileHeader) (resp OssUploadFileResp, err error) {
 	// 读取文件后缀
 	ext := filepath.Ext(file.Filename)
 	// 读取文件名并加密
@@ -40,33 +41,45 @@ func (*Local) UploadFile(file *multipart.FileHeader) (string, string, error) {
 	mkdirErr := os.MkdirAll(global.GVA_CONFIG.Local.StorePath, os.ModePerm)
 	if mkdirErr != nil {
 		global.GVA_LOG.Error("function os.MkdirAll() failed", zap.Any("err", mkdirErr.Error()))
-		return "", "", errors.New("function os.MkdirAll() failed, err:" + mkdirErr.Error())
+		err = errors.New("function os.MkdirAll() failed, err:" + mkdirErr.Error())
+		return
 	}
 	// 拼接路径和文件名
 	p := global.GVA_CONFIG.Local.StorePath + "/" + filename
-	filepath := global.GVA_CONFIG.Local.Path + "/" + filename
+	tmpFilepath := global.GVA_CONFIG.Local.Path + "/" + filename
 
 	f, openError := file.Open() // 读取文件
 	if openError != nil {
 		global.GVA_LOG.Error("function file.Open() failed", zap.Any("err", openError.Error()))
-		return "", "", errors.New("function file.Open() failed, err:" + openError.Error())
+		err = errors.New("function file.Open() failed, err:" + openError.Error())
+		return
 	}
 	defer f.Close() // 创建文件 defer 关闭
 
 	out, createErr := os.Create(p)
 	if createErr != nil {
 		global.GVA_LOG.Error("function os.Create() failed", zap.Any("err", createErr.Error()))
-
-		return "", "", errors.New("function os.Create() failed, err:" + createErr.Error())
+		err = errors.New("function os.Create() failed, err:" + createErr.Error())
+		return
 	}
 	defer out.Close() // 创建文件 defer 关闭
 
 	_, copyErr := io.Copy(out, f) // 传输（拷贝）文件
 	if copyErr != nil {
 		global.GVA_LOG.Error("function io.Copy() failed", zap.Any("err", copyErr.Error()))
-		return "", "", errors.New("function io.Copy() failed, err:" + copyErr.Error())
+		err = errors.New("function io.Copy() failed, err:" + copyErr.Error())
+		return
 	}
-	return filepath, filename, nil
+	fileHash, fileHashErr := cryptor.Md5File(p)
+	if fileHashErr != nil {
+		global.GVA_LOG.Error("cal file hash err", zap.Error(fileHashErr))
+		err = errors.New("cal file hash err, err:" + fileHashErr.Error())
+		return
+	}
+	resp.Filepath = tmpFilepath
+	resp.Filename = filename
+	resp.Hash = fileHash
+	return
 }
 
 //@author: [piexlmax](https://github.com/piexlmax)

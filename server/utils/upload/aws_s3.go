@@ -25,7 +25,7 @@ type AwsS3 struct{}
 //@param: file *multipart.FileHeader
 //@return: string, string, error
 
-func (*AwsS3) UploadFile(file *multipart.FileHeader) (string, string, error) {
+func (*AwsS3) UploadFile(file *multipart.FileHeader) (resp OssUploadFileResp, err error) {
 	session := newSession()
 	uploader := s3manager.NewUploader(session)
 
@@ -34,21 +34,24 @@ func (*AwsS3) UploadFile(file *multipart.FileHeader) (string, string, error) {
 	f, openError := file.Open()
 	if openError != nil {
 		global.GVA_LOG.Error("function file.Open() failed", zap.Any("err", openError.Error()))
-		return "", "", errors.New("function file.Open() failed, err:" + openError.Error())
+		err = errors.New("function file.Open() failed, err:" + openError.Error())
+		return
 	}
 	defer f.Close() // 创建文件 defer 关闭
 
-	_, err := uploader.Upload(&s3manager.UploadInput{
+	_, uploadErr := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(global.GVA_CONFIG.AwsS3.Bucket),
 		Key:    aws.String(filename),
 		Body:   f,
 	})
-	if err != nil {
+	if uploadErr != nil {
 		global.GVA_LOG.Error("function uploader.Upload() failed", zap.Any("err", err.Error()))
-		return "", "", err
+		err = uploadErr
+		return
 	}
-
-	return global.GVA_CONFIG.AwsS3.BaseURL + "/" + filename, fileKey, nil
+	resp.Filepath = global.GVA_CONFIG.AwsS3.BaseURL + "/" + filename
+	resp.Filename = fileKey
+	return
 }
 
 //@author: [WqyJh](https://github.com/WqyJh)

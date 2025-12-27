@@ -16,11 +16,12 @@ func NewHuaWeiObsClient() (client *obs.ObsClient, err error) {
 	return obs.New(global.GVA_CONFIG.HuaWeiObs.AccessKey, global.GVA_CONFIG.HuaWeiObs.SecretKey, global.GVA_CONFIG.HuaWeiObs.Endpoint)
 }
 
-func (o *Obs) UploadFile(file *multipart.FileHeader) (string, string, error) {
+func (o *Obs) UploadFile(file *multipart.FileHeader) (resp OssUploadFileResp, err error) {
 	// var open multipart.File
-	open, err := file.Open()
-	if err != nil {
-		return "", "", err
+	open, openErr := file.Open()
+	if openErr != nil {
+		err = openErr
+		return
 	}
 	defer open.Close()
 	filename := file.Filename
@@ -37,18 +38,20 @@ func (o *Obs) UploadFile(file *multipart.FileHeader) (string, string, error) {
 		Body: open,
 	}
 
-	var client *obs.ObsClient
-	client, err = NewHuaWeiObsClient()
-	if err != nil {
-		return "", "", errors.Wrap(err, "获取华为对象存储对象失败!")
+	client, clientErr := NewHuaWeiObsClient()
+	if clientErr != nil {
+		err = errors.Wrap(err, "获取华为对象存储对象失败!")
+		return
 	}
 
-	_, err = client.PutObject(input)
-	if err != nil {
-		return "", "", errors.Wrap(err, "文件上传失败!")
+	_, putErr := client.PutObject(input)
+	if putErr != nil {
+		err = errors.Wrap(err, "文件上传失败!")
+		return
 	}
-	filepath := global.GVA_CONFIG.HuaWeiObs.Path + "/" + filename
-	return filepath, filename, err
+	resp.Filepath = global.GVA_CONFIG.HuaWeiObs.Path + "/" + filename
+	resp.Filename = filename
+	return
 }
 
 func (o *Obs) DeleteFile(key string) error {

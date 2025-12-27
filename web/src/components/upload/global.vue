@@ -51,7 +51,7 @@ const emit = defineEmits(['on-success'])
 
 const fullscreenLoading = ref(false)
 
-const checkFile = (file) => {console.log(file)
+const checkFile = (file) => {
   fullscreenLoading.value = true
   if (props.size > 0) {
     if (file.size > props.size) {

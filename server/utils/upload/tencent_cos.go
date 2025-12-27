@@ -18,21 +18,26 @@ import (
 type TencentCOS struct{}
 
 // UploadFile upload file to COS
-func (*TencentCOS) UploadFile(file *multipart.FileHeader) (string, string, error) {
+func (*TencentCOS) UploadFile(file *multipart.FileHeader) (resp OssUploadFileResp, err error) {
 	client := NewClient()
 	f, openError := file.Open()
 	if openError != nil {
 		global.GVA_LOG.Error("function file.Open() failed", zap.Any("err", openError.Error()))
-		return "", "", errors.New("function file.Open() failed, err:" + openError.Error())
+		err = errors.New("function file.Open() failed, err:" + openError.Error())
+		return
 	}
 	defer f.Close() // 创建文件 defer 关闭
 	fileKey := fmt.Sprintf("%d%s", time.Now().Unix(), file.Filename)
 
-	_, err := client.Object.Put(context.Background(), global.GVA_CONFIG.TencentCOS.PathPrefix+"/"+fileKey, f, nil)
-	if err != nil {
-		panic(err)
+	_, putErr := client.Object.Put(context.Background(), global.GVA_CONFIG.TencentCOS.PathPrefix+"/"+fileKey, f, nil)
+	if putErr != nil {
+		global.GVA_LOG.Error("function Object.Put() failed", zap.Error(putErr))
+		err = errors.New("function Object.Put() failed, err:" + putErr.Error())
+		return
 	}
-	return global.GVA_CONFIG.TencentCOS.BaseURL + "/" + global.GVA_CONFIG.TencentCOS.PathPrefix + "/" + fileKey, fileKey, nil
+	resp.Filepath = global.GVA_CONFIG.TencentCOS.BaseURL + "/" + global.GVA_CONFIG.TencentCOS.PathPrefix + "/" + fileKey
+	resp.Filename = fileKey
+	return
 }
 
 // DeleteFile delete file form COS

@@ -94,17 +94,18 @@ func (e *FileUploadAndDownloadService) GetFileRecordInfoList(info request.ExaAtt
 
 func (e *FileUploadAndDownloadService) UploadFile(header *multipart.FileHeader, noSave string, classId int) (file example.ExaFileUploadAndDownload, err error) {
 	oss := upload.NewOss()
-	filePath, key, uploadErr := oss.UploadFile(header)
+	uploadResp, uploadErr := oss.UploadFile(header)
 	if uploadErr != nil {
 		return file, uploadErr
 	}
 	s := strings.Split(header.Filename, ".")
 	f := example.ExaFileUploadAndDownload{
-		Url:     filePath,
+		Url:     uploadResp.Filepath,
 		Name:    header.Filename,
 		ClassId: classId,
 		Tag:     s[len(s)-1],
-		Key:     key,
+		Key:     uploadResp.Filepath,
+		Hash:    uploadResp.Hash,
 	}
 	if noSave == "0" {
 		return f, e.Upload(f)

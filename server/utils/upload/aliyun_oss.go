@@ -12,18 +12,20 @@ import (
 
 type AliyunOSS struct{}
 
-func (*AliyunOSS) UploadFile(file *multipart.FileHeader) (string, string, error) {
-	bucket, err := NewBucket()
-	if err != nil {
-		global.GVA_LOG.Error("function AliyunOSS.NewBucket() Failed", zap.Any("err", err.Error()))
-		return "", "", errors.New("function AliyunOSS.NewBucket() Failed, err:" + err.Error())
+func (*AliyunOSS) UploadFile(file *multipart.FileHeader) (resp OssUploadFileResp, err error) {
+	bucket, bucketErr := NewBucket()
+	if bucketErr != nil {
+		global.GVA_LOG.Error("function AliyunOSS.NewBucket() Failed", zap.Any("err", bucketErr.Error()))
+		err = errors.New("function AliyunOSS.NewBucket() Failed, err:" + bucketErr.Error())
+		return
 	}
 
 	// 读取本地文件。
 	f, openError := file.Open()
 	if openError != nil {
 		global.GVA_LOG.Error("function file.Open() Failed", zap.Any("err", openError.Error()))
-		return "", "", errors.New("function file.Open() Failed, err:" + openError.Error())
+		err = errors.New("function file.Open() Failed, err:" + openError.Error())
+		return
 	}
 	defer f.Close() // 创建文件 defer 关闭
 	// 上传阿里云路径 文件名格式 自己可以改 建议保证唯一性
@@ -31,13 +33,15 @@ func (*AliyunOSS) UploadFile(file *multipart.FileHeader) (string, string, error)
 	yunFileTmpPath := global.GVA_CONFIG.AliyunOSS.BasePath + "/" + "uploads" + "/" + time.Now().Format("2006-01-02") + "/" + file.Filename
 
 	// 上传文件流。
-	err = bucket.PutObject(yunFileTmpPath, f)
-	if err != nil {
-		global.GVA_LOG.Error("function formUploader.Put() Failed", zap.Any("err", err.Error()))
-		return "", "", errors.New("function formUploader.Put() Failed, err:" + err.Error())
+	putErr := bucket.PutObject(yunFileTmpPath, f)
+	if putErr != nil {
+		global.GVA_LOG.Error("function formUploader.Put() Failed", zap.Any("err", putErr.Error()))
+		err = errors.New("function formUploader.Put() Failed, err:" + putErr.Error())
+		return
 	}
-
-	return global.GVA_CONFIG.AliyunOSS.BucketUrl + "/" + yunFileTmpPath, yunFileTmpPath, nil
+	resp.Filepath = global.GVA_CONFIG.AliyunOSS.BucketUrl + "/" + yunFileTmpPath
+	resp.Filename = yunFileTmpPath
+	return
 }
 
 func (*AliyunOSS) DeleteFile(key string) error {

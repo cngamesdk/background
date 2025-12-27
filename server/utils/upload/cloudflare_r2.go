@@ -17,16 +17,17 @@ import (
 
 type CloudflareR2 struct{}
 
-func (c *CloudflareR2) UploadFile(file *multipart.FileHeader) (fileUrl string, fileName string, err error) {
+func (c *CloudflareR2) UploadFile(file *multipart.FileHeader) (resp OssUploadFileResp, err error) {
 	session := c.newSession()
 	client := s3manager.NewUploader(session)
 
 	fileKey := fmt.Sprintf("%d_%s", time.Now().Unix(), file.Filename)
-	fileName = fmt.Sprintf("%s/%s", global.GVA_CONFIG.CloudflareR2.Path, fileKey)
+	fileName := fmt.Sprintf("%s/%s", global.GVA_CONFIG.CloudflareR2.Path, fileKey)
 	f, openError := file.Open()
 	if openError != nil {
 		global.GVA_LOG.Error("function file.Open() failed", zap.Any("err", openError.Error()))
-		return "", "", errors.New("function file.Open() failed, err:" + openError.Error())
+		err = errors.New("function file.Open() failed, err:" + openError.Error())
+		return
 	}
 	defer f.Close() // 创建文件 defer 关闭
 
@@ -36,16 +37,16 @@ func (c *CloudflareR2) UploadFile(file *multipart.FileHeader) (fileUrl string, f
 		Body:   f,
 	}
 
-	_, err = client.Upload(input)
-	if err != nil {
-		global.GVA_LOG.Error("function uploader.Upload() failed", zap.Any("err", err.Error()))
-		return "", "", err
+	_, uploadErr := client.Upload(input)
+	if uploadErr != nil {
+		global.GVA_LOG.Error("function uploader.Upload() failed", zap.Any("err", uploadErr.Error()))
+		err = uploadErr
+		return
 	}
 
-	return fmt.Sprintf("%s/%s", global.GVA_CONFIG.CloudflareR2.BaseURL,
-			fileName),
-		fileKey,
-		nil
+	resp.Filepath = fmt.Sprintf("%s/%s", global.GVA_CONFIG.CloudflareR2.BaseURL, fileName)
+	resp.Filename = fileKey
+	return
 }
 
 func (c *CloudflareR2) DeleteFile(key string) error {
