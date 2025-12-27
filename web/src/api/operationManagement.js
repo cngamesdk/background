@@ -305,3 +305,30 @@ export const globalCommonConfigModify = (data) => {
         data
     })
 }
+
+// @Router /operation_management/game-packaging-config/list [post]
+export const gamePackagingConfigList = (data) => {
+    return service({
+        url: '/operation_management/game-packaging-config/list',
+        method: 'post',
+        data
+    })
+}
+
+// @Router /operation_management/game-packaging-config/add [post]
+export const gamePackagingConfigAdd = (data) => {
+    return service({
+        url: '/operation_management/game-packaging-config/add',
+        method: 'post',
+        data
+    })
+}
+
+// @Router /operation_management/game-packaging-config/modify [post]
+export const gamePackagingConfigModify = (data) => {
+    return service({
+        url: '/operation_management/game-packaging-config/modify',
+        method: 'post',
+        data
+    })
+}

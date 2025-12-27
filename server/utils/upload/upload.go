@@ -10,8 +10,14 @@ import (
 // Author [SliverHorn](https://github.com/SliverHorn)
 // Author [ccfish86](https://github.com/ccfish86)
 type OSS interface {
-	UploadFile(file *multipart.FileHeader) (string, string, error)
+	UploadFile(file *multipart.FileHeader) (OssUploadFileResp, error)
 	DeleteFile(key string) error
+}
+
+type OssUploadFileResp struct {
+	Filepath string
+	Filename string
+	Hash     string
 }
 
 // NewOss OSS的实例化方法

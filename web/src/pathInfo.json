@@ -64,6 +64,8 @@
   "/src/view/operationManagement/gameManage/mainGame/list.vue": "MainGameList",
   "/src/view/operationManagement/gameManage/rootGame/list.vue": "RootGameList",
   "/src/view/operationManagement/gameManage/subGame/list.vue": "SubGameList",
+  "/src/view/operationManagement/gamePackaging/config/list.vue": "GamePackagingConfigList",
+  "/src/view/operationManagement/gamePackaging/index.vue": "GamePackaging",
   "/src/view/operationManagement/globalCommonConfig/index.vue": "GlobalCommonConfig",
   "/src/view/operationManagement/globalCommonConfig/list/list.vue": "GlobalCommonConfigList",
   "/src/view/operationManagement/index.vue": "OperationManagement",

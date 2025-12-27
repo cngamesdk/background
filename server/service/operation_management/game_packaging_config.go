@@ -7,6 +7,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management/api"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 type GamePackagingConfigService struct {
@@ -42,24 +43,66 @@ func (receiver *GamePackagingConfigService) List(ctx context.Context, req *api.G
 
 func (receiver *GamePackagingConfigService) Add(ctx context.Context, req *api.GamePackagingConfigAddReq) (
 	resp api.GamePackagingConfigAddResp, err error) {
-	model := operation_management.NewDimGamePackagingConfigModel()
-	req.DimGamePackagingConfigModel.Db = model.Db
-	if saveErr := req.Create(ctx); saveErr != nil {
-		err = saveErr
-		global.GVA_LOG.Error("保存失败", zap.Error(saveErr))
-		return
-	}
+	transactionErr := global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+
+		//当前为使用时，该游戏的其他版本下架，只保留一条使用中
+		if req.UseStatus == common.UseStatusNormal {
+			updateModel := operation_management.NewDimGamePackagingConfigModel()
+			updateModel.UseStatus = common.UseStatusRemove
+			updateModel.DimGamePackagingConfigModel.Db = func() *gorm.DB {
+				return tx
+			}
+			if updateErr := updateModel.Updates(ctx, "platform_id = ? and game_id = ? and common_media = ? and use_status = ? ",
+				req.PlatformId, req.GameId, req.CommonMedia, common.UseStatusNormal); updateErr != nil {
+				global.GVA_LOG.Error("更新异常", zap.Error(updateErr))
+				return updateErr
+			}
+		}
+
+		req.DimGamePackagingConfigModel.Db = func() *gorm.DB {
+			return tx
+		}
+		if saveErr := req.Create(ctx); saveErr != nil {
+			global.GVA_LOG.Error("保存失败", zap.Error(saveErr))
+			return saveErr
+		}
+
+		return nil
+	})
+	err = transactionErr
+	global.GVA_LOG.Error("事务异常", zap.Error(transactionErr))
 	return
 }
 
 func (receiver *GamePackagingConfigService) Modify(ctx context.Context, req *api.GamePackagingConfigModifyReq) (
 	resp api.GamePackagingConfigModifyResp, err error) {
-	model := operation_management.NewDimGamePackagingConfigModel()
-	req.DimGamePackagingConfigModel.Db = model.Db
-	if saveErr := req.Updates(ctx, "id = ?", req.Id); saveErr != nil {
-		err = saveErr
-		global.GVA_LOG.Error("保存失败", zap.Error(saveErr))
-		return
-	}
+
+	transactionErr := global.GVA_DB.Transaction(func(tx *gorm.DB) error {
+
+		//当前为使用时，该游戏的其他版本下架，只保留一条使用中
+		if req.UseStatus == common.UseStatusNormal {
+			updateModel := operation_management.NewDimGamePackagingConfigModel()
+			updateModel.UseStatus = common.UseStatusRemove
+			updateModel.DimGamePackagingConfigModel.Db = func() *gorm.DB {
+				return tx
+			}
+			if updateErr := updateModel.Updates(ctx, "platform_id = ? and game_id = ? and common_media = ? and use_status = ? ",
+				req.PlatformId, req.GameId, req.CommonMedia, common.UseStatusNormal); updateErr != nil {
+				global.GVA_LOG.Error("更新异常", zap.Error(updateErr))
+				return updateErr
+			}
+		}
+
+		req.DimGamePackagingConfigModel.Db = func() *gorm.DB {
+			return tx
+		}
+		if saveErr := req.Updates(ctx, "id = ?", req.Id); saveErr != nil {
+			global.GVA_LOG.Error("保存失败", zap.Error(saveErr))
+			return saveErr
+		}
+		return nil
+	})
+	err = transactionErr
+	global.GVA_LOG.Error("事务异常", zap.Error(transactionErr))
 	return
 }

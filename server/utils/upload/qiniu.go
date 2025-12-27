@@ -24,7 +24,7 @@ type Qiniu struct{}
 //@param: file *multipart.FileHeader
 //@return: string, string, error
 
-func (*Qiniu) UploadFile(file *multipart.FileHeader) (string, string, error) {
+func (*Qiniu) UploadFile(file *multipart.FileHeader) (resp OssUploadFileResp, err error) {
 	putPolicy := storage.PutPolicy{Scope: global.GVA_CONFIG.Qiniu.Bucket}
 	mac := qbox.NewMac(global.GVA_CONFIG.Qiniu.AccessKey, global.GVA_CONFIG.Qiniu.SecretKey)
 	upToken := putPolicy.UploadToken(mac)
@@ -36,17 +36,20 @@ func (*Qiniu) UploadFile(file *multipart.FileHeader) (string, string, error) {
 	f, openError := file.Open()
 	if openError != nil {
 		global.GVA_LOG.Error("function file.Open() failed", zap.Any("err", openError.Error()))
-
-		return "", "", errors.New("function file.Open() failed, err:" + openError.Error())
+		err = errors.New("function file.Open() failed, err:" + openError.Error())
+		return
 	}
 	defer f.Close()                                                  // 创建文件 defer 关闭
 	fileKey := fmt.Sprintf("%d%s", time.Now().Unix(), file.Filename) // 文件名格式 自己可以改 建议保证唯一性
 	putErr := formUploader.Put(context.Background(), &ret, upToken, fileKey, f, file.Size, &putExtra)
 	if putErr != nil {
 		global.GVA_LOG.Error("function formUploader.Put() failed", zap.Any("err", putErr.Error()))
-		return "", "", errors.New("function formUploader.Put() failed, err:" + putErr.Error())
+		err = errors.New("function formUploader.Put() failed, err:" + putErr.Error())
+		return
 	}
-	return global.GVA_CONFIG.Qiniu.ImgPath + "/" + ret.Key, ret.Key, nil
+	resp.Filepath = global.GVA_CONFIG.Qiniu.ImgPath + "/" + ret.Key
+	resp.Filename = ret.Key
+	return
 }
 
 //@author: [piexlmax](https://github.com/piexlmax)
