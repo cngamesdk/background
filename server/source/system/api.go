@@ -260,6 +260,8 @@ func (i *initApi) InitializeData(ctx context.Context) (context.Context, error) {
 		{ApiGroup: "游戏打包", Method: "POST", Path: "/operation_management/game-packaging-config/list", Description: "配置列表"},
 		{ApiGroup: "游戏打包", Method: "POST", Path: "/operation_management/game-packaging-config/add", Description: "配置新增"},
 		{ApiGroup: "游戏打包", Method: "POST", Path: "/operation_management/game-packaging-config/modify", Description: "配置修改"},
+		{ApiGroup: "游戏打包", Method: "POST", Path: "/operation_management/game-packaging/list", Description: "打包日志列表"},
+		{ApiGroup: "游戏打包", Method: "POST", Path: "/operation_management/game-packaging/add", Description: "打包任务提交"},
 
 		{ApiGroup: "系统管理", Method: "POST", Path: "/system_management/search/search", Description: "维度搜索"},
 	}
