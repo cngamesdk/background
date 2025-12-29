@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/cngamesdk/go-core/model/sql"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
 	"github.com/pkg/errors"
@@ -20,6 +21,7 @@ type GamePackagingAddReq struct {
 
 func (receiver *GamePackagingAddReq) Format() {
 	receiver.Id = 0
+	receiver.Status = sql.StatusNotStarted
 }
 
 func (receiver *GamePackagingAddReq) Validate() (err error) {
