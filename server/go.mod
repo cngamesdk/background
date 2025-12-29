@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-sdk-go v1.55.6
 	github.com/casbin/casbin/v2 v2.103.0
 	github.com/casbin/gorm-adapter/v3 v3.32.0
-	github.com/cngamesdk/go-core v1.0.9-0.20251227081210-b36d80c3830f
+	github.com/cngamesdk/go-core v1.0.9-0.20251229034213-55151fd4cf33
 	github.com/duke-git/lancet/v2 v2.3.8
 	github.com/dzwvip/gorm-oracle v0.1.2
 	github.com/fsnotify/fsnotify v1.8.0
