@@ -28,6 +28,20 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item label="广告位">
+          <el-select
+              remote
+              :remote-method="handleRemoteSearchSiteId"
+              filterable
+              v-model="searchInfo.site_id" placeholder="请选择广告位">
+            <el-option
+                v-for="item in sites"
+                :key="item.key"
+                :label="item.value"
+                :value="item.key"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSearchSubmit">
             查询
@@ -39,7 +53,7 @@
     <div class="gva-table-box">
       <div class="gva-btn-list">
         <el-button type="primary" icon="plus" @click="openAddConfigDialog"
-        >新增配置</el-button>
+        >新增打包</el-button>
       </div>
       <el-table :data="tableData" stripe row-key="id">
         <el-table-column
@@ -51,7 +65,7 @@
         <el-table-column
             align="left"
             label="平台"
-            min-width="150">
+            min-width="100">
           <template #default="scope">
             {{ scope.row.platform_id }}({{ scope.row.platform_name }})
           </template>
@@ -59,30 +73,25 @@
         <el-table-column
             align="left"
             label="游戏"
-            min-width="150">
+            min-width="100">
           <template #default="scope">
             {{ scope.row.game_id }}({{ scope.row.game_name }})
           </template>
         </el-table-column>
         <el-table-column
             align="left"
-            label="媒体">
+            label="渠道ID">
           <template #default="scope">
-            {{ scope.row.common_media }}({{ scope.row.common_media_name }})
+            {{ scope.row.agent_id }}({{ scope.row.agent_name }})
           </template>
         </el-table-column>
         <el-table-column
             align="left"
-            label="母包地址"
-            min-width="150"
-            prop="game_package_path"
-        />
-        <el-table-column
-            align="left"
-            label="母包哈希摘要"
-            min-width="150"
-            prop="game_package_hash"
-        />
+            label="广告位ID">
+          <template #default="scope">
+            {{ scope.row.site_id }}({{ scope.row.site_name }})
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="状态"
@@ -91,9 +100,21 @@
         />
         <el-table-column
             align="left"
-            label="使用状态"
+            label="安装包地址"
             min-width="150"
-            prop="use_status"
+            prop="game_package_path"
+        />
+        <el-table-column
+            align="left"
+            label="执行命令"
+            min-width="150"
+            prop="exec_cmd"
+        />
+        <el-table-column
+            align="left"
+            label="执行结果"
+            min-width="150"
+            prop="exec_cmd_result"
         />
         <el-table-column
             align="left"
@@ -113,16 +134,16 @@
             {{ formatDate(scope.row.updated_at) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" fixed="right">
-          <template #default="scope">
-            <el-button
-                type="primary"
-                link
-                icon="edit"
-                @click="openConfigEditDialog(scope.row)"
-            >编辑</el-button>
-          </template>
-        </el-table-column>
+<!--        <el-table-column label="操作" fixed="right">-->
+<!--          <template #default="scope">-->
+<!--            <el-button-->
+<!--                type="primary"-->
+<!--                link-->
+<!--                icon="edit"-->
+<!--                @click="openConfigEditDialog(scope.row)"-->
+<!--            >编辑</el-button>-->
+<!--          </template>-->
+<!--        </el-table-column>-->
       </el-table>
       <div class="gva-pagination">
         <el-pagination
@@ -172,52 +193,15 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="媒体" prop="common_media">
+        <el-form-item label="广告位" prop="site_id">
           <el-select
               filterable
               remote
-              :remote-method="handleRemoteSearchCommonMedia"
-              v-model="configInfo.common_media"
+              :remote-method="handleRemoteSearchSiteId"
+              v-model="configInfo.site_id"
               placeholder="请选择媒体" style="width: 240px">
             <el-option
-                v-for="item in commonMedias"
-                :key="item.key"
-                :label="item.value"
-                :value="item.key"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="母包地址" prop="game_package_path">
-          <el-input
-              autosize
-              type="textarea"
-              v-model="configInfo.game_package_path"
-              placeholder="请输入母包地址或者上传" style="width:450px;margin: 0 .5rem;"/>
-          <GlobalUploadCommon @on-success="handleSuccessCallback" :allowMimes="['application/vnd.android.package-archive', 'application/apk']"></GlobalUploadCommon>
-        </el-form-item>
-        <el-form-item label="母包MD5摘要" prop="game_package_hash">
-          <el-input
-              v-model="configInfo.game_package_hash"
-              placeholder="请输入母包MD5摘要"/>
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-select
-              v-model="configInfo.status"
-              placeholder="请选择状态" style="width: 240px">
-            <el-option
-                v-for="item in status"
-                :key="item.key"
-                :label="item.value"
-                :value="item.key"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="是否使用" prop="use_status">
-          <el-select
-              v-model="configInfo.use_status"
-              placeholder="请选择是否使用" style="width: 240px">
-            <el-option
-                v-for="item in useStatus"
+                v-for="item in sites"
                 :key="item.key"
                 :label="item.value"
                 :value="item.key"
@@ -237,10 +221,8 @@
 
 <script setup>
 
-import GlobalUploadCommon from '../../../../components/upload/global.vue'
-
-import { gamePackagingConfigList, gamePackagingConfigAdd, gamePackagingConfigModify } from '@/api/operationManagement'
-import { searchPlatform, searchSubGame, searchCommonMedia } from '@/api/systemManagement'
+import { gamePackagingLogList, gamePackagingAdd } from '@/api/operationManagement'
+import { searchPlatform, searchSubGame, searchSite } from '@/api/systemManagement'
 
 import { nextTick, ref, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -249,14 +231,15 @@ import { formatDate } from '@/utils/format'
 import { UploadFilled } from '@element-plus/icons-vue'
 
 defineOptions({
-  name: 'GamePackagingConfigList'
+  name: 'GamePackagingLogList'
 })
 
 const appStore = useAppStore()
 
 const defaultSearchInfo = {
   platform_id: 0,
-  game_id: 0
+  game_id: 0,
+  site_id: 0,
 }
 
 const searchInfo = ref(defaultSearchInfo)
@@ -271,11 +254,7 @@ const defaultConfigInfo = {
   id: 0,
   platform_id: 0,
   game_id: 0,
-  game_package_path: '',
-  upload_hash: '',
-  game_package_hash: '',
-  status: '',
-  use_status: '',
+  site_id: 0,
 }
 
 //游戏信息
@@ -288,13 +267,12 @@ const openAddConfigDialog = () => {
 
 const openConfigEditDialog = (row) => {
   configInfo.value = row
-  configInfo.value.upload_hash = row.game_package_hash
   configDialog.value.show = true
   configDialog.value.add = false
 }
 
 const closeConfigDialog = () => {
-  configInfo.value = defaultConfigInfo
+  configInfo.value = defaultConfigdefaultConfigInfoInfo
   configDialog.value.show = false
 }
 
@@ -314,15 +292,7 @@ const pageSize = ref(10)
 const tableData = ref([])
 const platforms = ref([])
 const games = ref([])
-const commonMedias = ref([])
-const status = ref([
-  {key: 'normal', value: '正常'},
-  {key: 'remove', value: '下架'},
-])
-const useStatus = ref([
-  {key: 'normal', value: '启用'},
-  {key: 'remove', value: '不启用'},
-])
+const sites = ref([])
 
 // 分页
 const handleSizeChange = (val) => {
@@ -342,16 +312,16 @@ const handleRemoteSearchGame = async (query) => {
   }
 }
 
-const handleRemoteSearchCommonMedia = async (query) => {
-  const result = await searchCommonMedia({keyword: query})
+const handleRemoteSearchSiteId = async (query) => {
+  const result = await searchSite({keyword: query})
   if (result.code === 0) {
-    commonMedias.value = result.data
+    sites.value = result.data
   }
 }
 
 // 查询
 const getTableData = async () => {
-  const table = await gamePackagingConfigList({
+  const table = await gamePackagingLogList({
     page: page.value,
     pageSize: pageSize.value,
     ...searchInfo.value
@@ -362,11 +332,6 @@ const getTableData = async () => {
     page.value = table.data.page
     pageSize.value = table.data.pageSize
   }
-}
-
-const handleSuccessCallback = (data) => {
-  configInfo.value.game_package_path = data.file.url
-  configInfo.value.upload_hash = data.file.hash
 }
 
 const getPlatforms = async () => {
@@ -384,16 +349,6 @@ const initPage = async () => {
 
 initPage()
 
-const validateHash = (rule, value, callback) => {
-  if (value === '') {
-    callback(new Error('请输入哈希'))
-  } else if (value !== configInfo.value.upload_hash) {
-    callback(new Error('哈希不一致，上传未完成或者填写错误!'))
-  } else {
-    callback()
-  }
-}
-
 const configForm = ref(null)
 const rules = ref({
   platform_id: [
@@ -404,21 +359,9 @@ const rules = ref({
     { required: true, message: '请选择游戏', trigger: 'blur' },
     { pattern: /^[1-9]\d*$/, message: '请选择游戏', trigger: 'blur' }
   ],
-  common_media: [
-    { required: true, message: '媒体', trigger: 'blur' },
-  ],
-  game_package_path: [
-    { required: true, message: '请输入或者上传游戏母包', trigger: 'blur' },
-  ],
-  game_package_hash: [
-    { required: true, message: '请输入游戏母包哈希摘要', trigger: 'blur' },
-    { validator: validateHash, trigger: 'blur' }
-  ],
-  status: [
-    { required: true, message: '请选择状态', trigger: 'blur' },
-  ],
-  use_status: [
-    { required: true, message: '请选择是否使用', trigger: 'blur' },
+  site_id: [
+    { required: true, message: '请选择广告位', trigger: 'blur' },
+    { pattern: /^[1-9]\d*$/, message: '请选择广告位', trigger: 'blur' }
   ],
 })
 
@@ -426,19 +369,13 @@ const submitConfigInfo = async () => {
   configForm.value.validate(async (valid) => {
     if (valid) {
       if (configDialog.value.add) {
-        const res = await gamePackagingConfigAdd(configInfo.value)
+        const res = await gamePackagingAdd(configInfo.value)
         if (res.code === 0) {
           ElMessage({ type: 'success', message: '创建成功' })
           await getTableData()
           closeConfigDialog()
         }
       } else {
-        const res = await gamePackagingConfigModify(configInfo.value)
-        if (res.code === 0) {
-          ElMessage({ type: 'success', message: '编辑成功' })
-          await getTableData()
-          closeConfigDialog()
-        }
       }
     }
   })
