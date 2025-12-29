@@ -332,3 +332,21 @@ export const gamePackagingConfigModify = (data) => {
         data
     })
 }
+
+// @Router /operation_management/game-packaging/list [post]
+export const gamePackagingLogList = (data) => {
+    return service({
+        url: '/operation_management/game-packaging/list',
+        method: 'post',
+        data
+    })
+}
+
+// @Router /operation_management/game-packaging/add [post]
+export const gamePackagingAdd = (data) => {
+    return service({
+        url: '/operation_management/game-packaging/add',
+        method: 'post',
+        data
+    })
+}
