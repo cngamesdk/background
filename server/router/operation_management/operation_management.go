@@ -108,5 +108,11 @@ func (s *OperationManagementRouter) InitApiRouter(Router *gin.RouterGroup) {
 			gamePackagingConfigRouter.POST("add", gamePackagingConfigApi.Add)       // 游戏打包配置添加
 			gamePackagingConfigRouter.POST("modify", gamePackagingConfigApi.Modify) // 游戏打包配置修改
 		}
+
+		gamePackagingRouter := apiRouter.Group("game-packaging")
+		{
+			gamePackagingRouter.POST("list", gamePackagingApi.List) // 游戏打包日志列表
+			gamePackagingRouter.POST("add", gamePackagingApi.Add)   // 游戏打包添加
+		}
 	}
 }

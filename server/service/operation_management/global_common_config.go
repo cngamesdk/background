@@ -2,7 +2,6 @@ package operation_management
 
 import (
 	"context"
-	"github.com/cngamesdk/go-core/model/sql/common"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management/api"
@@ -24,7 +23,7 @@ func (receiver *GlobalCommonConfigService) List(ctx context.Context, req *api.Gl
 		global.GVA_LOG.Error("获取总数异常", zap.Error(countErr))
 		return
 	}
-	var list []common.DimGlobalCommonConfigModel
+	var list []operation_management.DimGlobalCommonConfigModel
 	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1) * req.PageSize).Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取列表异常", zap.Error(listErr))

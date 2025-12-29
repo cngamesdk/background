@@ -31,7 +31,7 @@ func (receiver *GamePackagingConfigService) List(ctx context.Context, req *api.G
 		global.GVA_LOG.Error("获取总数异常", zap.Error(countErr))
 		return
 	}
-	var list []common.DimGamePackagingConfigModel
+	var list []operation_management.DimGamePackagingConfigModel
 	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1) * req.PageSize).Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取列表异常", zap.Error(listErr))

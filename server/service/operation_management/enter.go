@@ -12,4 +12,5 @@ type ServiceGroup struct {
 	ProductCommonConfigurationService
 	GlobalCommonConfigService
 	GamePackagingConfigService
+	GamePackagingService
 }
