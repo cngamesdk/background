@@ -39,7 +39,7 @@ func (receiver *GamePackagingApi) Add(ctx *gin.Context) {
 		return
 	}
 	req.Format()
-	if err := req.Validate(); err != nil {
+	if err := req.Validate(ctx); err != nil {
 		response.FailWithMessage(err.Error(), ctx)
 		return
 	}

@@ -33,7 +33,7 @@ func (g *GamePackagingService) LogList(ctx context.Context, req *api.GamePackagi
 		return
 	}
 	var list []operation_management.OdsGamePackagingLogModel
-	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1) * req.PageSize).Find(&list).Error; listErr != nil {
+	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1) * req.PageSize).Order("id DESC").Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取列表异常", zap.Error(listErr))
 		return
