@@ -62,6 +62,11 @@ func (receiver *GamePackagingAddReq) Validate(ctx context.Context) (err error) {
 		global.GVA_LOG.Error("获取配置异常", zap.Error(configInfoErr))
 		return
 	}
+	if globalCommonConfigModel.JavaExecutionPath == "" {
+		err = errors.New("请先安装Java.")
+		global.GVA_LOG.Warn("未安装java", zap.Any("data", globalCommonConfigModel))
+		return
+	}
 	if globalCommonConfigModel.GamePackagingToolPath == "" {
 		err = errors.New("请先配置打包工具.")
 		global.GVA_LOG.Warn("未获取到打包工具", zap.Any("data", globalCommonConfigModel))
