@@ -1,6 +1,9 @@
 common:
     aes_crypt_key: your-aes-crypt-key
     game_hash_key: your-game-hash-key
+    game_packaging:
+        path: uploads/file/game-packaging
+        process_count: 5
 aliyun-oss:
     endpoint: yourEndpoint
     access-key-id: yourAccessKeyId

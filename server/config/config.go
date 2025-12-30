@@ -1,17 +1,15 @@
 package config
 
-import "github.com/cngamesdk/go-core/config"
-
 type Server struct {
-	Common 	config.CommonConfig `mapstructure:"common" json:"common" yaml:"common"`
-	JWT       JWT     `mapstructure:"jwt" json:"jwt" yaml:"jwt"`
-	Zap       Zap     `mapstructure:"zap" json:"zap" yaml:"zap"`
-	Redis     Redis   `mapstructure:"redis" json:"redis" yaml:"redis"`
-	RedisList []Redis `mapstructure:"redis-list" json:"redis-list" yaml:"redis-list"`
-	Mongo     Mongo   `mapstructure:"mongo" json:"mongo" yaml:"mongo"`
-	Email     Email   `mapstructure:"email" json:"email" yaml:"email"`
-	System    System  `mapstructure:"system" json:"system" yaml:"system"`
-	Captcha   Captcha `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
+	Common    CommonConfig `mapstructure:"common" json:"common" yaml:"common"`
+	JWT       JWT          `mapstructure:"jwt" json:"jwt" yaml:"jwt"`
+	Zap       Zap          `mapstructure:"zap" json:"zap" yaml:"zap"`
+	Redis     Redis        `mapstructure:"redis" json:"redis" yaml:"redis"`
+	RedisList []Redis      `mapstructure:"redis-list" json:"redis-list" yaml:"redis-list"`
+	Mongo     Mongo        `mapstructure:"mongo" json:"mongo" yaml:"mongo"`
+	Email     Email        `mapstructure:"email" json:"email" yaml:"email"`
+	System    System       `mapstructure:"system" json:"system" yaml:"system"`
+	Captcha   Captcha      `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
 	// auto
 	AutoCode Autocode `mapstructure:"autocode" json:"autocode" yaml:"autocode"`
 	// gorm

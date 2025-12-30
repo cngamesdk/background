@@ -22,12 +22,17 @@ type GlobalCommonConfigAddReq struct {
 
 func (receiver *GlobalCommonConfigAddReq) Format() {
 	receiver.Id = 0
+	receiver.JavaExecutionPath = strings.TrimSpace(receiver.JavaExecutionPath)
 	receiver.GamePackagingToolPath = strings.TrimSpace(receiver.GamePackagingToolPath)
 }
 
 func (receiver *GlobalCommonConfigAddReq) Validate() (err error) {
+	if validateErr := validate.EmptyString(receiver.JavaExecutionPath); validateErr != nil {
+		err = errors.Wrap(validateErr, "java执行路径")
+		return
+	}
 	if validateErr := validate.EmptyString(receiver.GamePackagingToolPath); validateErr != nil {
-		err = validateErr
+		err = errors.Wrap(validateErr, "打包工具")
 		return
 	}
 	return
@@ -41,6 +46,7 @@ type GlobalCommonConfigModifyReq struct {
 }
 
 func (receiver *GlobalCommonConfigModifyReq) Format() {
+	receiver.JavaExecutionPath = strings.TrimSpace(receiver.JavaExecutionPath)
 	receiver.GamePackagingToolPath = strings.TrimSpace(receiver.GamePackagingToolPath)
 }
 
@@ -49,8 +55,12 @@ func (receiver *GlobalCommonConfigModifyReq) Validate() (err error) {
 		err = errors.New("主键ID为空")
 		return
 	}
+	if validateErr := validate.EmptyString(receiver.JavaExecutionPath); validateErr != nil {
+		err = errors.Wrap(validateErr, "Java执行路径")
+		return
+	}
 	if validateErr := validate.EmptyString(receiver.GamePackagingToolPath); validateErr != nil {
-		err = validateErr
+		err = errors.Wrap(validateErr, "打包工具")
 		return
 	}
 	return
