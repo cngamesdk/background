@@ -22,6 +22,12 @@
         </el-table-column>
         <el-table-column
             align="left"
+            label="Java执行路径"
+            min-width="150"
+            prop="java_execution_path"
+        />
+        <el-table-column
+            align="left"
             label="安卓打包工具"
             min-width="150"
             prop="game_packaging_tool_path"
@@ -88,6 +94,10 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item label="Java执行路径" prop="java_execution_path">
+          <el-input
+              v-model="configInfo.java_execution_path" placeholder="请输入java执行路径,如:/usr/bin/java"/>
+        </el-form-item>
         <el-form-item label="安卓打包工具" prop="game_packaging_tool_path">
           <el-input
               autosize
@@ -138,6 +148,7 @@ const configDialog = ref({
 const defaultConfigInfo = {
   id: 0,
   platform_id: 0,
+  java_execution_path: '',
   game_packaging_tool_path: '',
 }
 
@@ -226,6 +237,9 @@ const rules = ref({
   platform_id: [
     { required: true, message: '请选择平台', trigger: 'blur' },
     { pattern: /^[1-9]\d*$/, message: '请选择平台', trigger: 'blur' }
+  ],
+  java_execution_path: [
+    { required: true, message: '请输入java执行路径', trigger: 'blur' },
   ],
   game_packaging_tool_path: [
     { required: true, message: '请上传安卓打包工具', trigger: 'blur' },
