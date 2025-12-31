@@ -89,7 +89,7 @@ swag init
 
 > 执行上面的命令后，server目录下会出现docs文件夹里的 `docs.go`, `swagger.json`, `swagger.yaml` 三个文件更新，启动go服务之后, 在浏览器输入 [http://localhost:8888/swagger/index.html](http://localhost:8888/swagger/index.html) 即可查看swagger文档
 
-### 目录结构
+### 3. 目录结构
 
 ```
     ├── server
