@@ -66,7 +66,6 @@ func (i *initMenu) InitializeData(ctx context.Context) (next context.Context, er
 		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "plugin", Name: "plugin", Component: "view/routerHolder.vue", Sort: 60, Meta: Meta{Title: "插件系统", Icon: "cherry"}},
 		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "example", Name: "example", Component: "view/example/index.vue", Sort: 70, Meta: Meta{Title: "示例文件", Icon: "management"}},
 		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "state", Name: "state", Component: "view/system/state.vue", Sort: 80, Meta: Meta{Title: "服务器状态", Icon: "cloudy"}},
-		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "about", Name: "about", Component: "view/about/index.vue", Sort: 90, Meta: Meta{Title: "关于我们", Icon: "info-filled"}},
 	}
 
 	// 先创建父级菜单（ParentId = 0 的菜单）
