@@ -24,7 +24,11 @@
         <el-table-column align="left" label="名称" prop="channel_name"/>
         <el-table-column align="left" label="支付网关" prop="pay_type"/>
         <el-table-column align="left" label="状态" prop="status"/>
-        <el-table-column align="left" label="费率" prop="rate"/>
+        <el-table-column align="left" label="费率">
+          <template #default="scope">
+            <span>{{ scope.row.rate }}%</span>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="创建时间">
           <template #default="scope">
             {{ formatDate(scope.row.created_at) }}
@@ -119,7 +123,11 @@
           </el-select>
         </el-form-item>
         <el-form-item label="费率" prop="rate">
-          <el-input-number v-model="configInfo.rate" placeholder="请输入费率"/>
+          <el-input-number v-model="configInfo.rate" placeholder="请输入费率">
+            <template #suffix>
+              <span>%</span>
+            </template>
+          </el-input-number>
         </el-form-item>
       </el-form>
       <template #footer>
