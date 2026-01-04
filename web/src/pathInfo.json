@@ -1,5 +1,4 @@
 {
-  "/src/view/about/index.vue": "About",
   "/src/view/advertising/advertisingMedia/index.vue": "AdvertisingMedia",
   "/src/view/advertising/advertisingMedia/media/list.vue": "AdvertisingMediaList",
   "/src/view/advertising/agent/agent/list.vue": "AgentList",
