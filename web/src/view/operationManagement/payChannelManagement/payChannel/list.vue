@@ -18,19 +18,19 @@
         <el-button type="primary" icon="plus" @click="openAddConfigDialog">新增支付渠道</el-button>
       </div>
       <el-table :data="tableData" stripe row-key="id">
-        <el-table-column align="left" label="ID" min-width="50" prop="id" />
-        <el-table-column align="left" label="平台" min-width="50" prop="platform_id"/>
-        <el-table-column align="left" label="主体" min-width="100" prop="company_id"/>
-        <el-table-column align="left" label="名称" min-width="150" prop="channel_name"/>
-        <el-table-column align="left" label="支付网关" min-width="100" prop="pay_type"/>
-        <el-table-column align="left" label="状态" min-width="50" prop="status"/>
-        <el-table-column align="left" label="费率" min-width="50" prop="rate"/>
-        <el-table-column align="left" label="创建时间" min-width="180">
+        <el-table-column align="left" label="ID" prop="id" />
+        <el-table-column align="left" label="平台" prop="platform_id"/>
+        <el-table-column align="left" label="主体" prop="company_id"/>
+        <el-table-column align="left" label="名称" prop="channel_name"/>
+        <el-table-column align="left" label="支付网关" prop="pay_type"/>
+        <el-table-column align="left" label="状态" prop="status"/>
+        <el-table-column align="left" label="费率" prop="rate"/>
+        <el-table-column align="left" label="创建时间">
           <template #default="scope">
             {{ formatDate(scope.row.created_at) }}
           </template>
         </el-table-column>
-        <el-table-column align="left" label="更新时间" min-width="180">
+        <el-table-column align="left" label="更新时间">
           <template #default="scope">
             {{ formatDate(scope.row.updated_at) }}
           </template>
