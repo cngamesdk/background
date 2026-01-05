@@ -1,8 +1,3 @@
-<!--
-    @auther: bypanghu<bypanghu@163.com>
-    @date: 2024/5/8
-!-->
-
 <template>
   <div
     class="bg-white dark:bg-slate-900 text-gray-800 dark:text-gray-400 rounded shadow"
