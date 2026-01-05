@@ -81,30 +81,13 @@
       icon: User,
       title: '用户管理',
       path: 'user'
-    },
-    {
-      icon: Files,
-      title: '自动化包',
-      path: 'autoPkg'
-    },
-    {
-      icon: Memo,
-      title: '自动代码',
-      path: 'autoCode'
     }
   ]
 
+  // icon: Reading,
+  // title: '授权购买',
+  // path: 'xxxx'
   const recentVisits = [
-    {
-      icon: Reading,
-      title: '授权购买',
-      path: 'https://gin-vue-admin.com/empower/index.html'
-    },
-    {
-      icon: Document,
-      title: '插件市场',
-      path: 'https://plugin.gin-vue-admin.com/#/layout/home'
-    }
   ]
 </script>
 

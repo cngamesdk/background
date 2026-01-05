@@ -38,22 +38,9 @@
     >
       <gva-table />
     </gva-card>
-    <gva-card
-      title="最新插件"
-      custom-class="col-span-1 md:col-span-3 row-span-2"
-    >
-      <gva-plugin-table />
-    </gva-card>
 
     <gva-card title="公告" show-action custom-class="col-span-1 lg:col-start-7">
       <gva-notice />
-    </gva-card>
-
-    <gva-card
-      without-padding
-      custom-class="overflow-hidden lg:h-40 col-span-1 md:col-start-2 md:col-span-1 lg:col-start-7"
-    >
-      <gva-banner />
     </gva-card>
   </div>
 </template>
