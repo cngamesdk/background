@@ -204,13 +204,13 @@
         <el-form-item label="游戏币兑换比例" prop="game_rate">
           <el-input-number :min="0" v-model="gameInfo.game_rate" placeholder="请输入游戏币兑换比例，如：10"/>
         </el-form-item>
-        <el-form-item label="支付主体" prop="company_id">
+        <el-form-item label="归属主体" prop="company_id">
           <el-select
               v-model="gameInfo.company_id"
               filterable
               remote
               reserve-keyword
-              placeholder="请选择支付主体"
+              placeholder="请选择归属主体"
               :remote-method="searchCompanyMethod"
               :loading="loading"
               style="width: 240px"
