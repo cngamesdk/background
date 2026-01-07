@@ -97,6 +97,7 @@ func RegisterTables() {
 		common.DimGlobalCommonConfigModel{},
 		common.DimMainGameModel{},
 		common.DimPayChannelModel{},
+		common.DimPayChannelSwitchModel{},
 		common.DimPlatformModel{},
 		common.DimProductCommonConfigurationModel{},
 		common.DimRootGameModel{},
