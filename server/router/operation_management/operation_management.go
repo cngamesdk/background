@@ -76,6 +76,14 @@ func (s *OperationManagementRouter) InitApiRouter(Router *gin.RouterGroup) {
 			payChannelManageRouter.POST("modify", payChannelApi.Modify) // 支付渠道修改
 		}
 
+		//支付渠道切换管理
+		payChannelSwitchManageRouter := apiRouter.Group("pay_channel_switch")
+		{
+			payChannelSwitchManageRouter.POST("list", payChannelSwitchApi.List)
+			payChannelSwitchManageRouter.POST("add", payChannelSwitchApi.Add)
+			payChannelSwitchManageRouter.POST("modify", payChannelSwitchApi.Modify)
+		}
+
 		//发行管理
 		publishingManageRouter := apiRouter.Group("publishing")
 		{

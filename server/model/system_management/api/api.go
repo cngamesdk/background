@@ -7,9 +7,11 @@ import (
 )
 
 type SearchReq struct {
-	PlatformId int64 `json:"platform_id" form:"platform_id"`
-	DimType string `json:"dim_type" form:"dim_type" binding:"required"`
-	Keyword string `json:"keyword" form:"keyword"`
+	PlatformId int64  `json:"platform_id" form:"platform_id"`
+	DimType    string `json:"dim_type" form:"dim_type" binding:"required"`
+	Keyword    string `json:"keyword" form:"keyword"`
+	Status     string `json:"status" form:"status"`
+	PayType    string `json:"pay_type" form:"status"`
 }
 
 func (receiver *SearchReq) Format() {
@@ -26,5 +28,4 @@ func (receiver *SearchReq) Validate() (err error) {
 }
 
 type SearchResp struct {
-
 }

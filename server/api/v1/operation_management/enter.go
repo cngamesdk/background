@@ -10,6 +10,7 @@ type ApiGroup struct {
 	RootGameApi
 	CompanyApi
 	PayChannelApi
+	PayChannelSwitchApi
 	PublishingApi
 	PlatformApi
 	GameAppVersionConfigurationApi
@@ -25,6 +26,7 @@ var (
 	rootGameService                    = service.ServiceGroupApp.OperationManagementServiceGroup.RootGameService
 	companyService                     = service.ServiceGroupApp.OperationManagementServiceGroup.CompanyService
 	payChannelService                  = service.ServiceGroupApp.OperationManagementServiceGroup.PayChannelService
+	payChannelSwitchService            = service.ServiceGroupApp.OperationManagementServiceGroup.PayChannelSwitchService
 	publishingService                  = service.ServiceGroupApp.OperationManagementServiceGroup.PublishingService
 	platformService                    = service.ServiceGroupApp.OperationManagementServiceGroup.PlatformService
 	gameAppVersionConfigurationService = service.ServiceGroupApp.OperationManagementServiceGroup.GameAppVersionConfigurationService
