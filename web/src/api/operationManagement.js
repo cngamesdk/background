@@ -225,6 +225,33 @@ export const payChannelModify = (data) => {
     })
 }
 
+// @Router /operation_management/pay_channel_switch/list [post]
+export const payChannelSwitchList = (data) => {
+    return service({
+        url: '/operation_management/pay_channel_switch/list',
+        method: 'post',
+        data
+    })
+}
+
+// @Router /operation_management/pay_channel_switch/add [post]
+export const payChannelSwitchAdd = (data) => {
+    return service({
+        url: '/operation_management/pay_channel_switch/add',
+        method: 'post',
+        data
+    })
+}
+
+// @Router /operation_management/pay_channel_switch/modify [post]
+export const payChannelSwitchModify = (data) => {
+    return service({
+        url: '/operation_management/pay_channel_switch/modify',
+        method: 'post',
+        data
+    })
+}
+
 // @Router /operation_management/publishing/channel/list [post]
 export const publishingChannelList = (data) => {
     return service({

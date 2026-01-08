@@ -4,7 +4,7 @@
       <el-form ref="searchForm" :inline="true" :model="searchInfo">
         <el-form-item>
 
-         <dimensionFilter v-model="searchInfo.dimension_filter" :dimensions="['platform_id', 'root_game_id', 'main_game_id', 'game_id', 'agent_id', 'site_id']"></dimensionFilter>
+         <Filter label="维度筛选" v-model:init="searchInfo.dimension_filter" v-model:fields="displayFields"></Filter>
 
           <Dimensions v-model="searchInfo.dimensions" :dimensions="allDimensions"></Dimensions>
 
@@ -167,7 +167,8 @@
 <script setup>
 
 import { dayOverviewList } from '@/api/dataReport'
-import DimensionFilter from '../../../components/dataReport/dimensionFilter.vue'
+import { dimensionFilter } from '@/utils/common'
+import Filter from '../../../components/dataReport/filter.vue'
 import Dimensions from '../../../components/dataReport/dimensions.vue'
 import Indicators from '../../../components/dataReport/indicators.vue'
 import StatisticalCaliber from '../../../components/dataReport/statisticalCaliber.vue'
@@ -182,7 +183,7 @@ import { formatTimeToStr } from '@/utils/date'
 defineOptions({
   name: 'DayOverviewList',
   components: {
-    DimensionFilter,
+    Filter,
     Dimensions,
     Indicators,
     StatisticalCaliber,
@@ -194,6 +195,9 @@ defineOptions({
 const appStore = useAppStore()
 
 const dateRange = ref([new Date(), new Date()])
+
+//需要显示的维度筛选
+const displayFields = ref([])
 
 const searchInfo = ref({
   statistical_caliber : 'root-game-back-30',
@@ -227,6 +231,13 @@ const allIndicators = [
       {key: 'pay', value: '付费数'},
     ]}
 ]
+
+const getDisplayFields = async () => {
+  const result = await dimensionFilter()
+  result.forEach(function (item) {
+    displayFields.value.push(item.value)
+  })
+}
 
 const onSearchSubmit = () => {
   page.value = 1
@@ -277,5 +288,11 @@ const getTableData = async () => {
     }
   }
 }
+
+const initData = () => {
+  getDisplayFields()
+}
+
+initData()
 
 </script>
