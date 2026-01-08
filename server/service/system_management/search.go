@@ -36,6 +36,7 @@ func (receiver *SearchService) Search(ctx context.Context, req *api.SearchReq) (
 		"product-common-config":  receiver.searchProductCommonConfig,
 		"pay-type":               receiver.searchPayType,
 		"pay-status":             receiver.searchPayStatus,
+		"pay-channel":            receiver.searchPayChannel,
 		"publishing-channel":     receiver.searchPublishingChannel,
 		"agent":                  receiver.searchAgent,
 		"site":                   receiver.searchSite,
@@ -257,6 +258,39 @@ func (receiver *SearchService) searchPayStatus(ctx context.Context, req *api.Sea
 	var respList []data
 	for key, item := range common.PayStatuss {
 		respList = append(respList, data{Key: key, Value: item})
+	}
+	resp = respList
+	return
+}
+
+// searchPayChannel 搜索支付渠道
+func (receiver *SearchService) searchPayChannel(ctx context.Context, req *api.SearchReq) (resp interface{}, err error) {
+	model := operation_management.NewDimPayChannelModel()
+	tempDb := model.Db().WithContext(ctx).Table(model.TableName())
+	var list []operation_management.DimPayChannelModel
+	if !validator.IsEmptyString(req.Keyword) {
+		if validator.IsNumberStr(req.Keyword) {
+			tempDb.Where("id = ?", req.Keyword)
+		} else {
+			tempDb.Where("channel_name like ?", "%"+req.Keyword+"%")
+		}
+	}
+
+	if !validator.IsEmptyString(req.PayType) {
+		tempDb.Where("pay_type = ?", req.PayType)
+	}
+
+	if validator.IsEmptyString(req.Status) {
+		tempDb.Where("status = ?", req.Status)
+	}
+	if listErr := tempDb.Limit(50).Order("id DESC").Take(&list).Error; listErr != nil {
+		err = listErr
+		global.GVA_LOG.Error("获取异常", zap.Error(listErr))
+		return
+	}
+	var respList []data
+	for _, item := range list {
+		respList = append(respList, data{Key: item.Id, Value: item.ChannelName})
 	}
 	resp = respList
 	return

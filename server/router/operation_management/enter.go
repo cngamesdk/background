@@ -14,6 +14,7 @@ var (
 	rootGameApi                    = api2.ApiGroupApp.OperationManagementApiGroup.RootGameApi
 	companyApi                     = api2.ApiGroupApp.OperationManagementApiGroup.CompanyApi
 	payChannelApi                  = api2.ApiGroupApp.OperationManagementApiGroup.PayChannelApi
+	payChannelSwitchApi            = api2.ApiGroupApp.OperationManagementApiGroup.PayChannelSwitchApi
 	publishingApi                  = api2.ApiGroupApp.OperationManagementApiGroup.PublishingApi
 	platformApi                    = api2.ApiGroupApp.OperationManagementApiGroup.PlatformApi
 	gameAppVersionConfigurationApi = api2.ApiGroupApp.OperationManagementApiGroup.GameAppVersionConfigurationApi
