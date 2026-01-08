@@ -6,6 +6,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
 	"github.com/pkg/errors"
+	"slices"
 	"strings"
 )
 
@@ -50,11 +51,17 @@ func (c *PayChannelSwitchAddReq) Validate() (err error) {
 		err = errors.Wrap(error2.ErrorParamEmpty, "请配置充值渠道")
 		return
 	}
+	var tempPayChannelIds []int64
 	for _, item := range c.PayChannels {
 		if item.PayChannelId <= 0 || item.Weight <= 0 {
 			err = errors.Wrap(error2.ErrorParamEmpty, "充值渠道中存在空项，请重新配置")
 			return
 		}
+		if slices.Contains(tempPayChannelIds, item.PayChannelId) {
+			err = errors.New("支付渠道中存在重复项，请重新配置")
+			return
+		}
+		tempPayChannelIds = append(tempPayChannelIds, item.PayChannelId)
 	}
 	return
 }
@@ -97,11 +104,17 @@ func (c *PayChannelSwitchModifyReq) Validate() (err error) {
 		err = errors.Wrap(error2.ErrorParamEmpty, "请配置充值渠道")
 		return
 	}
+	var tempPayChannelIds []int64
 	for _, item := range c.PayChannels {
 		if item.PayChannelId <= 0 || item.Weight <= 0 {
 			err = errors.Wrap(error2.ErrorParamEmpty, "充值渠道中存在空项，请重新配置")
 			return
 		}
+		if slices.Contains(tempPayChannelIds, item.PayChannelId) {
+			err = errors.New("支付渠道中存在重复项，请重新配置")
+			return
+		}
+		tempPayChannelIds = append(tempPayChannelIds, item.PayChannelId)
 	}
 	return
 }
