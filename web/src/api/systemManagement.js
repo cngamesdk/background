@@ -121,6 +121,16 @@ export const searchPayStatus = (data) => {
 }
 
 // @Router /system_management/search/search [post]
+export const searchPayChannel = (data) => {
+    data = {dim_type: 'pay-channel', ...data}
+    return service({
+        url: baseSearchUrl,
+        method: 'post',
+        data
+    })
+}
+
+// @Router /system_management/search/search [post]
 export const searchPublishingChannel = (data) => {
     data = {dim_type: 'publishing-channel', ...data}
     return service({

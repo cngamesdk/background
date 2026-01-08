@@ -1,14 +1,16 @@
 <template>
   <el-popover v-mdoel="" placement="bottom-start" :width="500" trigger="click" @hide="hideComponent">
     <template #reference>
-      <el-button>维度筛选({{ selectedDimensionNum }})</el-button>
+      <el-button>{{ label }}({{ selectedNum }})</el-button>
     </template>
     <el-form label-position="right" label-width="100px">
-      <el-form-item v-if="dimensions.indexOf(dimensionFilters.platform_id.key) > -1" label="平台">
+
+      <el-form-item v-if="displayFilters[platformIdFilterKey]" label="平台">
         <el-select
             :teleported="false"
-            v-model="dimensionFilters.platform_id.operator"
-            placeholder="请选择操作符" class="middle">
+            v-model="displayFilters[platformIdFilterKey].operator"
+            placeholder="请选择操作符"
+            class="middle">
           <el-option
               v-for="item in operators"
               :key="item.key"
@@ -20,12 +22,11 @@
             :teleported="false"
             placement="right-start"
             class="dimension-select"
-            v-model="dimensionFilters.platform_id.value"
+            v-model="displayFilters[platformIdFilterKey].value"
             multiple
             filterable
             remote
             :remote-method="remoteSelectPlatform"
-            @change="changeSelect"
             placeholder="请选择平台">
           <el-option
               v-for="item in platforms"
@@ -35,10 +36,11 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="dimensions.indexOf(dimensionFilters.root_game_id.key) > -1" label="根游戏">
+
+      <el-form-item v-if="displayFilters[rootGameIdFilterKey]" label="根游戏">
         <el-select
             :teleported="false"
-            v-model="dimensionFilters.root_game_id.operator"
+            v-model="displayFilters[rootGameIdFilterKey].operator"
             placeholder="请选择操作符" class="middle">
           <el-option
               v-for="item in operators"
@@ -51,12 +53,11 @@
             :teleported="false"
             placement="right-start"
             class="dimension-select"
-            v-model="dimensionFilters.root_game_id.value"
+            v-model="displayFilters[rootGameIdFilterKey].value"
             multiple
             filterable
             remote
             :remote-method="remoteSelectRootGameId"
-            @change="changeSelect"
             placeholder="请选择根游戏">
           <el-option
               v-for="item in rootGameIds"
@@ -66,10 +67,11 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="dimensions.indexOf(dimensionFilters.main_game_id.key) > -1" label="主游戏">
+
+      <el-form-item v-if="displayFilters[mainGameIdFilterKey]" label="主游戏">
         <el-select
             :teleported="false"
-            v-model="dimensionFilters.main_game_id.operator"
+            v-model="displayFilters[mainGameIdFilterKey].operator"
             placeholder="请选择操作符" class="middle">
           <el-option
               v-for="item in operators"
@@ -82,12 +84,11 @@
             :teleported="false"
             placement="right-start"
             class="dimension-select"
-            v-model="dimensionFilters.main_game_id.value"
+            v-model="displayFilters[mainGameIdFilterKey].value"
             multiple
             filterable
             remote
             :remote-method="remoteSelectMainGameId"
-            @change="changeSelect"
             placeholder="请选择主游戏">
           <el-option
               v-for="item in mainGameIds"
@@ -97,10 +98,11 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="dimensions.indexOf(dimensionFilters.game_id.key) > -1" label="子游戏">
+
+      <el-form-item v-if="displayFilters[gameIdFilterKey]" label="子游戏">
         <el-select
             :teleported="false"
-            v-model="dimensionFilters.game_id.operator"
+            v-model="displayFilters[gameIdFilterKey].operator"
             placeholder="请选择操作符" class="middle">
           <el-option
               v-for="item in operators"
@@ -113,12 +115,11 @@
             :teleported="false"
             placement="right-start"
             class="dimension-select"
-            v-model="dimensionFilters.game_id.value"
+            v-model="displayFilters[gameIdFilterKey].value"
             multiple
             filterable
             remote
             :remote-method="remoteSelectSubGameId"
-            @change="changeSelect"
             placeholder="请选择子游戏">
           <el-option
               v-for="item in subGameIds"
@@ -128,10 +129,11 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="dimensions.indexOf(dimensionFilters.agent_id.key) > -1" label="渠道ID">
+
+      <el-form-item v-if="displayFilters[agentIdFilterKey]" label="渠道ID">
         <el-select
             :teleported="false"
-            v-model="dimensionFilters.agent_id.operator"
+            v-model="displayFilters[agentIdFilterKey].operator"
             placeholder="请选择操作符" class="middle">
           <el-option
               v-for="item in operators"
@@ -144,12 +146,11 @@
             :teleported="false"
             placement="right-start"
             class="dimension-select"
-            v-model="dimensionFilters.agent_id.value"
+            v-model="displayFilters[agentIdFilterKey].value"
             multiple
             filterable
             remote
             :remote-method="remoteSelectAgentId"
-            @change="changeSelect"
             placeholder="请选择渠道ID">
           <el-option
               v-for="item in agentIds"
@@ -159,10 +160,11 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="dimensions.indexOf(dimensionFilters.site_id.key) > -1" label="广告位ID">
+
+      <el-form-item v-if="displayFilters[siteIdFilterKey]" label="广告位ID">
         <el-select
             :teleported="false"
-            v-model="dimensionFilters.site_id.operator"
+            v-model="displayFilters[siteIdFilterKey].operator"
             placeholder="请选择操作符" class="middle">
           <el-option
               v-for="item in operators"
@@ -175,12 +177,11 @@
             :teleported="false"
             placement="right-start"
             class="dimension-select"
-            v-model="dimensionFilters.site_id.value"
+            v-model="displayFilters[siteIdFilterKey].value"
             multiple
             filterable
             remote
             :remote-method="remoteSelectSiteId"
-            @change="changeSelect"
             placeholder="请选择广告位ID">
           <el-option
               v-for="item in siteIds"
@@ -190,46 +191,79 @@
           />
         </el-select>
       </el-form-item>
+
+      <el-form-item v-if="displayFilters[userIdFilterKey]" label="用户ID">
+        <el-select
+            :teleported="false"
+            v-model="displayFilters[userIdFilterKey].operator"
+            placeholder="请选择操作符"
+            class="middle">
+          <el-option
+              v-for="item in operators"
+              :key="item.key"
+              :label="item.value"
+              :value="item.key"
+          />
+        </el-select>
+        <el-input-tag v-model="displayFilters[userIdFilterKey].value" placeholder="请输入用户ID，空格添加" class="dimension-select" clearable/>
+      </el-form-item>
+
     </el-form>
   </el-popover>
 </template>
 
 <script setup>
 
+import { watch } from 'vue'
 import { ref, nextTick, defineModel, onMounted } from 'vue'
 import { searchPlatform, searchRootGame, searchMainGame, searchSubGame, searchAgent, searchSite } from '@/api/systemManagement'
+import {
+  platformIdFilterKey,
+  rootGameIdFilterKey,
+  mainGameIdFilterKey,
+    gameIdFilterKey,
+    agentIdFilterKey,
+    siteIdFilterKey,
+    userIdFilterKey,
+} from '@/utils/common'
 
-const modelValue = defineModel({ type: Array, default: [] })
+//初始化数据模型
+const initModel = defineModel('init',{ type: Array, default: () => [] })
+const fieldsModel = defineModel('fields',{ type: Array, default: () => [] })
 
 defineOptions({
-  name: 'DimensionFilter',
+  name: 'Filter',
 })
 
 onMounted(() => {
-  const initValues = modelValue.value
-  const allDimensionFilters = dimensionFilters.value
-  initValues.forEach((item) => {
-    if(allDimensionFilters[item.key] && item.value.length > 0) {
-      allDimensionFilters[item.key] = item
-    }
-  });
-  changeSelect()
+  initModelData()
+  initFieldModelData()
 })
 
-const dimensionFilters = ref({
-  platform_id: {key: 'platform_id', operator: 'in', value: []},
-  root_game_id: {key: 'root_game_id', operator: 'in', value: []},
-  main_game_id: {key: 'main_game_id', operator: 'in', value: []},
-  game_id: {key: 'game_id', operator: 'in', value: []},
-  agent_id: {key: 'agent_id', operator: 'in', value: []},
-  site_id: {key: 'site_id', operator: 'in', value: []},
-})
+// 监听模型的变化
+watch(initModel, () => {
+      initModelData()
+},
+    { deep: true })
+
+// 监听模型的变化
+watch(fieldsModel, () => {
+      initFieldModelData()
+},
+    { deep: true })
+
+//显示的筛选器
+const displayFilters = ref({})
+
+watch(displayFilters, (newVal) => {
+  changeSelect()
+},{ deep: true })
 
 defineProps({
-  dimensions: {
-    type: Array,
+  label: {
+    type: String,
     default() {
-      return []
+      return '维度筛选'
     }
   }
 })
@@ -237,9 +271,32 @@ defineProps({
 const operators = ref([
     {key: 'in', value: '包含'},
     {key: 'not-in', value: '不包含'}
-    ])
+])
 
-const selectedDimensionNum = ref(0)
+const selectedNum = ref(0)
+
+const initFieldModelData = () => {
+  if (fieldsModel.value.length > 0) {
+    fieldsModel.value.forEach(function (item) {
+      if (!displayFilters.value[item]) {
+        displayFilters.value[item] = {key: item, operator: 'in', value: []}
+      }
+    })
+  }
+}
+
+const initModelData = () => {
+  const initValues = initModel.value
+  console.log('initValues', initValues)
+  if ( initValues.length > 0 ) {
+    initValues.forEach((item) => {
+      if(item.value.length > 0) {
+        displayFilters.value[item.key] = item
+      }
+    });
+  }
+  console.log('displayFilters', displayFilters.value)
+}
 
 const platforms = ref([])
 const remoteSelectPlatform = async (keyword) => {
@@ -302,12 +359,12 @@ const remoteSelectSiteId = async (keyword) => {
 }
 
 const hideComponent = () => {
-  modelValue.value = calcSelectedDimensions()
+  initModel.value = calcSelected()
 }
 
-const calcSelectedDimensions = () => {
+const calcSelected = () => {
   let filterValues = []
-  const filters = dimensionFilters.value
+  const filters = displayFilters.value
   for (let key in filters) {
     if (filters[key].value.length > 0) {
       filterValues.push(filters[key])
@@ -318,13 +375,13 @@ const calcSelectedDimensions = () => {
 
 const changeSelect = (currentValue, oldValue) => {
   let num = 0
-  const allDimensionFilters = dimensionFilters.value
-  for(let key in allDimensionFilters) {
-    if (allDimensionFilters[key].value.length > 0) {
+  const tmpFilters = displayFilters.value
+  for(let key in tmpFilters) {
+    if (tmpFilters[key].value.length > 0) {
       num++
     }
   }
-  selectedDimensionNum.value = num
+  selectedNum.value = num
 }
 
 </script>

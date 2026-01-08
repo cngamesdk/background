@@ -3,7 +3,7 @@
     <div class="gva-search-box">
       <el-form ref="searchForm" :inline="true" :model="searchInfo">
         <el-form-item>
-          <dimensionFilter v-model="searchInfo.dimension_filter" :dimensions="['platform_id', 'root_game_id', 'main_game_id', 'game_id', 'agent_id', 'site_id']"></dimensionFilter>
+          <Filter label="维度筛选" v-model:init="searchInfo.dimension_filter" v-mdoel:fields="displayDimensionFilter"></Filter>
           <Dimensions v-model="searchInfo.dimensions" :dimensions="allDimensions"></Dimensions>
           <Indicators v-model="searchInfo.indicators" :indicators="allIndicators"></Indicators>
           &nbsp;&nbsp;
@@ -131,7 +131,8 @@
 <script setup>
 
 import { paymentStatusList } from '@/api/dataReport'
-import DimensionFilter from '../../../components/dataReport/dimensionFilter.vue'
+import { dimensionFilter } from '@/utils/common'
+import Filter from '../../../components/dataReport/filter.vue'
 import Dimensions from '../../../components/dataReport/dimensions.vue'
 import Indicators from '../../../components/dataReport/indicators.vue'
 import StatisticalCaliber from '../../../components/dataReport/statisticalCaliber.vue'
@@ -141,11 +142,12 @@ import DateRange from '../../../components/dataReport/dateRange.vue'
 import { ref } from 'vue'
 import { useAppStore } from "@/pinia";
 import { formatTimeToStr } from '@/utils/date'
+import {dimensionFilter} from "@/utils/common";
 
 defineOptions({
   name: 'PaymentStatus',
   components: {
-    DimensionFilter,
+    Filter,
     Dimensions,
     Indicators,
     StatisticalCaliber,
@@ -157,6 +159,8 @@ defineOptions({
 const appStore = useAppStore()
 const dateRange = ref([new Date(), new Date()])
 const nDayColumns = ref([])
+//需要显示的维度筛选
+const displayDimensionFilter = ref([])
 
 const searchInfo = ref({
   statistical_caliber : 'root-game-back-30',
@@ -202,6 +206,13 @@ const paymentStatusOptions = ref([
   {key: 'ltv', value: 'LTV'},
   {key: 'cumulative-payment-amount', value: '累计付费'},
 ])
+
+const getDisplayDimensionFilter = async () => {
+  const result = await dimensionFilter()
+  result.forEach(function (item) {
+    displayDimensionFilter.value.push(item.value)
+  })
+}
 
 const onSearchSubmit = () => {
   page.value = 1
@@ -256,5 +267,11 @@ const getTableData = async () => {
     }
   }
 }
+
+const initData = () => {
+  getDisplayDimensionFilter()
+}
+
+initData()
 
 </script>

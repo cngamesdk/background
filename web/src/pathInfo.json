@@ -71,6 +71,7 @@
   "/src/view/operationManagement/index.vue": "OperationManagement",
   "/src/view/operationManagement/payChannelManagement/index.vue": "PayChannelManagement",
   "/src/view/operationManagement/payChannelManagement/payChannel/list.vue": "PayChannelList",
+  "/src/view/operationManagement/payChannelManagement/switch/list.vue": "PayChannelSwitchList",
   "/src/view/operationManagement/platformManagement/index.vue": "PlatformManage",
   "/src/view/operationManagement/platformManagement/platform/list.vue": "PlatformList",
   "/src/view/operationManagement/productConfigManagement/gameAppVersion/list.vue": "GameAppVersionConfigurationList",
