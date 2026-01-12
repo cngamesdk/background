@@ -205,7 +205,55 @@
               :value="item.key"
           />
         </el-select>
-        <el-input-tag v-model="displayFilters[userIdFilterKey].value" placeholder="请输入用户ID，空格添加" class="dimension-select" clearable/>
+        <el-input-tag v-model="displayFilters[userIdFilterKey].value" placeholder="请输入用户ID，回车添加" class="dimension-select" clearable/>
+      </el-form-item>
+
+      <el-form-item v-if="displayFilters[oaidFilterKey]" label="安卓Oaid">
+        <el-select
+            :teleported="false"
+            v-model="displayFilters[oaidFilterKey].operator"
+            placeholder="请选择操作符"
+            class="middle">
+          <el-option
+              v-for="item in operators"
+              :key="item.key"
+              :label="item.value"
+              :value="item.key"
+          />
+        </el-select>
+        <el-input-tag v-model="displayFilters[oaidFilterKey].value" placeholder="请输入oaid，回车添加" class="dimension-select" clearable/>
+      </el-form-item>
+
+      <el-form-item v-if="displayFilters[imeiFilterKey]" label="imei/idfa">
+        <el-select
+            :teleported="false"
+            v-model="displayFilters[imeiFilterKey].operator"
+            placeholder="请选择操作符"
+            class="middle">
+          <el-option
+              v-for="item in operators"
+              :key="item.key"
+              :label="item.value"
+              :value="item.key"
+          />
+        </el-select>
+        <el-input-tag v-model="displayFilters[imeiFilterKey].value" placeholder="请输入imei/idfa，回车添加" class="dimension-select" clearable/>
+      </el-form-item>
+
+      <el-form-item v-if="displayFilters[idfvFilterKey]" label="idfv">
+        <el-select
+            :teleported="false"
+            v-model="displayFilters[idfvFilterKey].operator"
+            placeholder="请选择操作符"
+            class="middle">
+          <el-option
+              v-for="item in operators"
+              :key="item.key"
+              :label="item.value"
+              :value="item.key"
+          />
+        </el-select>
+        <el-input-tag v-model="displayFilters[idfvFilterKey].value" placeholder="请输入idfv，回车添加" class="dimension-select" clearable/>
       </el-form-item>
 
     </el-form>
@@ -225,6 +273,9 @@ import {
     agentIdFilterKey,
     siteIdFilterKey,
     userIdFilterKey,
+    oaidFilterKey,
+    imeiFilterKey,
+    idfvFilterKey,
 } from '@/utils/common'
 
 //初始化数据模型
