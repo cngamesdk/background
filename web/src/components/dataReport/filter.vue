@@ -256,6 +256,22 @@
         <el-input-tag v-model="displayFilters[idfvFilterKey].value" placeholder="请输入idfv，回车添加" class="dimension-select" clearable/>
       </el-form-item>
 
+      <el-form-item v-if="displayFilters[ipFilterKey]" label="IP">
+        <el-select
+            :teleported="false"
+            v-model="displayFilters[ipFilterKey].operator"
+            placeholder="请选择操作符"
+            class="middle">
+          <el-option
+              v-for="item in operators"
+              :key="item.key"
+              :label="item.value"
+              :value="item.key"
+          />
+        </el-select>
+        <el-input-tag v-model="displayFilters[ipFilterKey].value" placeholder="请输入IP，回车添加" class="dimension-select" clearable/>
+      </el-form-item>
+
     </el-form>
   </el-popover>
 </template>
@@ -276,6 +292,7 @@ import {
     oaidFilterKey,
     imeiFilterKey,
     idfvFilterKey,
+    ipFilterKey,
 } from '@/utils/common'
 
 //初始化数据模型
