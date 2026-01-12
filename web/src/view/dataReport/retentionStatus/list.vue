@@ -127,7 +127,6 @@ import DateRange from '../../../components/dataReport/dateRange.vue'
 import { ref } from 'vue'
 import { useAppStore } from "@/pinia";
 import { formatTimeToStr } from '@/utils/date'
-import {dimensionFilter} from "@/utils/common";
 
 defineOptions({
   name: 'RetentionStatus',
