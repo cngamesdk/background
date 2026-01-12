@@ -264,6 +264,10 @@ const handleInsertPayChannel = (index) => {console.log('pay_channels', index, co
 }
 
 const handleDelPayChannel = (index) => {
+  if (configInfo.value.pay_channels.length <= 1) {
+    ElMessage({ type: 'error', message: '必须配置一个支付渠道' })
+    return
+  }
   configInfo.value.pay_channels.splice(index, 1)
 }
 
@@ -394,9 +398,11 @@ const rules = ref({
     { required: true, message: '请选择状态', trigger: 'blur' },
   ],
   rules: [
+    { required: true, message: '请配置支付规则', trigger: 'change' },
     { validator: validateRules, trigger: 'blur' }
   ],
   pay_channels: [
+    { required: true, message: '请配置支付渠道', trigger: 'blur' },
     { validator: validatePayChannels, trigger: 'blur' }
   ],
 })
