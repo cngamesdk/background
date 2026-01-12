@@ -1,5 +1,5 @@
 <template>
-  <el-popover v-mdoel="" placement="bottom-start" :width="500" trigger="click" @hide="hideComponent">
+  <el-popover v-mdoel="" placement="bottom-start" :width="500" popper-class="popover-container" trigger="click" @hide="hideComponent">
     <template #reference>
       <el-button>{{ label }}({{ selectedNum }})</el-button>
     </template>
@@ -443,5 +443,11 @@ const changeSelect = (currentValue, oldValue) => {
 }
 .dimension-select{
   width:15rem;
+}
+.popover-container {
+  max-height: 30rem;
+  overflow-y: scroll;
+  scrollbar-color: gray;
+  scrollbar-width: thin;
 }
 </style>
