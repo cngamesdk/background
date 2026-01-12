@@ -130,11 +130,11 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="切换规则">
+        <el-form-item label="切换规则" prop="rules">
           <Filter label="规则" v-model:init="configInfo.rules" v-model:fields="displayFields"></Filter>
         </el-form-item>
 
-        <el-form-item v-if="configInfo.pay_type !== ''" label="支付渠道">
+        <el-form-item v-if="configInfo.pay_type !== ''" label="支付渠道" prop="pay_channels">
 
           <div class="pay-channel-container">
             <div class="pay-channel-container-item" v-for="(itemPayChannel, indexPayChannel) in configInfo.pay_channels">
@@ -402,7 +402,7 @@ const rules = ref({
     { validator: validateRules, trigger: 'blur' }
   ],
   pay_channels: [
-    { required: true, message: '请配置支付渠道', trigger: 'blur' },
+    { required: true, message: '请配置支付渠道', trigger: 'change' },
     { validator: validatePayChannels, trigger: 'blur' }
   ],
 })
