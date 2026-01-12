@@ -7,7 +7,6 @@ const siteIdFilterKey = 'site_id'
 const ipFilterKey = 'ip'
 const oaidFilterKey = 'oaid'
 const imeiFilterKey = 'imei'
-const idfaFilterKey = 'idfa'
 const idfvFilterKey = 'idfv'
 const userIdFilterKey = 'user_id'
 const roleIdFilterKey = 'role_id'
@@ -25,7 +24,6 @@ export {
     ipFilterKey,
     oaidFilterKey,
     imeiFilterKey,
-    idfaFilterKey,
     idfvFilterKey,
     userIdFilterKey,
     roleIdFilterKey,
@@ -65,8 +63,7 @@ export const locationFilter = () => {
 export const deviceFilter = () => {
     return [
         {name: 'Oaid', value: oaidFilterKey},
-        {name: 'Imei', value: imeiFilterKey},
-        {name: 'Idfa', value: idfaFilterKey},
+        {name: 'Imei/Idfa', value: imeiFilterKey},
         {name: 'Idfv', value: idfvFilterKey},
     ]
 }
