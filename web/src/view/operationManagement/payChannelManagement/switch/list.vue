@@ -95,9 +95,8 @@
     <!-- 游戏添加/编辑对话框 -->
     <el-dialog
         destroy-on-close
-        center
         v-model="configDialog.show"
-        title="配置"
+        title="支付渠道切换配置"
         width="700px"
         @close="closeConfigDialog"
         :close-on-click-modal="false"
