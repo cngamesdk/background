@@ -158,6 +158,16 @@
                   <span>权重</span>
                 </template>
               </el-input-number>
+              <el-select class="pay-channel-container-item-child" v-model="configInfo.pay_channels[indexPayChannel].mode"
+                         placeholder="请选择模式"
+                         style="width: 120px">
+                <el-option
+                    v-for="item in payChannelModes"
+                    :key="item.key"
+                    :label="item.value"
+                    :value="item.key"
+                />
+              </el-select>
               <el-button class="pay-channel-container-item-child" type="primary" size="small" :icon="Plus" @click="handleInsertPayChannel(indexPayChannel)"/>
               <el-button class="pay-channel-container-item-child" type="primary" size="small" :icon="Minus" @click="handleDelPayChannel(indexPayChannel)"/>
             </div>
@@ -252,6 +262,12 @@ const statuss = ref([
   {key: 'remove', value: '下架'},
   {key: 'delete', value: '删除'},
 ])
+// 支付渠道模式
+const payChannelModes = ref([
+  {key: 'active', value: '主'},
+  {key: 'standby', value: '备'},
+])
+
 // 需要显示的筛选
 const displayFields = ref([])
 
