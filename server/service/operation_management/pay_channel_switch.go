@@ -2,6 +2,7 @@ package operation_management
 
 import (
 	"context"
+	"fmt"
 	"github.com/cngamesdk/go-core/model/sql"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
@@ -21,7 +22,7 @@ func (p *PayChannelSwitchService) List(ctx context.Context, req *api.PayChannelS
 		tmpDb.Where("pay_type = ?", req.PayType)
 	}
 	if req.PayChannelId > 0 {
-		tmpDb.Where("JSON_EXTRACT(pay_channels, '$[*].pay_channel_id') = ? ", req.PayChannelId)
+		tmpDb.Where("pay_channels LIKE ?", "%"+fmt.Sprintf("\"pay_channel_id\": %d", req.PayChannelId)+"%")
 	}
 	if countErr := tmpDb.Count(&total).Error; countErr != nil {
 		err = countErr
