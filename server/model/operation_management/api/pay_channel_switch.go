@@ -52,8 +52,9 @@ func (c *PayChannelSwitchAddReq) Validate() (err error) {
 		return
 	}
 	var tempPayChannelIds []int64
+	var existsActivePayChannel bool
 	for _, item := range c.PayChannels {
-		if item.PayChannelId <= 0 || item.Weight <= 0 {
+		if item.PayChannelId <= 0 || item.Weight <= 0 || item.Mode == "" {
 			err = errors.Wrap(error2.ErrorParamEmpty, "充值渠道中存在空项，请重新配置")
 			return
 		}
@@ -61,7 +62,14 @@ func (c *PayChannelSwitchAddReq) Validate() (err error) {
 			err = errors.New("支付渠道中存在重复项，请重新配置")
 			return
 		}
+		if item.Mode == common.PayChannelSwitchModeActive {
+			existsActivePayChannel = true
+		}
 		tempPayChannelIds = append(tempPayChannelIds, item.PayChannelId)
+	}
+	if !existsActivePayChannel {
+		err = errors.New("支付渠道中必须设置主模式，请重新配置")
+		return
 	}
 	return
 }
@@ -104,9 +112,10 @@ func (c *PayChannelSwitchModifyReq) Validate() (err error) {
 		err = errors.Wrap(error2.ErrorParamEmpty, "请配置充值渠道")
 		return
 	}
+	var existsActivePayChannel bool
 	var tempPayChannelIds []int64
 	for _, item := range c.PayChannels {
-		if item.PayChannelId <= 0 || item.Weight <= 0 {
+		if item.PayChannelId <= 0 || item.Weight <= 0 || item.Mode == "" {
 			err = errors.Wrap(error2.ErrorParamEmpty, "充值渠道中存在空项，请重新配置")
 			return
 		}
@@ -114,7 +123,14 @@ func (c *PayChannelSwitchModifyReq) Validate() (err error) {
 			err = errors.New("支付渠道中存在重复项，请重新配置")
 			return
 		}
+		if item.Mode == common.PayChannelSwitchModeActive {
+			existsActivePayChannel = true
+		}
 		tempPayChannelIds = append(tempPayChannelIds, item.PayChannelId)
+	}
+	if !existsActivePayChannel {
+		err = errors.New("支付渠道中必须设置主模式，请重新配置")
+		return
 	}
 	return
 }
