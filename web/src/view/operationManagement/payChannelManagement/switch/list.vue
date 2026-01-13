@@ -277,7 +277,6 @@ const openAddConfigDialog = () => {
 }
 
 const openConfigEditDialog = (row) => {
-  console.log('row', row)
   configInfo.value = row
   configDialog.value.show = true
   configDialog.value.add = false
