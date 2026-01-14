@@ -162,6 +162,10 @@ github.com/cngamesdk/go-core v1.0.9-0.20260108083055-9f8516cb2237 h1:gizKqnVwzXF
 github.com/cngamesdk/go-core v1.0.9-0.20260108083055-9f8516cb2237/go.mod h1:F0+ah460RFt+Pda6O5aXLcYQ0Ecz9Y10/DCDYDSXYso=
 github.com/cngamesdk/go-core v1.0.9-0.20260113033514-6e13924d2ae9 h1:Gr1j1AU0pCZgfvLzM2UHCyFIL5JckCu2KhrzbTZ32PE=
 github.com/cngamesdk/go-core v1.0.9-0.20260113033514-6e13924d2ae9/go.mod h1:F0+ah460RFt+Pda6O5aXLcYQ0Ecz9Y10/DCDYDSXYso=
+github.com/cngamesdk/go-core v1.0.9-0.20260114042201-6070b7523735 h1:TIemrasoYYYDyI8Ihoa8yKkbrvWcikxW9gtBDMktwoc=
+github.com/cngamesdk/go-core v1.0.9-0.20260114042201-6070b7523735/go.mod h1:F0+ah460RFt+Pda6O5aXLcYQ0Ecz9Y10/DCDYDSXYso=
+github.com/cngamesdk/go-core v1.0.9-0.20260114095123-caf8792047e5 h1:7hham4wvZL2AVMtAJsE6qg8U+hfARY76gTJ3DbkRCos=
+github.com/cngamesdk/go-core v1.0.9-0.20260114095123-caf8792047e5/go.mod h1:F0+ah460RFt+Pda6O5aXLcYQ0Ecz9Y10/DCDYDSXYso=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/dave/jennifer v1.6.1/go.mod h1:nXbxhEmQfOZhWml3D1cDK5M1FLnMSozpbFN/m3RmGZc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
