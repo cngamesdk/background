@@ -26,6 +26,7 @@ const (
 	InitOrderSystem   = 10
 	InitOrderInternal = 1000
 	InitOrderExternal = 100000
+	InitOrderMyCustom = 10000000 // 自定义的值
 )
 
 var (
@@ -75,7 +76,7 @@ func RegisterInit(order int, i SubInitializer) {
 	}
 	name := i.InitializerName()
 	if _, existed := cache[name]; existed {
-		panic(fmt.Sprintf("Name conflict on %s", name))
+		panic(any(fmt.Sprintf("Name conflict on %s", name)))
 	}
 	ni := orderedInitializer{order, i}
 	initializers = append(initializers, &ni)
