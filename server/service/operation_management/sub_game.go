@@ -7,6 +7,7 @@ import (
 	"github.com/duke-git/lancet/v2/cryptor"
 	"github.com/duke-git/lancet/v2/validator"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	model2 "github.com/flipped-aurora/gin-vue-admin/server/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management/api"
 	"github.com/pkg/errors"
@@ -15,17 +16,17 @@ import (
 )
 
 type SubGameService struct {
-
 }
 
 func (receiver *SubGameService) List(ctx context.Context, req *api.SubGameListReq) (resp interface{}, total int64, err error) {
 	model := operation_management.NewDimGameModel()
-	tmpDb := model.Db().WithContext(ctx).Table(model.TableName())
+	alias := "game"
+	tmpDb := model.Db().WithContext(ctx).Table(model.TableName() + " as " + alias)
 	if req.GameName != "" {
 		if validator.IsNumberStr(req.GameName) {
 			tmpDb.Where("id = ?", req.GameName)
 		} else {
-			tmpDb.Where("game_name like ?", "%"+ req.GameName + "%")
+			tmpDb.Where("game_name like ?", "%"+req.GameName+"%")
 		}
 	}
 	if countErr := tmpDb.Count(&total).Error; countErr != nil {
@@ -33,8 +34,14 @@ func (receiver *SubGameService) List(ctx context.Context, req *api.SubGameListRe
 		global.GVA_LOG.Error("获取总数异常", zap.Error(countErr))
 		return
 	}
+	model2.JoinPlatform(tmpDb, alias)
+	model2.JoinMainGame(tmpDb, alias)
 	var list []operation_management.DimGameModel
-	if listErr := tmpDb.Offset((req.Page - 1)*req.PageSize).Limit(req.PageSize).Find(&list).Error; listErr != nil {
+	if listErr := tmpDb.
+		Select(alias + ".*,platform.platform_name,main_game.game_name as main_game_name").
+		Offset((req.Page - 1) * req.PageSize).
+		Limit(req.PageSize).
+		Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取列表异常", zap.Error(listErr))
 		return
@@ -88,12 +95,12 @@ func (receiver *SubGameService) Config(ctx context.Context, req *api.SubGameConf
 API密钥(app_key): %s
 二次认证密钥(login_key): %s
 充值密钥(pay_key): %s`,
-model.GameName,
-cryptor.Base64StdEncode(string(plaform)),
-req.Id,
-common.GetGameAppKey(req.Id, global.GVA_CONFIG.Common.GameHashKey),
-common.GetGameLoginKey(req.Id, global.GVA_CONFIG.Common.GameHashKey),
-common.GetGamePayKey(req.Id, global.GVA_CONFIG.Common.GameHashKey),
+		model.GameName,
+		cryptor.Base64StdEncode(string(plaform)),
+		req.Id,
+		common.GetGameAppKey(req.Id, global.GVA_CONFIG.Common.GameHashKey),
+		common.GetGameLoginKey(req.Id, global.GVA_CONFIG.Common.GameHashKey),
+		common.GetGamePayKey(req.Id, global.GVA_CONFIG.Common.GameHashKey),
 	)
 	resp.Content = content
 	return
