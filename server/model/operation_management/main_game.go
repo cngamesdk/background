@@ -9,6 +9,8 @@ import (
 // DimMainGameModel 主游戏维度
 type DimMainGameModel struct {
 	common.DimMainGameModel
+	PlatformName string `json:"platform_name" gorm:"platform_name"`
+	RootGameName string `json:"root_game_name" gorm:"root_game_name"`
 }
 
 func NewDimMainGameModel() *DimMainGameModel {
