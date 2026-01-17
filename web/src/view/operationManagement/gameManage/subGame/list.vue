@@ -22,7 +22,11 @@
       <el-table :data="tableData" stripe row-key="id">
         <el-table-column align="left" label="游戏ID" min-width="100" prop="id" />
         <el-table-column align="left" label="名称" min-width="100" prop="game_name" />
-        <el-table-column align="left" label="所属平台" min-width="100" prop="platform_id" />
+        <el-table-column align="left" label="所属平台" min-width="100">
+          <template #default="scope">
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="包名"
@@ -33,20 +37,22 @@
             align="left"
             label="游戏类型"
             min-width="150"
-            prop="game_type"
+            prop="game_type_str"
         />
         <el-table-column
             align="left"
             label="操作系统"
             min-width="180"
-            prop="os"
+            prop="os_str"
         />
         <el-table-column
             align="left"
             label="所属主游戏"
-            min-width="180"
-            prop="main_game_id"
-        />
+            min-width="180">
+          <template #default="scope">
+            {{scope.row.main_game_id}}-{{scope.row.main_game_name}}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="兑换比例"
