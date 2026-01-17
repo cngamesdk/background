@@ -15,3 +15,8 @@ func JoinPlatform(tx *gorm.DB, alias string) {
 func JoinMainGame(tx *gorm.DB, alias string) {
 	tx.Joins(fmt.Sprintf("join %s as main_game on %s.main_game_id = main_game.id", (&operation_management.DimMainGameModel{}).TableName(), alias))
 }
+
+// 链接根游戏
+func JoinRootGame(tx *gorm.DB, alias string) {
+	tx.Joins(fmt.Sprintf("join %s as root_game on %s.root_game_id = root_game.id", (&operation_management.DimRootGameModel{}).TableName(), alias))
+}
