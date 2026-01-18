@@ -15,23 +15,23 @@
     </div>
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="openAddConfigDialog"
-        >新增配置</el-button
-        >
+        <el-button type="primary" icon="plus" @click="openAddConfigDialog">新增配置</el-button>
       </div>
       <el-table :data="tableData" stripe row-key="id">
         <el-table-column
             align="left"
             label="ID"
-            min-width="150"
+            min-width="50"
             prop="id"
         />
         <el-table-column
             align="left"
             label="平台"
-            min-width="150"
-            prop="platform_id"
-        />
+            min-width="100">
+          <template #default="scope">
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="配置名称"
@@ -41,13 +41,15 @@
         <el-table-column
             align="left"
             label="游戏"
-            min-width="150"
-            prop="game_id"
-        />
+            min-width="100">
+          <template #default="scope">
+            {{ scope.row.game_id }}-{{ scope.row.game_name }}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="APP版本号"
-            min-width="150"
+            min-width="100"
             prop="app_version_code"
         />
         <el-table-column
@@ -59,9 +61,11 @@
         <el-table-column
             align="left"
             label="归属配置"
-            min-width="150"
-            prop="product_config_id"
-        />
+            min-width="100">
+          <template #default="scope">
+            {{ scope.row.product_config_id }}-{{ scope.row.config_name }}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="创建时间"
