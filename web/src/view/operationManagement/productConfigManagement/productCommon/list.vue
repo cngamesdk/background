@@ -15,23 +15,23 @@
     </div>
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="openAddConfigDialog"
-        >新增配置</el-button
-        >
+        <el-button type="primary" icon="plus" @click="openAddConfigDialog">新增配置</el-button>
       </div>
       <el-table :data="tableData" stripe row-key="id">
         <el-table-column
             align="left"
             label="ID"
-            min-width="150"
+            min-width="100"
             prop="id"
         />
         <el-table-column
             align="left"
             label="平台"
-            min-width="150"
-            prop="platform_id"
-        />
+            min-width="100">
+          <template #default="scope">
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="配置名称"
