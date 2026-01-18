@@ -8,6 +8,7 @@ import (
 
 type DimProductCommonConfigurationModel struct {
 	common.DimProductCommonConfigurationModel
+	PlatformName string `json:"platform_name" gorm:"platform_name"`
 }
 
 func NewDimProductCommonConfigurationModel() *DimProductCommonConfigurationModel {
