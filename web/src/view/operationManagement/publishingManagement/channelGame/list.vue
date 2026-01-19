@@ -8,36 +8,31 @@
       </div>
       <el-table :data="tableData" stripe row-key="id">
         <el-table-column align="left" label="ID" min-width="50" prop="id" />
-        <el-table-column
-            align="left"
-            label="平台"
-            min-width="100"
-            prop="platform_id"
-        />
-        <el-table-column
-            align="left"
-            label="子游戏"
-            min-width="100"
-            prop="game_id"
-        />
-        <el-table-column
-            align="left"
-            label="发行渠道"
-            min-width="150"
-            prop="channel_id"
-        />
-        <el-table-column
-            align="left"
-            label="渠道ID"
-            min-width="150"
-            prop="agent_id"
-        />
-        <el-table-column
-            align="left"
-            label="广告位ID"
-            min-width="150"
-            prop="site_id"
-        />
+        <el-table-column align="left" label="平台">
+          <template #default="scope">
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="子游戏">
+          <template #default="scope">
+            {{ scope.row.game_id }}-{{ scope.row.game_name }}
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="发行渠道" min-width="150">
+          <template #default="scope">
+            {{ scope.row.channel_id }}-{{ scope.row.channel_name }}
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="渠道ID">
+          <template #default="scope">
+            {{ scope.row.agent_id }}-{{ scope.row.agent_name }}
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="广告位ID" min-width="100">
+          <template #default="scope">
+            {{ scope.row.site_id }}-{{ scope.row.site_name }}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="创建时间"
