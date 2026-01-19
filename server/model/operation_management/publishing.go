@@ -8,6 +8,7 @@ import (
 
 type DimPublishingChannelConfigModel struct {
 	publishing.DimPublishingChannelConfigModel
+	PlatformName string `json:"platform_name" gorm:"platform_name"`
 }
 
 func NewDimPublishingChannelConfigModel() *DimPublishingChannelConfigModel {
@@ -20,6 +21,11 @@ func NewDimPublishingChannelConfigModel() *DimPublishingChannelConfigModel {
 
 type DimPublishingChannelGameConfigModel struct {
 	publishing.DimPublishingChannelGameConfigModel
+	PlatformName string `json:"platform_name" gorm:"platform_name"`
+	GameName     string `json:"game_name" gorm:"game_name"`
+	ChannelName  string `json:"channel_name" gorm:"channel_name"`
+	AgentName    string `json:"agent_name" gorm:"agent_name"`
+	SiteName     string `json:"site_name" gorm:"site_name"`
 }
 
 func NewDimPublishingChannelGameConfigModel() *DimPublishingChannelGameConfigModel {

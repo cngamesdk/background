@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
 	"gorm.io/gorm"
 )
@@ -34,4 +35,19 @@ func JoinCompany(tx *gorm.DB, alias string) {
 // 链接通用配置
 func JoinProductCommonConfig(tx *gorm.DB, alias string) {
 	tx.Joins(fmt.Sprintf("join %s as common_config on %s.product_config_id = common_config.id", (&operation_management.DimProductCommonConfigurationModel{}).TableName(), alias))
+}
+
+// 链接联运渠道
+func JoinCoPublishing(tx *gorm.DB, alias string) {
+	tx.Joins(fmt.Sprintf("join %s as channel on %s.channel_id = channel.id", (&operation_management.DimPublishingChannelConfigModel{}).TableName(), alias))
+}
+
+// 链接渠道
+func JoinAgent(tx *gorm.DB, alias string) {
+	tx.Joins(fmt.Sprintf("join %s as agent on %s.agent_id = agent.id", (&advertising.DimAgentModel{}).TableName(), alias))
+}
+
+// 链接广告位
+func JoinSite(tx *gorm.DB, alias string) {
+	tx.Joins(fmt.Sprintf("join %s as site on %s.site_id = site.id", (&advertising.DimSiteModel{}).TableName(), alias))
 }
