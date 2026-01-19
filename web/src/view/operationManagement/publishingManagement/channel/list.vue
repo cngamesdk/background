@@ -15,18 +15,15 @@
     </div>
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="openAddConfigDialog"
-        >新增渠道</el-button
-        >
+        <el-button type="primary" icon="plus" @click="openAddConfigDialog">新增渠道</el-button>
       </div>
       <el-table :data="tableData" stripe row-key="id">
         <el-table-column align="left" label="ID" min-width="50" prop="id" />
-        <el-table-column
-            align="left"
-            label="平台"
-            min-width="100"
-            prop="platform_id"
-        />
+        <el-table-column align="left" label="平台">
+          <template #default="scope">
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="渠道名称"
