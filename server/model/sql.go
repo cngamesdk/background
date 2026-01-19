@@ -26,6 +26,11 @@ func JoinRootGame(tx *gorm.DB, alias string) {
 	tx.Joins(fmt.Sprintf("join %s as root_game on %s.root_game_id = root_game.id", (&operation_management.DimRootGameModel{}).TableName(), alias))
 }
 
+// 链接主体
+func JoinCompany(tx *gorm.DB, alias string) {
+	tx.Joins(fmt.Sprintf("join %s as company on %s.company_id = company.id", (&operation_management.DimCompanyModel{}).TableName(), alias))
+}
+
 // 链接通用配置
 func JoinProductCommonConfig(tx *gorm.DB, alias string) {
 	tx.Joins(fmt.Sprintf("join %s as common_config on %s.product_config_id = common_config.id", (&operation_management.DimProductCommonConfigurationModel{}).TableName(), alias))
