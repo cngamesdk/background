@@ -71,15 +71,25 @@ func (p *PublishingService) ChannelConfigModify(ctx context.Context, req *api.Pu
 
 func (p *PublishingService) ChannelGameConfigList(ctx context.Context, req *api.PublishingChannelGameConfigListReq) (
 	resp interface{}, total int64, err error) {
+	alias := "config"
 	model := operation_management.NewDimPublishingChannelGameConfigModel()
-	tmpDb := model.Db().WithContext(ctx).Table(model.TableName())
+	tmpDb := model.Db().WithContext(ctx).Table(model.TableName() + " as " + alias)
 	if countErr := tmpDb.Count(&total).Error; countErr != nil {
 		err = countErr
 		global.GVA_LOG.Error("获取总数异常", zap.Error(countErr))
 		return
 	}
+	model2.JoinPlatform(tmpDb, alias)
+	model2.JoinGame(tmpDb, alias)
+	model2.JoinCoPublishing(tmpDb, alias)
+	model2.JoinAgent(tmpDb, alias)
+	model2.JoinSite(tmpDb, alias)
 	var list []operation_management.DimPublishingChannelGameConfigModel
-	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1) * req.PageSize).Find(&list).Error; listErr != nil {
+	if listErr := tmpDb.
+		Select(alias + ".*,platform_name,channel_name,agent_name,site_name,game_name").
+		Limit(req.PageSize).
+		Offset((req.Page - 1) * req.PageSize).
+		Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取异常", zap.Error(listErr))
 		return
