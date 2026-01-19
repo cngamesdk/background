@@ -14,10 +14,9 @@
         />
         <el-table-column
             align="left"
-            label="平台"
-            min-width="150">
+            label="平台">
           <template #default="scope">
-            {{ scope.row.platform_id }}({{ scope.row.platform_name }})
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
           </template>
         </el-table-column>
         <el-table-column
