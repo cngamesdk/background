@@ -4,24 +4,25 @@ import (
 	"context"
 	"github.com/duke-git/lancet/v2/validator"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	model2 "github.com/flipped-aurora/gin-vue-admin/server/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management/api"
 	"go.uber.org/zap"
 )
 
 type PublishingService struct {
-
 }
 
 func (p *PublishingService) ChannelConfigList(ctx context.Context, req *api.PublishingChannelConfigListReq) (
 	resp interface{}, total int64, err error) {
+	alias := "channel"
 	model := operation_management.NewDimPublishingChannelConfigModel()
-	tmpDb := model.Db().WithContext(ctx).Table(model.TableName())
+	tmpDb := model.Db().WithContext(ctx).Table(model.TableName() + " as " + alias)
 	if req.ChannelName != "" {
 		if validator.IsNumberStr(req.ChannelName) {
 			tmpDb.Where("id = ?", req.ChannelName)
 		} else {
-			tmpDb.Where("channel_name like ?", "%"+ req.ChannelName +"%")
+			tmpDb.Where("channel_name like ?", "%"+req.ChannelName+"%")
 		}
 	}
 	if countErr := tmpDb.Count(&total).Error; countErr != nil {
@@ -29,8 +30,13 @@ func (p *PublishingService) ChannelConfigList(ctx context.Context, req *api.Publ
 		global.GVA_LOG.Error("获取总数异常", zap.Error(countErr))
 		return
 	}
+	model2.JoinPlatform(tmpDb, alias)
 	var list []operation_management.DimPublishingChannelConfigModel
-	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page-1)*req.PageSize).Find(&list).Error; listErr != nil {
+	if listErr := tmpDb.
+		Select(alias + ".*,platform_name").
+		Limit(req.PageSize).
+		Offset((req.Page - 1) * req.PageSize).
+		Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取异常", zap.Error(listErr))
 		return
@@ -73,7 +79,7 @@ func (p *PublishingService) ChannelGameConfigList(ctx context.Context, req *api.
 		return
 	}
 	var list []operation_management.DimPublishingChannelGameConfigModel
-	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page-1)*req.PageSize).Find(&list).Error; listErr != nil {
+	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1) * req.PageSize).Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取异常", zap.Error(listErr))
 		return
