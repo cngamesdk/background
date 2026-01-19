@@ -19,11 +19,19 @@
       </div>
       <el-table :data="tableData" stripe row-key="id">
         <el-table-column align="left" label="ID" prop="id" />
-        <el-table-column align="left" label="平台" prop="platform_id"/>
-        <el-table-column align="left" label="主体" prop="company_id"/>
+        <el-table-column align="left" label="平台">
+          <template #default="scope">
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="主体">
+          <template #default="scope">
+            {{ scope.row.company_id }}-{{ scope.row.company_name }}
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="名称" prop="channel_name"/>
-        <el-table-column align="left" label="支付网关" prop="pay_type"/>
-        <el-table-column align="left" label="状态" prop="status"/>
+        <el-table-column align="left" label="支付网关" prop="pay_type_name"/>
+        <el-table-column align="left" label="状态" prop="status_name"/>
         <el-table-column align="left" label="费率">
           <template #default="scope">
             <span>{{ scope.row.rate }}%</span>
