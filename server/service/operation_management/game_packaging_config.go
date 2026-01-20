@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/cngamesdk/go-core/model/sql/common"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	model2 "github.com/flipped-aurora/gin-vue-admin/server/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management/api"
 	"go.uber.org/zap"
@@ -15,8 +16,9 @@ type GamePackagingConfigService struct {
 
 func (receiver *GamePackagingConfigService) List(ctx context.Context, req *api.GamePackagingConfigListReq) (
 	resp interface{}, total int64, err error) {
+	alias := "config"
 	model := operation_management.NewDimGamePackagingConfigModel()
-	tmpDb := model.Db().WithContext(ctx).Table(model.TableName())
+	tmpDb := model.Db().WithContext(ctx).Table(model.TableName() + " as " + alias)
 	if req.PlatformId > 0 {
 		tmpDb.Where("platform_id = ?", req.PlatformId)
 	}
@@ -31,8 +33,14 @@ func (receiver *GamePackagingConfigService) List(ctx context.Context, req *api.G
 		global.GVA_LOG.Error("获取总数异常", zap.Error(countErr))
 		return
 	}
+	model2.JoinPlatform(tmpDb, alias)
+	model2.JoinGame(tmpDb, alias)
 	var list []operation_management.DimGamePackagingConfigModel
-	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1) * req.PageSize).Find(&list).Error; listErr != nil {
+	if listErr := tmpDb.
+		Select(alias + ".*,platform_name,game_name").
+		Limit(req.PageSize).
+		Offset((req.Page - 1) * req.PageSize).
+		Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取列表异常", zap.Error(listErr))
 		return

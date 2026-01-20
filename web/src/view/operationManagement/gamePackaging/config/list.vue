@@ -38,8 +38,7 @@
     </div>
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="openAddConfigDialog"
-        >新增配置</el-button>
+        <el-button type="primary" icon="plus" @click="openAddConfigDialog">新增配置</el-button>
       </div>
       <el-table :data="tableData" stripe row-key="id">
         <el-table-column
@@ -50,50 +49,67 @@
         />
         <el-table-column
             align="left"
-            label="平台"
-            min-width="150">
+            label="平台">
           <template #default="scope">
-            {{ scope.row.platform_id }}({{ scope.row.platform_name }})
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
           </template>
         </el-table-column>
         <el-table-column
             align="left"
             label="游戏"
-            min-width="150">
+            min-width="100">
           <template #default="scope">
-            {{ scope.row.game_id }}({{ scope.row.game_name }})
+            {{ scope.row.game_id }}-{{ scope.row.game_name }}
           </template>
         </el-table-column>
         <el-table-column
             align="left"
             label="媒体">
           <template #default="scope">
-            {{ scope.row.common_media }}({{ scope.row.common_media_name }})
+            {{ scope.row.common_media_name }}
           </template>
         </el-table-column>
         <el-table-column
             align="left"
-            label="母包地址"
-            min-width="150"
-            prop="game_package_path"
-        />
+            label="母包地址">
+          <template #default="scope">
+            <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="scope.row.game_package_path"
+                placement="top"
+            >
+              <el-link type="primary">查看</el-link>
+            </el-tooltip>
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="母包哈希摘要"
             min-width="150"
-            prop="game_package_hash"
-        />
+        >
+          <template #default="scope">
+            <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="scope.row.game_package_hash"
+                placement="top"
+            >
+              <el-link type="primary">查看</el-link>
+            </el-tooltip>
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="状态"
-            min-width="150"
-            prop="status"
+            min-width="100"
+            prop="status_name"
         />
         <el-table-column
             align="left"
             label="使用状态"
-            min-width="150"
-            prop="use_status"
+            min-width="100"
+            prop="use_status_name"
         />
         <el-table-column
             align="left"
