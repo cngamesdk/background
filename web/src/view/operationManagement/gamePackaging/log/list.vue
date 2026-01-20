@@ -67,7 +67,7 @@
             label="平台"
             min-width="100">
           <template #default="scope">
-            {{ scope.row.platform_id }}({{ scope.row.platform_name }})
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
           </template>
         </el-table-column>
         <el-table-column
@@ -75,47 +75,77 @@
             label="游戏"
             min-width="100">
           <template #default="scope">
-            {{ scope.row.game_id }}({{ scope.row.game_name }})
+            {{ scope.row.game_id }}-{{ scope.row.game_name }}
           </template>
         </el-table-column>
         <el-table-column
             align="left"
+            min-width="150"
             label="渠道ID">
           <template #default="scope">
-            {{ scope.row.agent_id }}({{ scope.row.agent_name }})
+            {{ scope.row.agent_id }}-{{ scope.row.agent_name }}
           </template>
         </el-table-column>
         <el-table-column
             align="left"
-            label="广告位ID">
+            label="广告位ID"
+            min-width="150"
+        >
           <template #default="scope">
-            {{ scope.row.site_id }}({{ scope.row.site_name }})
+            {{ scope.row.site_id }}-{{ scope.row.site_name }}
           </template>
         </el-table-column>
         <el-table-column
             align="left"
             label="状态"
-            min-width="150"
-            prop="status"
+            min-width="100"
+            prop="status_name"
         />
         <el-table-column
             align="left"
             label="安装包地址"
-            min-width="150"
-            prop="game_package_path"
-        />
+            min-width="100">
+          <template #default="scope">
+            <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="scope.row.game_package_path"
+                placement="top"
+            >
+              <el-link type="primary">查看</el-link>
+            </el-tooltip>
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="执行命令"
-            min-width="150"
-            prop="exec_cmd"
-        />
+            min-width="100">
+          <template #default="scope">
+            <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="scope.row.exec_cmd"
+                placement="top"
+            >
+              <el-link type="primary">查看</el-link>
+            </el-tooltip>
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="执行结果"
-            min-width="150"
-            prop="exec_cmd_result"
-        />
+            min-width="100">
+          <template #default="scope">
+            <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="scope.row.exec_cmd_result"
+                placement="top"
+            >
+              <el-link type="primary">查看</el-link>
+            </el-tooltip>
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="创建时间"

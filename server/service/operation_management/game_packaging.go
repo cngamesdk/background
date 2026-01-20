@@ -3,6 +3,7 @@ package operation_management
 import (
 	"context"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	model2 "github.com/flipped-aurora/gin-vue-admin/server/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management/api"
 	"go.uber.org/zap"
@@ -13,8 +14,9 @@ type GamePackagingService struct {
 
 func (g *GamePackagingService) LogList(ctx context.Context, req *api.GamePackagingLogListReq) (
 	resp interface{}, total int64, err error) {
+	alias := "log"
 	model := operation_management.NewOdsGamePackagingLogModel()
-	tmpDb := model.Db().WithContext(ctx).Table(model.TableName())
+	tmpDb := model.Db().WithContext(ctx).Table(model.TableName() + " as " + alias)
 	if req.PlatformId > 0 {
 		tmpDb.Where("platform_id = ?", req.PlatformId)
 	}
@@ -32,8 +34,16 @@ func (g *GamePackagingService) LogList(ctx context.Context, req *api.GamePackagi
 		global.GVA_LOG.Error("获取总数异常", zap.Error(countErr))
 		return
 	}
+	model2.JoinPlatform(tmpDb, alias)
+	model2.JoinGame(tmpDb, alias)
+	model2.JoinAgent(tmpDb, alias)
+	model2.JoinSite(tmpDb, alias)
 	var list []operation_management.OdsGamePackagingLogModel
-	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1) * req.PageSize).Order("id DESC").Find(&list).Error; listErr != nil {
+	if listErr := tmpDb.
+		Select(alias + ".*,platform_name,game_name,agent_name,site_name").
+		Limit(req.PageSize).Offset((req.Page - 1) * req.PageSize).
+		Order("id DESC").
+		Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取列表异常", zap.Error(listErr))
 		return
