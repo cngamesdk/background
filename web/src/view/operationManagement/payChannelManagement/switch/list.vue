@@ -44,20 +44,41 @@
       </div>
       <el-table :data="tableData" stripe row-key="id">
         <el-table-column align="left" label="ID" prop="id" />
-        <el-table-column align="left" label="平台" prop="platform_id"/>
-        <el-table-column align="left" label="支付网关" prop="pay_type"/>
+        <el-table-column
+            align="left"
+            label="平台"
+            min-width="100">
+          <template #default="scope">
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="支付网关" prop="pay_type_name"/>
         <el-table-column align="left" label="规则">
           <template #default="scope">
-            {{ JSON.stringify(scope.row.rules) }}
+            <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="JSON.stringify(scope.row.rules)"
+                placement="top"
+            >
+              <el-link type="primary">查看</el-link>
+            </el-tooltip>
           </template>
         </el-table-column>
         <el-table-column align="left" label="支付渠道">
           <template #default="scope">
-            {{ JSON.stringify(scope.row.pay_channels) }}
+            <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="JSON.stringify(scope.row.pay_channels)"
+                placement="top"
+            >
+              <el-link type="primary">查看</el-link>
+            </el-tooltip>
           </template>
         </el-table-column>
         <el-table-column align="left" label="排序" prop="sort"/>
-        <el-table-column align="left" label="状态" prop="status"/>
+        <el-table-column align="left" label="状态" prop="status_name"/>
         <el-table-column align="left" label="创建时间">
           <template #default="scope">
             {{ formatDate(scope.row.created_at) }}
