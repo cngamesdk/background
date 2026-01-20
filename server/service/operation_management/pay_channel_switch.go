@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/cngamesdk/go-core/model/sql"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	model2 "github.com/flipped-aurora/gin-vue-admin/server/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management/api"
 	"go.uber.org/zap"
@@ -15,8 +16,9 @@ type PayChannelSwitchService struct {
 
 func (p *PayChannelSwitchService) List(ctx context.Context, req *api.PayChannelSwitchListReq) (
 	resp interface{}, total int64, err error) {
+	alias := "pay"
 	model := operation_management.NewDimPayChannelSwitchModel()
-	tmpDb := model.Db().WithContext(ctx).Table(model.TableName())
+	tmpDb := model.Db().WithContext(ctx).Table(model.TableName() + " as " + alias)
 	tmpDb.Where("status <> ?", sql.StatusDelete)
 	if req.PayType != "" {
 		tmpDb.Where("pay_type = ?", req.PayType)
@@ -29,8 +31,12 @@ func (p *PayChannelSwitchService) List(ctx context.Context, req *api.PayChannelS
 		global.GVA_LOG.Error("获取总数异常", zap.Error(countErr))
 		return
 	}
+	model2.JoinPlatform(tmpDb, alias)
 	var list []operation_management.DimPayChannelSwitchModel
-	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1) * req.PageSize).Find(&list).Error; listErr != nil {
+	if listErr := tmpDb.Select(alias + ".*,platform_name").
+		Limit(req.PageSize).
+		Offset((req.Page - 1) * req.PageSize).
+		Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取异常", zap.Error(listErr))
 		return

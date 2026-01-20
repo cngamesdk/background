@@ -52,8 +52,7 @@
     </div>
     <div class="gva-table-box">
       <div class="gva-btn-list">
-        <el-button type="primary" icon="plus" @click="openAddConfigDialog"
-        >新增打包</el-button>
+        <el-button type="primary" icon="plus" @click="openAddConfigDialog">新增打包</el-button>
       </div>
       <el-table :data="tableData" stripe row-key="id">
         <el-table-column
