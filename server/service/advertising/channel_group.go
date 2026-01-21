@@ -3,28 +3,35 @@ package advertising
 import (
 	"context"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	model2 "github.com/flipped-aurora/gin-vue-admin/server/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
 	api2 "github.com/flipped-aurora/gin-vue-admin/server/model/advertising/api"
 	"go.uber.org/zap"
 )
 
 type ChannelGroupService struct {
-
 }
 
 func (receiver *ChannelGroupService) List(ctx context.Context, req *api2.ChannelGroupListReq) (resp interface{}, total int64, err error) {
+	alias := "c_g"
 	model := advertising.NewDimChannelGroupModel()
-	tmpDb := model.Db().WithContext(ctx).Table(model.TableName())
+	tmpDb := model.Db().WithContext(ctx).Table(model.TableName() + " as " + alias)
 	if req.ChannelGroupName != "" {
-		tmpDb.Where("id = ? or channel_group_name like ?", req.ChannelGroupName, "%"+ req.ChannelGroupName +"%")
+		tmpDb.Where("id = ? or channel_group_name like ?", req.ChannelGroupName, "%"+req.ChannelGroupName+"%")
 	}
 	if countErr := tmpDb.Count(&total).Error; countErr != nil {
 		err = countErr
 		global.GVA_LOG.Error("获取总数异常", zap.Error(countErr))
 		return
 	}
+	model2.JoinPlatform(tmpDb, alias)
+	model2.JoinMedia(tmpDb, alias)
 	var list []advertising.DimChannelGroupModel
-	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1)*req.PageSize).Find(&list).Error; listErr != nil {
+	if listErr := tmpDb.
+		Select(alias + ".*,platform_name,advertising_media_name as media_name").
+		Limit(req.PageSize).
+		Offset((req.Page - 1) * req.PageSize).
+		Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取异常", zap.Error(listErr))
 		return

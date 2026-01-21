@@ -24,15 +24,19 @@
         <el-table-column
             align="left"
             label="平台"
-            min-width="100"
-            prop="platform_id"
-        />
+            min-width="100">
+          <template #default="scope">
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="媒体"
-            min-width="100"
-            prop="advertising_media_id"
-        />
+            min-width="100">
+          <template #default="scope">
+            {{ scope.row.advertising_media_id }}-{{ scope.row.media_name }}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="渠道组名称"

@@ -8,6 +8,8 @@ import (
 
 type DimChannelGroupModel struct {
 	advertising.DimChannelGroupModel
+	PlatformName string `json:"platform_name" gorm:"platform_name"`
+	MediaName    string `json:"media_name" gorm:"media_name"`
 }
 
 func NewDimChannelGroupModel() *DimChannelGroupModel {
