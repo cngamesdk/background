@@ -22,15 +22,19 @@
         <el-table-column
             align="left"
             label="平台"
-            min-width="100"
-            prop="platform_id"
-        />
+            min-width="100">
+          <template #default="scope">
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="渠道"
-            min-width="100"
-            prop="agent_id"
-        />
+            min-width="100">
+          <template #default="scope">
+            {{ scope.row.agent_id }}-{{ scope.row.agent_name }}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="广告位名称"
