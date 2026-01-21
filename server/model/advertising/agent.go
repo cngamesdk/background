@@ -10,6 +10,9 @@ import (
 
 type DimAgentModel struct {
 	common.DimAgentModel
+	PlatformName       string `json:"platform_name" gorm:"platform_name"`
+	ChannelGroupName   string `json:"channel_group_name" gorm:"channel_group_name"`
+	SettlementTypeName string `json:"settlement_type_name" gorm:"settlement_type_name"`
 }
 
 func NewDimAgentModel() *DimAgentModel {
@@ -18,6 +21,15 @@ func NewDimAgentModel() *DimAgentModel {
 		return global.GVA_DB
 	}
 	return model
+}
+
+func (receiver *DimAgentModel) AfterFind(tx *gorm.DB) (err error) {
+	return receiver.findHook(tx)
+}
+
+func (receiver *DimAgentModel) findHook(tx *gorm.DB) (err error) {
+	receiver.SettlementTypeName = common.GetSettlementTypeName(receiver.SettlementType)
+	return
 }
 
 type DimAgentDetailInfoModel struct {

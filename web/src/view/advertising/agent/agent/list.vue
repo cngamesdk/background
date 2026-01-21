@@ -24,15 +24,19 @@
         <el-table-column
             align="left"
             label="平台"
-            min-width="100"
-            prop="platform_id"
-        />
+            min-width="100">
+          <template #default="scope">
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="渠道组"
-            min-width="100"
-            prop="channel_group_id"
-        />
+            min-width="100">
+          <template #default="scope">
+            {{ scope.row.channel_group_id }}-{{ scope.row.channel_group_name }}
+          </template>
+        </el-table-column>
         <el-table-column
             align="left"
             label="渠道名称"
@@ -42,8 +46,8 @@
         <el-table-column
             align="left"
             label="结算类型"
-            min-width="150"
-            prop="settlement_type"
+            min-width="100"
+            prop="settlement_type_name"
         />
         <el-table-column
             align="left"
