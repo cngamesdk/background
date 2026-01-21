@@ -51,3 +51,8 @@ func JoinAgent(tx *gorm.DB, alias string) {
 func JoinSite(tx *gorm.DB, alias string) {
 	tx.Joins(fmt.Sprintf("join %s as site on %s.site_id = site.id", (&advertising.DimSiteModel{}).TableName(), alias))
 }
+
+// 链接媒体
+func JoinMedia(tx *gorm.DB, alias string) {
+	tx.Joins(fmt.Sprintf("join %s as ad on %s.advertising_media_id = ad.id", (&advertising.DimAdvertisingMediaModel{}).TableName(), alias))
+}
