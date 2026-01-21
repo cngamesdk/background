@@ -3,6 +3,7 @@ package advertising
 import (
 	"context"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	model2 "github.com/flipped-aurora/gin-vue-admin/server/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
 	api2 "github.com/flipped-aurora/gin-vue-admin/server/model/advertising/api"
 	"go.uber.org/zap"
@@ -12,18 +13,25 @@ type SiteService struct {
 }
 
 func (receiver *SiteService) List(ctx context.Context, req *api2.SiteListReq) (resp interface{}, total int64, err error) {
+	alias := "site"
 	model := advertising.NewDimSiteModel()
-	tmpDb := model.Db().WithContext(ctx).Table(model.TableName())
+	tmpDb := model.Db().WithContext(ctx).Table(model.TableName() + " as " + alias)
 	if req.SiteName != "" {
-		tmpDb.Where("id = ? or site_name like ?", req.SiteName, "%"+ req.SiteName +"%")
+		tmpDb.Where("id = ? or site_name like ?", req.SiteName, "%"+req.SiteName+"%")
 	}
 	if countErr := tmpDb.Count(&total).Error; countErr != nil {
 		err = countErr
 		global.GVA_LOG.Error("获取总数异常", zap.Error(countErr))
 		return
 	}
+	model2.JoinPlatform(tmpDb, alias)
+	model2.JoinAgent(tmpDb, alias)
 	var list []advertising.DimSiteModel
-	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1)*req.PageSize).Find(&list).Error; listErr != nil {
+	if listErr := tmpDb.
+		Select(alias + ".*,platform_name,agent_name").
+		Limit(req.PageSize).
+		Offset((req.Page - 1) * req.PageSize).
+		Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取异常", zap.Error(listErr))
 		return

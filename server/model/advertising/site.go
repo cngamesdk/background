@@ -8,6 +8,8 @@ import (
 
 type DimSiteModel struct {
 	common.DimSiteModel
+	PlatformName string `json:"platform_name" gorm:"platform_name"`
+	AgentName    string `json:"agent_name" gorm:"agent_name"`
 }
 
 func NewDimSiteModel() *DimSiteModel {
