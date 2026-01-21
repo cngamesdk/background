@@ -43,42 +43,42 @@
             v-if="firstRowData.hasOwnProperty('platform_id')"
             align="left" label="平台">
           <template #default="scope">
-            {{ scope.row.platform_name }}({{ scope.row.platform_id }})
+            {{ scope.row.platform_id }}-{{ scope.row.platform_name }}
           </template>
         </el-table-column>
         <el-table-column
             v-if="firstRowData.hasOwnProperty('root_game_id')"
             align="left" label="根游戏">
           <template #default="scope">
-            {{ scope.row.root_game_name }}({{ scope.row.root_game_id }})
+            {{ scope.row.root_game_id }}-{{ scope.row.root_game_name }}
           </template>
         </el-table-column>
         <el-table-column
             v-if="firstRowData.hasOwnProperty('main_game_id')"
             align="left" label="主游戏">
           <template #default="scope">
-            {{ scope.row.main_game_name }}({{ scope.row.main_game_id }})
+            {{ scope.row.main_game_id }}-{{ scope.row.main_game_name }}
           </template>
         </el-table-column>
         <el-table-column
             v-if="firstRowData.hasOwnProperty('game_id')"
             align="left" label="子游戏">
           <template #default="scope">
-            {{ scope.row.game_name }}({{ scope.row.game_id }})
+            {{ scope.row.game_id }}-{{ scope.row.game_name }}
           </template>
         </el-table-column>
         <el-table-column
             v-if="firstRowData.hasOwnProperty('agent_id')"
             align="left" label="渠道ID">
           <template #default="scope">
-            {{ scope.row.agent_name }}({{ scope.row.agent_id }})
+            {{ scope.row.agent_id }}-{{ scope.row.agent_name }}
           </template>
         </el-table-column>
         <el-table-column
             v-if="firstRowData.hasOwnProperty('site_id')"
             align="left" label="广告位ID">
           <template #default="scope">
-            {{ scope.row.site_name }}({{ scope.row.site_id }})
+            {{ scope.row.site_id }}-{{ scope.row.site_name }}
           </template>
         </el-table-column>
         <el-table-column
