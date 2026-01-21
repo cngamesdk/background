@@ -56,3 +56,8 @@ func JoinSite(tx *gorm.DB, alias string) {
 func JoinMedia(tx *gorm.DB, alias string) {
 	tx.Joins(fmt.Sprintf("join %s as ad on %s.advertising_media_id = ad.id", (&advertising.DimAdvertisingMediaModel{}).TableName(), alias))
 }
+
+// 链接渠道组
+func JoinChannelGroup(tx *gorm.DB, alias string) {
+	tx.Joins(fmt.Sprintf("join %s as channel_group on %s.channel_group_id = channel_group.id", (&advertising.DimChannelGroupModel{}).TableName(), alias))
+}
