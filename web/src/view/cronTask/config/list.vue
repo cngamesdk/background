@@ -35,13 +35,13 @@
             align="left"
             label="状态"
             min-width="100"
-            prop="status"
+            prop="status_name"
         />
         <el-table-column
             align="left"
             label="执行模式"
             min-width="100"
-            prop="execution_mode"
+            prop="execution_mode_name"
         />
         <el-table-column
             align="left"
@@ -120,7 +120,7 @@
           </el-table-column>
           <el-table-column
               align="left"
-              label="耗时"
+              label="耗时(秒)"
               min-width="100"
               prop="latency"
           />
@@ -128,7 +128,7 @@
               align="left"
               label="结果"
               min-width="150"
-              prop="status"
+              prop="status_name"
           />
           <el-table-column
               align="left"
