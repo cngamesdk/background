@@ -78,6 +78,8 @@ func RegisterTables() {
 		log.DwdRootGameRegLogModel{},
 		log.DwdRootGameBackRegLogModel{},
 		log.DwdDayGameRegUidLoginLogModel{},
+		log.DwdDayRootGameRegUidLoginLogModel{},
+		log.DwdDayRootGameReg30BackUidLoginLogModel{},
 		log.OdsGamePackagingLogModel{},
 
 		report.DwsDayRootGameBackLoginActiveLogModel{},
