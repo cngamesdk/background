@@ -45,7 +45,7 @@ func (i *initCronTaskConfigMysql) InitializeData(ctx context.Context) (context.C
 		return ctx, system.ErrMissingDBContext
 	}
 	entities := []cron_task2.DimCronTaskConfigModel{
-		{Name: "天用户登录日志表（按子）", Spec: "* */5 * * * *", Remark: "从登录日志清洗用户每天唯一记录", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `INSERT IGNORE INTO dwd_day_game_reg_uid_login_log (
+		{Name: "天用户登录日志表（按子）", Spec: "* */5 * * * *", Remark: "从登录日志清洗用户每天唯一记录", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `REPLACE INTO dwd_day_game_reg_uid_login_log (
 	platform_id,
 	game_id,
 	user_id,
@@ -74,44 +74,71 @@ func (i *initCronTaskConfigMysql) InitializeData(ctx context.Context) (context.C
 	user_agent,
 	unique_device 
 ) SELECT
-login.platform_id,
-login.game_id,
-login.user_id,
-DATE ( login.login_time ) AS lgin_date,
-login.login_time AS first_login_time,
-login.login_time AS last_login_timelast_login_time,
-1 AS login_count,
-reg.reg_time AS reg_time,
-login.agent_id,
-login.site_id,
-login.media_site_id,
-login.idfv,
-login.imei,
-login.oaid,
-login.andriod_id,
-login.system_version,
-login.app_version_code,
-login.sdk_version_code,
-login.network,
-login.client_ip,
-login.ipv4,
-login.ipv6,
-login.channel_id,
-login.model,
-login.brand,
-login.user_agent,
-login.unique_device 
+IFNULL( before_login.platform_id, login.platform_id ) AS platform_id,
+IFNULL( before_login.game_id, login.game_id ) AS game_id,
+IFNULL( before_login.user_id, login.user_id ) AS user_id,
+IFNULL( before_login.login_date, login.login_date ) AS lgin_date,
+IFNULL( before_login.first_login_time, login.first_login_time ) AS first_login_time,
+IFNULL( before_login.last_login_time, login.last_login_time ) AS last_login_time,
+IFNULL( before_login.login_count, 0 ) + login.login_count AS login_count,
+IFNULL(
+	before_login.reg_time,
+IFNULL( reg.reg_time, login.first_login_time )) AS reg_time,
+IFNULL( before_login.agent_id, login.agent_id ) AS agent_id,
+IFNULL( before_login.site_id, login.site_id ) AS site_id,
+IFNULL( before_login.media_site_id, login.media_site_id ) AS media_site_id,
+IFNULL( before_login.idfv, login.idfv ) AS idfv,
+IFNULL( before_login.imei, login.imei ) AS imei,
+IFNULL( before_login.oaid, login.oaid ) AS oaid,
+IFNULL( before_login.andriod_id, login.andriod_id ) AS andriod_id,
+IFNULL( before_login.system_version, login.system_version ) AS system_version,
+IFNULL( before_login.app_version_code, login.app_version_code ) AS app_version_code,
+IFNULL( before_login.sdk_version_code, login.sdk_version_code ) AS sdk_version_code,
+IFNULL( before_login.network, login.network ) AS network,
+IFNULL( before_login.client_ip, login.client_ip ) AS client_ip,
+IFNULL( before_login.ipv4, login.ipv4 ) AS ipv4,
+IFNULL( before_login.ipv6, login.ipv6 ) AS ipv6,
+IFNULL( before_login.channel_id, login.channel_id ) AS channel_id,
+IFNULL( before_login.model, login.model ) AS model,
+IFNULL( before_login.brand, login.brand ) AS brand,
+IFNULL( before_login.user_agent, login.user_agent ) AS user_agent,
+IFNULL( before_login.unique_device, login.unique_device ) AS unique_device 
 FROM
 	(
 	SELECT
-		login.* 
+		login.*,
+		temp.first_login_time,
+		temp.last_login_time,
+		temp.login_count,
+		temp.login_date 
 	FROM
 		ods_login_logs AS login
-		JOIN ( SELECT MIN( id ) AS min_id FROM ods_login_logs WHERE created_at BETWEEN '{{StartDateTime}}' AND '{{EndDateTime}}' GROUP BY platform_id, game_id, user_id ) AS temp ON temp.min_id = login.id 
+		JOIN (
+		SELECT
+			MIN( id ) AS min_id,
+			DATE_FORMAT( login_time, '%Y-%m-%d' ) AS login_date,
+			MIN( login_time ) AS first_login_time,
+			MAX( login_time ) AS last_login_time,
+			COUNT( 1 ) AS login_count 
+		FROM
+			ods_login_logs 
+		WHERE
+			created_at BETWEEN '{{StartDateTime}}' 
+			AND '{{EndDateTime}}' 
+		GROUP BY
+			platform_id,
+			game_id,
+			user_id,
+			DATE_FORMAT( login_time, '%Y-%m-%d' ) 
+		) AS temp ON temp.min_id = login.id 
 	) AS login
 	LEFT JOIN dwd_game_reg_log AS reg ON login.platform_id = reg.platform_id 
 	AND login.game_id = reg.game_id 
-	AND login.user_id = reg.user_id;`},
+	AND login.user_id = reg.user_id
+	LEFT JOIN dwd_day_game_reg_uid_login_log AS before_login ON login.platform_id = before_login.platform_id 
+	AND login.game_id = before_login.game_id 
+	AND login.user_id = before_login.user_id 
+	AND login.login_date = before_login.login_date;`},
 		{Name: "天用户登录日志表（按根）", Spec: "* */5 * * * *", Remark: "从用户天登录日志表(按子)中清洗到按根用户天登录日志表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `REPLACE INTO dwd_day_root_game_reg_uid_login_log (
 	platform_id,
 	root_game_id,
