@@ -249,6 +249,76 @@ FROM
 WHERE
 	login.updated_at BETWEEN '{{StartDateTime}}' 
 	AND '{{EndDateTime}}';`},
+		{Name: "天用户登录日志表（30天回流）", Spec: "* */5 * * * *", Remark: "从用户天登录日志表(按根)中清洗到按30天用户天登录日志表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `REPLACE INTO dwd_day_root_game_reg_30_back_uid_login_log (
+	platform_id,
+	root_game_id,
+	user_id,
+	login_date,
+	game_id,
+	agent_id,
+	site_id,
+	media_site_id,
+	idfv,
+	imei,
+	oaid,
+	andriod_id,
+	system_version,
+	app_version_code,
+	sdk_version_code,
+	network,
+	client_ip,
+	ipv4,
+	ipv6,
+	channel_id,
+	model,
+	brand,
+	user_agent,
+	unique_device,
+	first_login_time,
+	last_login_time,
+	login_count,
+	reg_time
+) SELECT
+IFNULL( before_login.platform_id, login.platform_id ) AS platform_id,
+IFNULL( before_login.root_game_id, login.root_game_id ) AS root_game_id,
+IFNULL( before_login.user_id, login.user_id ) AS user_id,
+IFNULL( before_login.login_date, login.login_date ) AS lgin_date,
+IFNULL( before_login.game_id, login.game_id ) AS game_id,
+IFNULL( before_login.agent_id, login.agent_id ) AS agent_id,
+IFNULL( before_login.site_id, login.site_id ) AS site_id,
+IFNULL( before_login.media_site_id, login.media_site_id ) AS media_site_id,
+IFNULL( before_login.idfv, login.idfv ) AS idfv,
+IFNULL( before_login.imei, login.imei ) AS imei,
+IFNULL( before_login.oaid, login.oaid ) AS oaid,
+IFNULL( before_login.andriod_id, login.andriod_id ) AS andriod_id,
+IFNULL( before_login.system_version, login.system_version ) AS system_version,
+IFNULL( before_login.app_version_code, login.app_version_code ) AS app_version_code,
+IFNULL( before_login.sdk_version_code, login.sdk_version_code ) AS sdk_version_code,
+IFNULL( before_login.network, login.network ) AS network,
+IFNULL( before_login.client_ip, login.client_ip ) AS client_ip,
+IFNULL( before_login.ipv4, login.ipv4 ) AS ipv4,
+IFNULL( before_login.ipv6, login.ipv6 ) AS ipv6,
+IFNULL( before_login.channel_id, login.channel_id ) AS channel_id,
+IFNULL( before_login.model, login.model ) AS model,
+IFNULL( before_login.brand, login.brand ) AS brand,
+IFNULL( before_login.user_agent, login.user_agent ) AS user_agent,
+IFNULL( before_login.unique_device, login.unique_device ) AS unique_device,
+IFNULL( before_login.first_login_time, login.first_login_time ) AS first_login_time,
+login.last_login_time AS last_login_time,
+IFNULL( before_login.login_count, login.login_count) AS login_count,
+IFNULL( reg.reg_time, login.first_login_time ) AS reg_time
+FROM
+	dwd_day_root_game_reg_uid_login_log AS login
+	LEFT JOIN dwd_root_game_back_reg_log AS reg ON login.platform_id = reg.platform_id 
+	AND login.root_game_id = reg.root_game_id 
+	AND login.user_id = reg.user_id AND login.first_login_time BETWEEN reg.reg_time AND reg.last_time
+	LEFT JOIN dwd_day_root_game_reg_30_back_uid_login_log AS before_login ON login.platform_id = before_login.platform_id 
+	AND login.root_game_id = before_login.root_game_id 
+	AND login.user_id = before_login.user_id 
+	AND login.login_date = before_login.login_date 
+WHERE
+	login.updated_at BETWEEN '{{StartDateTime}}' 
+	AND '{{EndDateTime}}';`},
 		{Name: "子注册清洗", Spec: "* */5 * * * *", Remark: "从天登录日志清洗到子注册表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `INSERT INTO dwd_game_reg_log (
 	platform_id,
 	game_id,
