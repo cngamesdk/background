@@ -319,7 +319,7 @@ FROM
 WHERE
 	login.updated_at BETWEEN '{{StartDateTime}}' 
 	AND '{{EndDateTime}}';`},
-		{Name: "子注册清洗", Spec: "* */5 * * * *", Remark: "从天登录日志清洗到子注册表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `INSERT INTO dwd_game_reg_log (
+		{Name: "子注册清洗", Spec: "* */5 * * * *", Remark: "从天登录日志清洗到子注册表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `REPLACE INTO dwd_game_reg_log (
 	platform_id,
 	game_id,
 	user_id,
@@ -341,43 +341,54 @@ WHERE
 	channel_id,
 	model,
 	brand,
-	user_agent 
+	user_agent,
+	ad3_id,
+	unique_device,
+	last_login_time,
+	total_login_count,
+	total_pay_count,
+	total_pay_money 
 ) SELECT
-login.platform_id,
-login.game_id,
-login.user_id,
-login.login_time,
-login.agent_id,
-login.site_id,
-login.media_site_id,
-login.idfv,
-login.imei,
-login.oaid,
-login.andriod_id,
-login.system_version,
-login.app_version_code,
-login.sdk_version_code,
-login.network,
-login.client_ip,
-login.ipv4,
-login.ipv6,
-login.channel_id,
-login.model,
-login.brand,
-login.user_agent 
+IFNULL( reg.platform_id, login.platform_id ) AS platform_id,
+IFNULL( reg.game_id, login.game_id ) AS game_id,
+IFNULL( reg.user_id, login.user_id ) AS user_id,
+IFNULL( reg.reg_time, login.reg_time ) AS reg_time,
+IFNULL( reg.agent_id, login.agent_id ) AS reg_time,
+IFNULL( reg.site_id, login.site_id ) AS site_id,
+IFNULL( reg.media_site_id, login.media_site_id ) AS media_site_id,
+IFNULL( reg.idfv, login.idfv ) AS idfv,
+IFNULL( reg.imei, login.imei ) AS imei,
+IFNULL( reg.oaid, login.oaid ) AS oaid,
+IFNULL( reg.andriod_id, login.andriod_id ) AS andriod_id,
+IFNULL( reg.system_version, login.system_version ) AS system_version,
+IFNULL( reg.app_version_code, login.app_version_code ) AS app_version_code,
+IFNULL( reg.sdk_version_code, login.sdk_version_code ) AS sdk_version_code,
+IFNULL( reg.network, login.network ) AS network,
+IFNULL( reg.client_ip, login.client_ip ) AS client_ip,
+IFNULL( reg.ipv4, login.ipv4 ) AS ipv4,
+IFNULL( reg.ipv6, login.ipv6 ) AS ipv6,
+IFNULL( reg.channel_id, login.channel_id ) AS channel_id,
+IFNULL( reg.model, login.model ) AS model,
+IFNULL( reg.brand, login.brand ) AS brand,
+IFNULL( reg.user_agent, login.user_agent ) AS user_agent,
+IFNULL( reg.ad3_id, 0 ) AS ad3_id,
+IFNULL( reg.unique_device, login.unique_device ) AS unique_device,
+login.last_login_time,
+IFNULL( reg.total_login_count, 0 ) + login.login_count AS total_login_count,
+IFNULL( reg.total_pay_count, 0 ) AS total_pay_count,
+IFNULL( reg.total_pay_money, 0 ) AS total_pay_money 
 FROM
-	(
-	SELECT
-		login.* 
-	FROM
-		ods_login_logs AS login
-		JOIN ( SELECT platform_id, game_id, user_id, min( id ) AS min_id FROM ods_login_logs WHERE updated_at BETWEEN '{{StartDateTime}}' AND '{{EndDateTime}}' GROUP BY platform_id, game_id, user_id ) AS user_min_log ON login.id = user_min_log.min_id 
-	) AS login
+	dwd_day_game_reg_uid_login_log AS login
 	LEFT JOIN dwd_game_reg_log AS reg ON login.platform_id = reg.platform_id 
 	AND login.game_id = reg.game_id 
 	AND login.user_id = reg.user_id 
 WHERE
-	reg.platform_id IS NULL;`},
+	login.updated_at BETWEEN '{{StartDateTime}}' 
+	AND '{{EndDateTime}}' 
+GROUP BY
+	login.platform_id,
+	login.game_id,
+	login.user_id;`},
 		{Name: "根注册清洗", Spec: "* */5 * * * *", Remark: "从子注册清洗到根注册表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `INSERT INTO dwd_root_game_reg_log (
 	platform_id,
 	root_game_id,
