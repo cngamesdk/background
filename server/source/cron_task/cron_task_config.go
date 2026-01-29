@@ -467,7 +467,7 @@ FROM
 	LEFT JOIN dwd_root_game_reg_log AS reg ON game_reg.platform_id = reg.platform_id 
 	AND game_reg.root_game_id = reg.root_game_id 
 	AND game_reg.user_id = reg.user_id;`},
-		{Name: "根注册写入30天回流表", Spec: "* */5 * * * *", Remark: "从根注册清洗到30天回流表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `INSERT INTO dwd_root_game_back_reg_log (
+		{Name: "根注册写入30天回流注册表", Spec: "* */5 * * * *", Remark: "从根注册清洗到30天回流表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `INSERT INTO dwd_root_game_back_reg_log (
 	platform_id,
 	root_game_id,
 	user_id,
@@ -491,7 +491,9 @@ FROM
 	channel_id,
 	model,
 	brand,
-	user_agent 
+	user_agent,
+	ad3_id,
+	unique_device
 )
 SELECT
 	root_reg.platform_id,
@@ -517,14 +519,16 @@ SELECT
 	root_reg.channel_id,
 	root_reg.model,
 	root_reg.brand,
-	root_reg.user_agent 
+	root_reg.user_agent,
+	root_reg.ad3_id,
+	root_reg.unique_device
 FROM
 	dwd_root_game_reg_log AS root_reg
 	LEFT JOIN dwd_root_game_back_reg_log AS back_reg ON root_reg.platform_id = back_reg.platform_id 
 	AND root_reg.root_game_id = back_reg.root_game_id 
 	AND root_reg.user_id = back_reg.user_id
 WHERE
-	 root_reg.updated_at BETWEEN '{{StartDateTime}}' AND '{{EndDateTime}}' 
+	 root_reg.created_at BETWEEN '{{StartDateTime}}' AND '{{EndDateTime}}' 
 	AND back_reg.platform_id IS NULL;`},
 		{Name: "30天回流用户写入30天回流表", Spec: "* */5 * * * *", Remark: "登录日志中流失用户写入30天回流表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `INSERT INTO dwd_root_game_back_reg_log (
 	platform_id,
