@@ -176,6 +176,8 @@ github.com/cngamesdk/go-core v1.0.9-0.20260129043505-392a414ed25f h1:Q8jaqU3EdNL
 github.com/cngamesdk/go-core v1.0.9-0.20260129043505-392a414ed25f/go.mod h1:F0+ah460RFt+Pda6O5aXLcYQ0Ecz9Y10/DCDYDSXYso=
 github.com/cngamesdk/go-core v1.0.9-0.20260129074653-fb8484ee9d64 h1:L77RFmWB0t745vHGi+MNPbNyJtps9qT/wqo6Rr2f1CA=
 github.com/cngamesdk/go-core v1.0.9-0.20260129074653-fb8484ee9d64/go.mod h1:F0+ah460RFt+Pda6O5aXLcYQ0Ecz9Y10/DCDYDSXYso=
+github.com/cngamesdk/go-core v1.0.9-0.20260129082323-b18b75380343 h1:9G2zDwwCT8u1IVWP5HiIdKe4m6HFu5hOyDkDYhz2NhU=
+github.com/cngamesdk/go-core v1.0.9-0.20260129082323-b18b75380343/go.mod h1:F0+ah460RFt+Pda6O5aXLcYQ0Ecz9Y10/DCDYDSXYso=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/dave/jennifer v1.6.1/go.mod h1:nXbxhEmQfOZhWml3D1cDK5M1FLnMSozpbFN/m3RmGZc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
