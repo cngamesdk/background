@@ -467,7 +467,7 @@ FROM
 	LEFT JOIN dwd_root_game_reg_log AS reg ON game_reg.platform_id = reg.platform_id 
 	AND game_reg.root_game_id = reg.root_game_id 
 	AND game_reg.user_id = reg.user_id;`},
-		{Name: "根注册写入30天回流注册表", Spec: "* */5 * * * *", Remark: "从根注册清洗到30天回流表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `INSERT INTO dwd_root_game_back_reg_log (
+		{Name: "30天回流注册清洗", Spec: "* */5 * * * *", Remark: "从30天回流登录日志中清洗注册", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `REPLACE INTO dwd_root_game_back_reg_log (
 	platform_id,
 	root_game_id,
 	user_id,
@@ -479,7 +479,6 @@ FROM
 	media_site_id,
 	idfv,
 	imei,
-	oaid,
 	andriod_id,
 	system_version,
 	app_version_code,
@@ -493,199 +492,62 @@ FROM
 	brand,
 	user_agent,
 	ad3_id,
-	unique_device
-)
-SELECT
-	root_reg.platform_id,
-	root_reg.root_game_id,
-	root_reg.user_id,
-	root_reg.reg_time,
-	CONCAT(date(DATE_ADD(root_reg.reg_time, INTERVAL 30 DAY)), " 23:59:59") AS last_time,
-	root_reg.game_id,
-	root_reg.agent_id,
-	root_reg.site_id,
-	root_reg.media_site_id,
-	root_reg.idfv,
-	root_reg.imei,
-	root_reg.oaid,
-	root_reg.andriod_id,
-	root_reg.system_version,
-	root_reg.app_version_code,
-	root_reg.sdk_version_code,
-	root_reg.network,
-	root_reg.client_ip,
-	root_reg.ipv4,
-	root_reg.ipv6,
-	root_reg.channel_id,
-	root_reg.model,
-	root_reg.brand,
-	root_reg.user_agent,
-	root_reg.ad3_id,
-	root_reg.unique_device
-FROM
-	dwd_root_game_reg_log AS root_reg
-	LEFT JOIN dwd_root_game_back_reg_log AS back_reg ON root_reg.platform_id = back_reg.platform_id 
-	AND root_reg.root_game_id = back_reg.root_game_id 
-	AND root_reg.user_id = back_reg.user_id
-WHERE
-	 root_reg.created_at BETWEEN '{{StartDateTime}}' AND '{{EndDateTime}}' 
-	AND back_reg.platform_id IS NULL;`},
-		{Name: "30天回流用户写入30天回流表", Spec: "* */5 * * * *", Remark: "登录日志中流失用户写入30天回流表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `INSERT INTO dwd_root_game_back_reg_log (
-	platform_id,
-	root_game_id,
-	user_id,
-	reg_time,
-	last_time,
-	game_id,
-	agent_id,
-	site_id,
-	media_site_id,
-	idfv,
-	imei,
-	oaid,
-	andriod_id,
-	system_version,
-	app_version_code,
-	sdk_version_code,
-	network,
-	client_ip,
-	ipv4,
-	ipv6,
-	channel_id,
-	model,
-	brand,
-	user_agent 
+	unique_device,
+	first_day_pay_time,
+	first_day_pay_count,
+	first_day_pay_money,
+	first_pay_time,
+	first_pay_money,
+	total_pay_count,
+	total_pay_money,
+	last_login_time,
+	total_login_count 
 ) SELECT
-login.platform_id,
-login.root_game_id,
-login.user_id,
-login.login_time,
-CONCAT(date(DATE_ADD(login.login_time, INTERVAL 30 DAY)), " 23:59:59") AS last_time,
-login.game_id,
-login.agent_id,
-login.site_id,
-login.media_site_id,
-login.idfv,
-login.imei,
-login.oaid,
-login.andriod_id,
-login.system_version,
-login.app_version_code,
-login.sdk_version_code,
-login.network,
-login.client_ip,
-login.ipv4,
-login.ipv6,
-login.channel_id,
-login.model,
-login.brand,
-login.user_agent 
+IFNULL( reg.platform_id, login.platform_id ) AS platform_id,
+IFNULL( reg.root_game_id, login.root_game_id ) AS root_game_id,
+IFNULL( reg.user_id, login.user_id ) AS user_id,
+IFNULL( reg.reg_time, login.reg_time ) AS reg_time,
+CONCAT( DATE ( DATE_ADD( login.first_login_time, INTERVAL 30 DAY )), " 23:59:59" ) AS last_time,
+IFNULL( reg.game_id, login.game_id ) AS game_id,
+IFNULL( reg.agent_id, login.agent_id ) AS agent_id,
+IFNULL( reg.site_id, login.site_id ) AS site_id,
+IFNULL( reg.media_site_id, login.media_site_id ) AS media_site_id,
+IFNULL( reg.idfv, login.idfv ) AS idfv,
+IFNULL( reg.imei, login.imei ) AS imei,
+IFNULL( reg.andriod_id, login.andriod_id ) AS andriod_id,
+IFNULL( reg.system_version, login.system_version ) AS system_version,
+IFNULL( reg.app_version_code, login.app_version_code ) AS app_version_code,
+IFNULL( reg.sdk_version_code, login.sdk_version_code ) AS sdk_version_code,
+IFNULL( reg.network, login.network ) AS network,
+IFNULL( reg.client_ip, login.client_ip ) AS client_ip,
+IFNULL( reg.ipv4, login.ipv4 ) AS ipv4,
+IFNULL( reg.ipv6, login.ipv6 ) AS ipv6,
+IFNULL( reg.channel_id, login.channel_id ) AS channel_id,
+IFNULL( reg.model, login.model ) AS model,
+IFNULL( reg.brand, login.brand ) AS brand,
+IFNULL( reg.user_agent, login.user_agent ) AS user_agent,
+IFNULL( reg.ad3_id, 0 ) AS ad3_id,
+reg.first_day_pay_time,
+IFNULL( reg.first_day_pay_count, 0 ) AS first_day_pay_count,
+IFNULL( reg.first_day_pay_money, 0 ) AS first_day_pay_money,
+reg.first_pay_time AS first_pay_time,
+IFNULL( reg.first_pay_money, 0 ) AS first_pay_money,
+IFNULL( reg.total_pay_count, 0 ) AS total_pay_count,
+IFNULL( reg.total_pay_money, 0 ) AS total_pay_money,
+IFNULL( reg.unique_device, login.unique_device ) AS unique_device,
+login.last_login_time AS last_login_time,
+IFNULL( reg.total_login_count, 0 ) + login.login_count AS total_login_count -- todo
+
 FROM
-	(
-	SELECT
-		login.*,
-		main_game.root_game_id 
-	FROM
-		ods_login_logs AS login
-		JOIN ( SELECT platform_id, game_id, user_id, min( id ) AS min_id FROM ods_login_logs WHERE updated_at BETWEEN '{{StartDateTime}}' AND '{{EndDateTime}}' GROUP BY platform_id, game_id, user_id ) AS user_min_log ON login.id = user_min_log.min_id
-		JOIN dim_game AS game ON user_min_log.platform_id = game.platform_id 
-		AND user_min_log.game_id = game.id
-		JOIN dim_main_game AS main_game ON game.platform_id = main_game.platform_id 
-		AND game.main_id = main_game.id
-		JOIN dim_root_game AS root_game ON main_game.platform_id = root_game.platform_id 
-		AND main_game.root_game_id = root_game.id 
-	) AS login
-	JOIN (
-	SELECT
-		back_reg.* 
-	FROM
-		dwd_root_game_back_reg_log AS back_reg
-		JOIN ( SELECT platform_id, root_game_id, user_id, max( id ) AS max_id FROM dwd_root_game_back_reg_log GROUP BY platform_id, root_game_id, user_id ) AS tmp_back_reg ON back_reg.id = tmp_back_reg.max_id 
-	) AS reg ON login.platform_id = reg.platform_id 
+	dwd_day_root_game_reg_30_back_uid_login_log AS login
+	LEFT JOIN dwd_root_game_back_reg_log AS reg ON login.platform_id = reg.platform_id 
 	AND login.root_game_id = reg.root_game_id 
 	AND login.user_id = reg.user_id 
-	AND login.login_time > reg.last_time
-	LEFT JOIN dwd_root_game_back_reg_log AS back_reg ON back_reg.platform_id = reg.platform_id 
-	AND back_reg.root_game_id = reg.root_game_id 
-	AND back_reg.user_id = reg.user_id 
+	AND login.first_login_time BETWEEN reg.reg_time 
+	AND reg.last_time 
 WHERE
-	back_reg.platform_id IS NULL;`},
-		{Name: "更新30天回流用户last_time", Spec: "* */5 * * * *", Remark: "通过登录日志更新30天回流last_time", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `REPLACE INTO dwd_root_game_back_reg_log (
-	platform_id,
-	root_game_id,
-	user_id,
-	reg_time,
-	last_time,
-	game_id,
-	agent_id,
-	site_id,
-	media_site_id,
-	idfv,
-	imei,
-	oaid,
-	andriod_id,
-	system_version,
-	app_version_code,
-	sdk_version_code,
-	network,
-	client_ip,
-	ipv4,
-	ipv6,
-	channel_id,
-	model,
-	brand,
-	user_agent 
-) SELECT
-reg.platform_id,
-reg.root_game_id,
-reg.user_id,
-reg.reg_time,
-CONCAT(date(DATE_ADD(login.login_time, INTERVAL 30 DAY)), " 23:59:59") AS last_time,
-reg.game_id,
-reg.agent_id,
-reg.site_id,
-reg.media_site_id,
-reg.idfv,
-reg.imei,
-reg.oaid,
-reg.andriod_id,
-reg.system_version,
-reg.app_version_code,
-reg.sdk_version_code,
-reg.network,
-reg.client_ip,
-reg.ipv4,
-reg.ipv6,
-reg.channel_id,
-reg.model,
-reg.brand,
-reg.user_agent 
-FROM
-	(
-	SELECT
-		login.*,
-		main_game.root_game_id 
-	FROM
-		ods_login_logs AS login
-		JOIN ( SELECT platform_id, game_id, user_id, max( id ) AS max_id FROM ods_login_logs WHERE updated_at BETWEEN '{{StartDateTime}}' AND '{{EndDateTime}}' GROUP BY platform_id, game_id, user_id ) AS user_min_log ON login.id = user_min_log.max_id
-		JOIN dim_game AS game ON user_min_log.platform_id = game.platform_id 
-		AND user_min_log.game_id = game.id
-		JOIN dim_main_game AS main_game ON game.platform_id = main_game.platform_id 
-		AND game.main_id = main_game.id
-		JOIN dim_root_game AS root_game ON main_game.platform_id = root_game.platform_id 
-		AND main_game.root_game_id = root_game.id 
-	) AS login
-	JOIN (
-	SELECT
-		back_reg.* 
-	FROM
-		dwd_root_game_back_reg_log AS back_reg
-		JOIN ( SELECT platform_id, root_game_id, user_id, max( id ) AS max_id FROM dwd_root_game_back_reg_log GROUP BY platform_id, root_game_id, user_id ) AS tmp_back_reg ON back_reg.id = tmp_back_reg.max_id 
-	) AS reg ON login.platform_id = reg.platform_id 
-	AND login.root_game_id = reg.root_game_id 
-	AND login.user_id = reg.user_id 
-	AND login.login_time BETWEEN reg.reg_time AND reg.last_time
-	;`},
+	login.updated_at BETWEEN '{{StartDateTime}}' 
+	AND '{{EndDateTime}}';`},
 		{Name: "30天回流激活统计", Spec: "* */5 * * * *", Remark: "激活日志表洗入每天30天回流overview表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `REPLACE INTO dws_day_root_game_back_overview_log (
 	platform_id,
 	stat_date,
