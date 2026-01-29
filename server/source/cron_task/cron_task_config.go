@@ -389,7 +389,7 @@ GROUP BY
 	login.platform_id,
 	login.game_id,
 	login.user_id;`},
-		{Name: "根注册清洗", Spec: "* */5 * * * *", Remark: "从子注册清洗到根注册表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `INSERT INTO dwd_root_game_reg_log (
+		{Name: "根注册清洗", Spec: "* */5 * * * *", Remark: "从子注册清洗到根注册表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `REPLACE INTO dwd_root_game_reg_log (
 	platform_id,
 	root_game_id,
 	user_id,
@@ -412,31 +412,43 @@ GROUP BY
 	channel_id,
 	model,
 	brand,
-	user_agent 
+	user_agent,
+	ad3_id,
+	unique_device,
+	last_login_time,
+	total_login_count,
+	total_pay_count,
+	total_pay_money 
 ) SELECT
-game_reg.platform_id,
-game_reg.root_game_id,
-game_reg.user_id,
-game_reg.reg_time,
-game_reg.game_id,
-game_reg.agent_id,
-game_reg.site_id,
-game_reg.media_site_id,
-game_reg.idfv,
-game_reg.imei,
-game_reg.oaid,
-game_reg.andriod_id,
-game_reg.system_version,
-game_reg.app_version_code,
-game_reg.sdk_version_code,
-game_reg.network,
-game_reg.client_ip,
-game_reg.ipv4,
-game_reg.ipv6,
-game_reg.channel_id,
-game_reg.model,
-game_reg.brand,
-game_reg.user_agent 
+IFNULL( reg.platform_id, game_reg.platform_id ) AS platform_id,
+IFNULL( reg.root_game_id, game_reg.root_game_id ) AS root_game_id,
+IFNULL( reg.user_id, game_reg.user_id ) AS user_id,
+IFNULL( reg.reg_time, game_reg.reg_time ) AS reg_time,
+IFNULL( reg.game_id, game_reg.game_id ) AS game_id,
+IFNULL( reg.agent_id, game_reg.agent_id ) AS agent_id,
+IFNULL( reg.site_id, game_reg.site_id ) AS site_id,
+IFNULL( reg.media_site_id, game_reg.media_site_id ) AS media_site_id,
+IFNULL( reg.idfv, game_reg.idfv ) AS idfv,
+IFNULL( reg.imei, game_reg.imei ) AS imei,
+IFNULL( reg.oaid, game_reg.oaid ) AS oaid,
+IFNULL( reg.andriod_id, game_reg.andriod_id ) AS andriod_id,
+IFNULL( reg.system_version, game_reg.system_version ) AS system_version,
+IFNULL( reg.app_version_code, game_reg.app_version_code ) AS app_version_code,
+IFNULL( reg.sdk_version_code, game_reg.sdk_version_code ) AS sdk_version_code,
+IFNULL( reg.network, game_reg.network ) AS network,
+IFNULL( reg.client_ip, game_reg.client_ip ) AS client_ip,
+IFNULL( reg.ipv4, game_reg.ipv4 ) AS ipv4,
+IFNULL( reg.ipv6, game_reg.ipv6 ) AS ipv6,
+IFNULL( reg.channel_id, game_reg.channel_id ) AS channel_id,
+IFNULL( reg.model, game_reg.model ) AS model,
+IFNULL( reg.brand, game_reg.brand ) AS brand,
+IFNULL( reg.user_agent, game_reg.user_agent ) AS user_agent,
+IFNULL( reg.ad3_id, game_reg.ad3_id ) AS ad3_id,
+IFNULL( reg.unique_device, game_reg.unique_device ) AS unique_device,
+game_reg.last_login_time AS last_login_time,
+IFNULL( reg.total_login_count, 0 ) + game_reg.total_login_count AS total_login_count,-- todo
+IFNULL( reg.total_pay_count, 0 ) AS total_pay_count,
+IFNULL( reg.total_pay_money, 0 ) AS total_pay_money 
 FROM
 	(
 	SELECT
@@ -447,18 +459,14 @@ FROM
 		JOIN dim_game AS game ON reg.platform_id = game.platform_id 
 		AND reg.game_id = game.id
 		JOIN dim_main_game AS main_game ON game.platform_id = main_game.platform_id 
-		AND game.main_id = main_game.id
-		JOIN dim_root_game AS root_game ON main_game.platform_id = root_game.platform_id 
-		AND main_game.root_game_id = root_game.id 
+		AND game.main_id = main_game.id 
 	WHERE
 		reg.updated_at BETWEEN '{{StartDateTime}}' 
 		AND '{{EndDateTime}}' 
 	) AS game_reg
-	LEFT JOIN dwd_root_game_reg_log AS root_reg ON game_reg.platform_id = root_reg.platform_id 
-	AND game_reg.root_game_id = root_reg.root_game_id 
-	AND game_reg.user_id = root_reg.user_id 
-WHERE
-	root_reg.platform_id IS NULL;`},
+	LEFT JOIN dwd_root_game_reg_log AS reg ON game_reg.platform_id = reg.platform_id 
+	AND game_reg.root_game_id = reg.root_game_id 
+	AND game_reg.user_id = reg.user_id;`},
 		{Name: "根注册写入30天回流表", Spec: "* */5 * * * *", Remark: "从根注册清洗到30天回流表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `INSERT INTO dwd_root_game_back_reg_log (
 	platform_id,
 	root_game_id,
@@ -518,7 +526,7 @@ FROM
 WHERE
 	 root_reg.updated_at BETWEEN '{{StartDateTime}}' AND '{{EndDateTime}}' 
 	AND back_reg.platform_id IS NULL;`},
-		{Name: "30天回流用户写入回流表", Spec: "* */5 * * * *", Remark: "登录日志中流失用户写入30天回流表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `INSERT INTO dwd_root_game_back_reg_log (
+		{Name: "30天回流用户写入30天回流表", Spec: "* */5 * * * *", Remark: "登录日志中流失用户写入30天回流表", Status: sql.StatusNormal, TaskType: cron_task2.TaskTypeSqlCleaning, ExecutionMode: cron_task2.ExecutionModeAsync, Content: `INSERT INTO dwd_root_game_back_reg_log (
 	platform_id,
 	root_game_id,
 	user_id,
