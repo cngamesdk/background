@@ -5,6 +5,7 @@ import (
 	"github.com/cngamesdk/go-core/model/sql/common"
 	"github.com/cngamesdk/go-core/model/sql/cron_task"
 	"github.com/cngamesdk/go-core/model/sql/log"
+	"github.com/cngamesdk/go-core/model/sql/material"
 	"github.com/cngamesdk/go-core/model/sql/report"
 	"os"
 
@@ -90,6 +91,8 @@ func RegisterTables() {
 		advertising.DimAdvertisingMediaManagementAccountModel{},
 		advertising.DimAdvertisingMediaAccountModel{},
 		advertising.DimChannelGroupModel{},
+
+		material.DimMaterialTheme{},
 
 		common.DimAgentModel{},
 		common.DimSiteModel{},
