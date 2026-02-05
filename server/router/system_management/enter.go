@@ -7,6 +7,5 @@ type RouterGroup struct {
 }
 
 var (
-	searchApi	= api2.ApiGroupApp.SystemManagementApiGroup.SearchApi
+	searchApi = api2.ApiGroupApp.SystemManagementApiGroup.SearchApi
 )
-

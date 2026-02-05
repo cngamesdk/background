@@ -6,7 +6,6 @@ import (
 )
 
 type SystemManagementRouter struct {
-
 }
 
 func (s *SystemManagementRouter) InitApiRouter(Router *gin.RouterGroup) {
@@ -16,7 +15,7 @@ func (s *SystemManagementRouter) InitApiRouter(Router *gin.RouterGroup) {
 		//搜索
 		searchGroup := apiRouter.Group("search")
 		{
-			searchGroup.POST("search", searchApi.Search)     // 所有维度搜索
+			searchGroup.POST("search", searchApi.Search) // 所有维度搜索
 		}
 	}
 }

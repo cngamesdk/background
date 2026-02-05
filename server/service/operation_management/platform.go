@@ -10,7 +10,6 @@ import (
 )
 
 type PlatformService struct {
-
 }
 
 func (receiver *PlatformService) List(ctx context.Context, req *api.PlatformListReq) (resp interface{}, total int64, err error) {
@@ -20,7 +19,7 @@ func (receiver *PlatformService) List(ctx context.Context, req *api.PlatformList
 		if validator.IsNumberStr(req.PlatformName) {
 			tmpDb.Where("id = ?", req.PlatformName)
 		} else {
-			tmpDb.Where("platform_name like ?", "%"+ req.PlatformName +"%")
+			tmpDb.Where("platform_name like ?", "%"+req.PlatformName+"%")
 		}
 	}
 	if countErr := tmpDb.Count(&total).Error; countErr != nil {
@@ -29,7 +28,7 @@ func (receiver *PlatformService) List(ctx context.Context, req *api.PlatformList
 		return
 	}
 	var list []operation_management.DimPlatformModel
-	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1)*req.PageSize).Find(&list).Error; listErr != nil {
+	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1) * req.PageSize).Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取异常", zap.Error(listErr))
 		return

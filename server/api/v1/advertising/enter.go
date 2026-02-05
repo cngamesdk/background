@@ -11,7 +11,7 @@ type ApiGroup struct {
 
 var (
 	advertisingMediaService = service.ServiceGroupApp.AdvertisingServiceGroup.AdvertisingMediaService
-	channelGroupService = service.ServiceGroupApp.AdvertisingServiceGroup.ChannelGroupService
-	agentService = service.ServiceGroupApp.AdvertisingServiceGroup.AgentService
-	siteService = service.ServiceGroupApp.AdvertisingServiceGroup.SiteService
+	channelGroupService     = service.ServiceGroupApp.AdvertisingServiceGroup.ChannelGroupService
+	agentService            = service.ServiceGroupApp.AdvertisingServiceGroup.AgentService
+	siteService             = service.ServiceGroupApp.AdvertisingServiceGroup.SiteService
 )

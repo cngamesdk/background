@@ -9,7 +9,6 @@ import (
 )
 
 type PublishingApi struct {
-	
 }
 
 func (receiver *PublishingApi) ChannelConfigList(ctx *gin.Context) {
@@ -25,9 +24,9 @@ func (receiver *PublishingApi) ChannelConfigList(ctx *gin.Context) {
 		return
 	}
 	response.OkWithData(response.PageResult{
-		List: resp,
-		Total: respTotal,
-		Page: req.Page,
+		List:     resp,
+		Total:    respTotal,
+		Page:     req.Page,
 		PageSize: req.PageSize,
 	}, ctx)
 	return
@@ -88,9 +87,9 @@ func (receiver *PublishingApi) ChannelGameConfigList(ctx *gin.Context) {
 		return
 	}
 	response.OkWithData(response.PageResult{
-		List: resp,
-		Total: respTotal,
-		Page: req.Page,
+		List:     resp,
+		Total:    respTotal,
+		Page:     req.Page,
 		PageSize: req.PageSize,
 	}, ctx)
 	return

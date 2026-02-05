@@ -9,7 +9,6 @@ import (
 )
 
 type CronTaskApi struct {
-
 }
 
 func (receiver *CronTaskApi) ConfigList(ctx *gin.Context) {
@@ -25,9 +24,9 @@ func (receiver *CronTaskApi) ConfigList(ctx *gin.Context) {
 		return
 	}
 	response.OkWithData(response.PageResult{
-		List: resp,
-		Total: respTotal,
-		Page: req.Page,
+		List:     resp,
+		Total:    respTotal,
+		Page:     req.Page,
 		PageSize: req.PageSize,
 	}, ctx)
 	return
@@ -88,9 +87,9 @@ func (receiver *CronTaskApi) LogList(ctx *gin.Context) {
 		return
 	}
 	response.OkWithData(response.PageResult{
-		List: resp,
-		Total: respTotal,
-		Page: req.Page,
+		List:     resp,
+		Total:    respTotal,
+		Page:     req.Page,
 		PageSize: req.PageSize,
 	}, ctx)
 	return

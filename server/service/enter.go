@@ -5,6 +5,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/service/cron_task"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/data_report"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/example"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/material"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/operation_management"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/system_management"
@@ -20,4 +21,5 @@ type ServiceGroup struct {
 	AdvertisingServiceGroup         advertising.ServiceGroup
 	CronTaskServiceGroup            cron_task.ServiceGroup
 	DataReportServiceGroup          data_report.ServiceGroup
+	MaterialGroup                   material.ServiceGroup
 }

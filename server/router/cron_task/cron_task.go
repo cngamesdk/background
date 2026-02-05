@@ -6,7 +6,6 @@ import (
 )
 
 type CronTaskRouter struct {
-	
 }
 
 func (s *CronTaskRouter) InitApiRouter(Router *gin.RouterGroup) {

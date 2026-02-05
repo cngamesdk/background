@@ -48,7 +48,6 @@ func (receiver *AgentAddReq) Validate() (err error) {
 }
 
 type AgentAddResp struct {
-
 }
 
 type AgentModifyReq struct {
@@ -85,5 +84,4 @@ func (receiver *AgentModifyReq) Validate() (err error) {
 }
 
 type AgentModifyResp struct {
-
 }

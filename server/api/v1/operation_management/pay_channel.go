@@ -9,7 +9,6 @@ import (
 )
 
 type PayChannelApi struct {
-	
 }
 
 func (receiver *PayChannelApi) List(ctx *gin.Context) {
@@ -25,9 +24,9 @@ func (receiver *PayChannelApi) List(ctx *gin.Context) {
 		return
 	}
 	response.OkWithData(response.PageResult{
-		List: resp,
-		Total: respTotal,
-		Page: req.Page,
+		List:     resp,
+		Total:    respTotal,
+		Page:     req.Page,
 		PageSize: req.PageSize,
 	}, ctx)
 	return
