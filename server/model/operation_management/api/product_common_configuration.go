@@ -15,7 +15,6 @@ type ProductCommonConfigurationListReq struct {
 }
 
 type ProductCommonConfigurationListResp struct {
-	
 }
 
 type ProductCommonConfigurationAddReq struct {
@@ -40,7 +39,6 @@ func (c *ProductCommonConfigurationAddReq) Validate() (err error) {
 }
 
 type ProductCommonConfigurationAddResp struct {
-	
 }
 
 type ProductCommonConfigurationModifyReq struct {

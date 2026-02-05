@@ -43,7 +43,6 @@ func (receiver *SiteAddReq) Validate() (err error) {
 }
 
 type SiteAddResp struct {
-
 }
 
 type SiteModifyReq struct {
@@ -75,5 +74,4 @@ func (receiver *SiteModifyReq) Validate() (err error) {
 }
 
 type SiteModifyResp struct {
-
 }

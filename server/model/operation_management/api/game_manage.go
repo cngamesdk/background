@@ -67,7 +67,6 @@ func (receiver *SubGameModifyReq) Validate() (err error) {
 }
 
 type SubGameModifyResp struct {
-
 }
 
 type MainGameListReq struct {

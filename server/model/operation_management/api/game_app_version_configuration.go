@@ -15,7 +15,6 @@ type GameAppVersionConfigurationListReq struct {
 }
 
 type GameAppVersionConfigurationListResp struct {
-
 }
 
 type GameAppVersionConfigurationAddReq struct {
@@ -51,7 +50,6 @@ func (c *GameAppVersionConfigurationAddReq) Validate() (err error) {
 }
 
 type GameAppVersionConfigurationAddResp struct {
-
 }
 
 type GameAppVersionConfigurationModifyReq struct {

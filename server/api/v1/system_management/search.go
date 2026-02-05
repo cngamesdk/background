@@ -9,7 +9,6 @@ import (
 )
 
 type SearchApi struct {
-
 }
 
 func (receiver *SearchApi) Search(ctx *gin.Context) {

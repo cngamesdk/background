@@ -15,7 +15,6 @@ type PublishingChannelConfigListReq struct {
 }
 
 type PublishingChannelConfigListResp struct {
-	
 }
 
 type PublishingChannelConfigAddReq struct {
@@ -36,7 +35,6 @@ func (a *PublishingChannelConfigAddReq) Validate() (err error) {
 }
 
 type PublishingChannelConfigAddResp struct {
-
 }
 
 type PublishingChannelConfigModifyReq struct {
@@ -60,7 +58,6 @@ func (a *PublishingChannelConfigModifyReq) Validate() (err error) {
 }
 
 type PublishingChannelConfigModifyResp struct {
-
 }
 
 type PublishingChannelGameConfigListReq struct {
@@ -69,7 +66,6 @@ type PublishingChannelGameConfigListReq struct {
 }
 
 type PublishingChannelGameConfigListResp struct {
-	
 }
 
 type PublishingChannelGameConfigAddReq struct {
@@ -105,7 +101,6 @@ func (a *PublishingChannelGameConfigAddReq) Validate() (err error) {
 }
 
 type PublishingChannelGameConfigAddResp struct {
-
 }
 
 type PublishingChannelGameConfigModifyReq struct {
@@ -144,5 +139,4 @@ func (a *PublishingChannelGameConfigModifyReq) Validate() (err error) {
 }
 
 type PublishingChannelGameConfigModifyResp struct {
-
 }

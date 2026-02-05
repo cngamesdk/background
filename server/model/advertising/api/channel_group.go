@@ -1,12 +1,12 @@
 package api
 
 import (
-error2 "github.com/cngamesdk/go-core/model/error"
-"github.com/cngamesdk/go-core/validate"
-"github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
-"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
-errors2 "github.com/pkg/errors"
-"strings"
+	error2 "github.com/cngamesdk/go-core/model/error"
+	"github.com/cngamesdk/go-core/validate"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
+	errors2 "github.com/pkg/errors"
+	"strings"
 )
 
 type ChannelGroupListReq struct {
@@ -43,7 +43,6 @@ func (receiver *ChannelGroupAddReq) Validate() (err error) {
 }
 
 type ChannelGroupAddResp struct {
-
 }
 
 type ChannelGroupModifyReq struct {
@@ -75,5 +74,4 @@ func (receiver *ChannelGroupModifyReq) Validate() (err error) {
 }
 
 type ChannelGroupModifyResp struct {
-
 }

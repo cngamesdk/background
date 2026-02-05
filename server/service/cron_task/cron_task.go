@@ -10,7 +10,6 @@ import (
 )
 
 type CronTaskService struct {
-
 }
 
 func (receiver *CronTaskService) ConfigList(ctx context.Context, req *api.CronTaskListReq) (resp interface{}, total int64, err error) {
@@ -20,7 +19,7 @@ func (receiver *CronTaskService) ConfigList(ctx context.Context, req *api.CronTa
 		if validator.IsNumberStr(req.Name) {
 			tmpDb.Where("id = ?", req.Name)
 		} else {
-			tmpDb.Where("name like ?", "%"+ req.Name +"%")
+			tmpDb.Where("name like ?", "%"+req.Name+"%")
 		}
 	}
 	if countErr := tmpDb.Count(&total).Error; countErr != nil {
@@ -31,7 +30,7 @@ func (receiver *CronTaskService) ConfigList(ctx context.Context, req *api.CronTa
 	var list []cron_task.DimCronTaskConfigModel
 	if listErr := tmpDb.
 		Limit(req.PageSize).
-		Offset((req.Page - 1)*req.PageSize).
+		Offset((req.Page - 1) * req.PageSize).
 		Order("id DESC").
 		Find(&list).Error; listErr != nil {
 		err = listErr
@@ -74,7 +73,7 @@ func (receiver *CronTaskService) LogList(ctx context.Context, req *api.CronTaskL
 		return
 	}
 	var list []cron_task.OdsCronTaskLogModel
-	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1)*req.PageSize).Find(&list).Error; listErr != nil {
+	if listErr := tmpDb.Limit(req.PageSize).Offset((req.Page - 1) * req.PageSize).Find(&list).Error; listErr != nil {
 		err = listErr
 		global.GVA_LOG.Error("获取异常", zap.Error(listErr))
 		return

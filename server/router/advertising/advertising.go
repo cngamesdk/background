@@ -6,7 +6,6 @@ import (
 )
 
 type AdvertisingRouter struct {
-
 }
 
 func (s *AdvertisingRouter) InitApiRouter(Router *gin.RouterGroup) {

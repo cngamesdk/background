@@ -9,7 +9,6 @@ import (
 )
 
 type SiteApi struct {
-
 }
 
 func (receiver *SiteApi) List(ctx *gin.Context) {
@@ -25,9 +24,9 @@ func (receiver *SiteApi) List(ctx *gin.Context) {
 		return
 	}
 	response.OkWithData(response.PageResult{
-		List: resp,
-		Total: respTotal,
-		Page: req.Page,
+		List:     resp,
+		Total:    respTotal,
+		Page:     req.Page,
 		PageSize: req.PageSize,
 	}, ctx)
 	return

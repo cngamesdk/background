@@ -44,7 +44,6 @@ func (receiver *AdvertisingMediaAddReq) Validate() (err error) {
 }
 
 type AdvertisingMediaAddResp struct {
-	
 }
 
 type AdvertisingMediaModifyReq struct {
@@ -77,5 +76,4 @@ func (receiver *AdvertisingMediaModifyReq) Validate() (err error) {
 }
 
 type AdvertisingMediaModifyResp struct {
-
 }

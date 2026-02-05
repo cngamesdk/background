@@ -7,5 +7,5 @@ type RouterGroup struct {
 }
 
 var (
-	cronTaskApi                     = api2.ApiGroupApp.CronTaskApiGroup.CronTaskApi
+	cronTaskApi = api2.ApiGroupApp.CronTaskApiGroup.CronTaskApi
 )

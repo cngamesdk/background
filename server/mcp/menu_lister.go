@@ -19,11 +19,11 @@ func init() {
 
 // MenuListResponse 菜单列表响应结构
 type MenuListResponse struct {
-	Success     bool                  `json:"success"`
-	Message     string                `json:"message"`
-	Menus       []system.SysBaseMenu  `json:"menus"`
-	TotalCount  int                   `json:"totalCount"`
-	Description string                `json:"description"`
+	Success     bool                 `json:"success"`
+	Message     string               `json:"message"`
+	Menus       []system.SysBaseMenu `json:"menus"`
+	TotalCount  int                  `json:"totalCount"`
+	Description string               `json:"description"`
 }
 
 // MenuLister 菜单列表工具
@@ -109,4 +109,3 @@ func (m *MenuLister) getAllMenus() ([]system.SysBaseMenu, error) {
 	}
 	return menus, nil
 }
-

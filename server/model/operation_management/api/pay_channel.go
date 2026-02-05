@@ -16,7 +16,6 @@ type PayChannelListReq struct {
 }
 
 type PayChannelListResp struct {
-	
 }
 
 type PayChannelAddReq struct {
@@ -58,7 +57,6 @@ func (c *PayChannelAddReq) Validate() (err error) {
 }
 
 type PayChannelAddResp struct {
-	
 }
 
 type PayChannelModifyReq struct {
@@ -103,5 +101,4 @@ func (c *PayChannelModifyReq) Validate() (err error) {
 }
 
 type PayChannelModifyResp struct {
-
 }
