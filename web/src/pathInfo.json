@@ -57,6 +57,8 @@
   "/src/view/layout/setting/modules/layout/index.vue": "LayoutSettings",
   "/src/view/layout/tabs/index.vue": "HistoryComponent",
   "/src/view/login/index.vue": "Login",
+  "/src/view/material/index.vue": "MaterialManagement",
+  "/src/view/material/theme/list.vue": "MaterialThemeList",
   "/src/view/operationManagement/companyManagement/company/list.vue": "CompanyList",
   "/src/view/operationManagement/companyManagement/index.vue": "CompanyManage",
   "/src/view/operationManagement/gameManage/index.vue": "GameManage",
