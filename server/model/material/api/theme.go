@@ -14,6 +14,8 @@ type MaterialThemeListReq struct {
 }
 
 type MaterialThemeListResp struct {
+	material.DimMaterialThemeModel
+	PlatformName string `json:"platform_name" gorm:"platform_name"`
 }
 
 type MaterialThemeAddReq struct {

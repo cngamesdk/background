@@ -6,7 +6,6 @@ import (
 	model2 "github.com/flipped-aurora/gin-vue-admin/server/model"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/material"
 	api2 "github.com/flipped-aurora/gin-vue-admin/server/model/material/api"
-	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
 	"go.uber.org/zap"
 )
 
@@ -26,7 +25,7 @@ func (receiver *ThemeService) List(ctx context.Context, req *api2.MaterialThemeL
 		return
 	}
 	model2.JoinPlatform(tmpDb, alias)
-	var list []operation_management.DimCompanyModel
+	var list []api2.MaterialThemeListResp
 	if listErr := tmpDb.
 		Select(alias + ".*,platform.platform_name").
 		Limit(req.PageSize).
