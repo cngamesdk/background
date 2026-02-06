@@ -19,6 +19,9 @@ func (receiver *ThemeService) List(ctx context.Context, req *api2.MaterialThemeL
 	if req.ThemeName != "" {
 		tmpDb.Where("theme_name like ?", "%"+req.ThemeName+"%")
 	}
+	if req.ParentId > 0 {
+		tmpDb.Where("parent_id = ?", req.ParentId)
+	}
 	if countErr := tmpDb.Count(&total).Error; countErr != nil {
 		err = countErr
 		global.GVA_LOG.Error("获取总数异常", zap.Error(countErr))
