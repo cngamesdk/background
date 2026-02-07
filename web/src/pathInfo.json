@@ -58,6 +58,7 @@
   "/src/view/layout/tabs/index.vue": "HistoryComponent",
   "/src/view/login/index.vue": "Login",
   "/src/view/material/index.vue": "MaterialManagement",
+  "/src/view/material/material/list.vue": "MaterialList",
   "/src/view/material/theme/list.vue": "MaterialThemeList",
   "/src/view/operationManagement/companyManagement/company/list.vue": "CompanyList",
   "/src/view/operationManagement/companyManagement/index.vue": "CompanyManage",

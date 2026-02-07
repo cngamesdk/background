@@ -5,6 +5,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	api2 "github.com/flipped-aurora/gin-vue-admin/server/model/material/api"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 )
@@ -38,6 +39,14 @@ func (receiver *MaterialApi) Add(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		response.FailWithMessage(translator.DealErr(err).Error(), ctx)
 		return
+	}
+	if req.Author == "" {
+		claim, claimErr := utils.GetClaims(ctx)
+		if claimErr != nil {
+			response.FailWithMessage(translator.DealErr(claimErr).Error(), ctx)
+			return
+		}
+		req.Author = claim.NickName
 	}
 	req.Format()
 	if err := req.Validate(); err != nil {
