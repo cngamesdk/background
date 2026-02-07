@@ -25,5 +25,12 @@ func (s *MaterialRouter) InitApiRouter(Router *gin.RouterGroup) {
 			materialGroup.POST("add", materialApi.Add)
 			materialGroup.POST("modify", materialApi.Modify)
 		}
+
+		materialFileGroup := apiRouter.Group("material-file")
+		{
+			materialFileGroup.POST("list", materialFileApi.List)
+			materialFileGroup.POST("add", materialFileApi.Add)
+			materialFileGroup.POST("modify", materialFileApi.Modify)
+		}
 	}
 }
