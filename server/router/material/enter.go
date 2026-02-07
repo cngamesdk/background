@@ -7,6 +7,7 @@ type RouterGroup struct {
 }
 
 var (
-	themeApi    = api2.ApiGroupApp.MaterialApiGroup.ThemeApi
-	materialApi = api2.ApiGroupApp.MaterialApiGroup.MaterialApi
+	themeApi        = api2.ApiGroupApp.MaterialApiGroup.ThemeApi
+	materialApi     = api2.ApiGroupApp.MaterialApiGroup.MaterialApi
+	materialFileApi = api2.ApiGroupApp.MaterialApiGroup.MaterialFileApi
 )
