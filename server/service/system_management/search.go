@@ -8,14 +8,21 @@ import (
 	"github.com/duke-git/lancet/v2/validator"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/material"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system_management/api"
 	"github.com/pkg/errors"
+	"github.com/spf13/cast"
 	"go.uber.org/zap"
 )
 
 type data struct {
 	Key   interface{} `json:"key"`
+	Value interface{} `json:"value"`
+}
+
+type dataNew struct {
+	Label interface{} `json:"label"`
 	Value interface{} `json:"value"`
 }
 
@@ -44,6 +51,7 @@ func (receiver *SearchService) Search(ctx context.Context, req *api.SearchReq) (
 		"media":                  receiver.searchMedia,
 		"channel-group":          receiver.searchChannelGroup,
 		"settlement-type":        receiver.searchSettlementType,
+		"material-theme":         receiver.searchMaterialTheme,
 	}
 	searchFun, ok := dimTypes[req.DimType]
 	if !ok {
@@ -430,5 +438,51 @@ func (receiver *SearchService) searchSettlementType(ctx context.Context, req *ap
 		respList = append(respList, data{Key: key, Value: item})
 	}
 	resp = respList
+	return
+}
+
+// 题材
+func (receiver *SearchService) searchMaterialTheme(ctx context.Context, req *api.SearchReq) (resp interface{}, err error) {
+	model := material.NewDimMaterialThemeModel()
+	tmpDb := model.Db().
+		WithContext(ctx).
+		Select("id,theme_name,parent_id").
+		Where("platform_id = ?", req.PlatformId)
+	if req.Keyword != "" {
+		tmpDb.Where("theme_name like ?", "%"+req.Keyword+"%")
+	}
+
+	var list []material.DimMaterialThemeModel
+	if listErr := tmpDb.Order("id DESC").Find(&list).Error; listErr != nil {
+		err = listErr
+		global.GVA_LOG.Error("获取异常", zap.Error(listErr))
+		return
+	}
+
+	type formatMaterialThemeStruct struct {
+		dataNew
+		Children []dataNew `json:"children"`
+	}
+
+	var formatData []formatMaterialThemeStruct
+
+	//先找父节点
+	for _, item := range list {
+		if item.ParentId == 0 {
+			myFormat := formatMaterialThemeStruct{}
+			myFormat.Label = item.ThemeName
+			myFormat.Value = item.Id
+			formatData = append(formatData, myFormat)
+		}
+	}
+
+	for index, item := range formatData {
+		for _, itemList := range list {
+			if cast.ToInt64(item.Value) == itemList.ParentId {
+				formatData[index].Children = append(formatData[index].Children, dataNew{Value: itemList.Id, Label: itemList.ThemeName})
+			}
+		}
+	}
+	resp = formatData
 	return
 }
