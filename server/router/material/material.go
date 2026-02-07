@@ -18,5 +18,12 @@ func (s *MaterialRouter) InitApiRouter(Router *gin.RouterGroup) {
 			themeGroup.POST("add", themeApi.Add)
 			themeGroup.POST("modify", themeApi.Modify)
 		}
+
+		materialGroup := apiRouter.Group("material")
+		{
+			materialGroup.POST("list", materialApi.List)
+			materialGroup.POST("add", materialApi.Add)
+			materialGroup.POST("modify", materialApi.Modify)
+		}
 	}
 }
