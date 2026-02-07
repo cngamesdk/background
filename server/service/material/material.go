@@ -15,7 +15,7 @@ type MaterialService struct {
 
 func (receiver *MaterialService) List(ctx context.Context, req *api2.MaterialListReq) (resp interface{}, total int64, err error) {
 	model := material.NewOdsMaterialLogModel()
-	alias := "theme"
+	alias := "material"
 	tmpDb := model.Db().WithContext(ctx).Table(model.TableName() + " as " + alias)
 	tmpDb.Where("status != ?", sql.StatusDelete)
 	if req.MaterialName != "" {
@@ -27,9 +27,10 @@ func (receiver *MaterialService) List(ctx context.Context, req *api2.MaterialLis
 		return
 	}
 	model2.JoinPlatform(tmpDb, alias)
+	model2.JoinMaterialTheme(tmpDb, alias)
 	var list []api2.MaterialListResp
 	if listErr := tmpDb.
-		Select(alias + ".*,platform.platform_name").
+		Select(alias + ".*,platform.platform_name,theme.theme_name").
 		Limit(req.PageSize).
 		Offset((req.Page - 1) * req.PageSize).
 		Find(&list).Error; listErr != nil {

@@ -3,6 +3,7 @@ package model
 import (
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/material"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/operation_management"
 	"gorm.io/gorm"
 )
@@ -60,4 +61,9 @@ func JoinMedia(tx *gorm.DB, alias string) {
 // 链接渠道组
 func JoinChannelGroup(tx *gorm.DB, alias string) {
 	tx.Joins(fmt.Sprintf("join %s as channel_group on %s.channel_group_id = channel_group.id", (&advertising.DimChannelGroupModel{}).TableName(), alias))
+}
+
+// 链接素材题材
+func JoinMaterialTheme(tx *gorm.DB, alias string) {
+	tx.Joins(fmt.Sprintf("join %s as theme on %s.theme_id = theme.id", (&material.DimMaterialThemeModel{}).TableName(), alias))
 }
