@@ -5,8 +5,8 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/example"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/example/request"
-	exampleRes "github.com/flipped-aurora/gin-vue-admin/server/model/example/response"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 	"go.uber.org/zap"
 	"strconv"
 )
@@ -23,8 +23,7 @@ type FileUploadAndDownloadApi struct{}
 // @Success   200   {object}  response.Response{data=exampleRes.ExaFileResponse,msg=string}  "上传文件示例,返回包括文件详情"
 // @Router    /fileUploadAndDownload/upload [post]
 func (b *FileUploadAndDownloadApi) UploadFile(c *gin.Context) {
-	var file example.ExaFileUploadAndDownload
-	noSave := c.DefaultQuery("noSave", "0")
+	noSave := c.PostForm("noSave")
 	_, header, err := c.Request.FormFile("file")
 	classId, _ := strconv.Atoi(c.DefaultPostForm("classId", "0"))
 	if err != nil {
@@ -32,13 +31,16 @@ func (b *FileUploadAndDownloadApi) UploadFile(c *gin.Context) {
 		response.FailWithMessage("接收文件失败", c)
 		return
 	}
-	file, err = fileUploadAndDownloadService.UploadFile(header, noSave, classId) // 文件上传后拿到文件路径
-	if err != nil {
-		global.GVA_LOG.Error("上传文件失败!", zap.Error(err))
+	uploadReq := request.UploadFileReq{}
+	uploadReq.PlatformId = cast.ToInt64(c.PostForm("platform_id"))
+	uploadReq.Biz = c.PostForm("biz")
+	file, uploadErr := fileUploadAndDownloadService.UploadFile(header, noSave, classId, uploadReq) // 文件上传后拿到文件路径
+	if uploadErr != nil {
+		global.GVA_LOG.Error("上传文件失败!", zap.Error(uploadErr))
 		response.FailWithMessage("上传文件失败", c)
 		return
 	}
-	response.OkWithDetailed(exampleRes.ExaFileResponse{File: file}, "上传成功", c)
+	response.OkWithDetailed(file, "上传成功", c)
 }
 
 // EditFileName 编辑文件名或者备注

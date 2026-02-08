@@ -17,7 +17,7 @@ import (
 
 type CloudflareR2 struct{}
 
-func (c *CloudflareR2) UploadFile(file *multipart.FileHeader) (resp OssUploadFileResp, err error) {
+func (c *CloudflareR2) UploadFile(file *multipart.FileHeader, req UploadFileExtReq) (resp OssUploadFileResp, err error) {
 	session := c.newSession()
 	client := s3manager.NewUploader(session)
 

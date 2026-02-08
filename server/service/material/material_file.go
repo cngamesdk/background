@@ -25,7 +25,7 @@ func (receiver *MaterialFileService) List(ctx context.Context, req *api2.Materia
 		return
 	}
 	model2.JoinPlatform(tmpDb, alias)
-	var list []api2.MaterialListResp
+	var list []api2.MaterialFileListResp
 	if listErr := tmpDb.
 		Select(alias + ".*,platform.platform_name").
 		Limit(req.PageSize).

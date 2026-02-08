@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"github.com/flipped-aurora/gin-vue-admin/server/model/example/response"
 	"mime/multipart"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
@@ -10,14 +11,19 @@ import (
 // Author [SliverHorn](https://github.com/SliverHorn)
 // Author [ccfish86](https://github.com/ccfish86)
 type OSS interface {
-	UploadFile(file *multipart.FileHeader) (OssUploadFileResp, error)
+	UploadFile(file *multipart.FileHeader, req UploadFileExtReq) (OssUploadFileResp, error)
 	DeleteFile(key string) error
+}
+
+type UploadFileExtReq struct {
+	StoreDir string `json:"store_dir"` // 存储目录
 }
 
 type OssUploadFileResp struct {
 	Filepath string
 	Filename string
 	Hash     string
+	response.ExaFileResponse
 }
 
 // NewOss OSS的实例化方法

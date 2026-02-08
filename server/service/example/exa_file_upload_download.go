@@ -2,6 +2,7 @@ package example
 
 import (
 	"errors"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/example/response"
 	"mime/multipart"
 	"strings"
 
@@ -92,13 +93,24 @@ func (e *FileUploadAndDownloadService) GetFileRecordInfoList(info request.ExaAtt
 //@param: header *multipart.FileHeader, noSave string
 //@return: file model.ExaFileUploadAndDownload, err error
 
-func (e *FileUploadAndDownloadService) UploadFile(header *multipart.FileHeader, noSave string, classId int) (file example.ExaFileUploadAndDownload, err error) {
+func (e *FileUploadAndDownloadService) UploadFile(header *multipart.FileHeader, noSave string, classId int, req request.UploadFileReq) (file response.ExaFileResponse, err error) {
 	oss := upload.NewOss()
-	uploadResp, uploadErr := oss.UploadFile(header)
+	storeDir := ""
+	if req.PlatformId > 0 {
+		if bizFun, ok := request.BizStoreDirMap[req.Biz]; ok {
+			storeDir = bizFun(req)
+		}
+	}
+
+	uploadExtReq := upload.UploadFileExtReq{}
+	uploadExtReq.StoreDir = storeDir
+	uploadResp, uploadErr := oss.UploadFile(header, uploadExtReq)
 	if uploadErr != nil {
 		return file, uploadErr
 	}
 	s := strings.Split(header.Filename, ".")
+	fileResp := uploadResp.ExaFileResponse
+
 	f := example.ExaFileUploadAndDownload{
 		Url:     uploadResp.Filepath,
 		Name:    header.Filename,
@@ -107,10 +119,11 @@ func (e *FileUploadAndDownloadService) UploadFile(header *multipart.FileHeader, 
 		Key:     uploadResp.Filepath,
 		Hash:    uploadResp.Hash,
 	}
+	fileResp.File = f
 	if noSave == "0" {
-		return f, e.Upload(f)
+		return fileResp, e.Upload(f)
 	}
-	return f, nil
+	return fileResp, nil
 }
 
 //@author: [piexlmax](https://github.com/piexlmax)
