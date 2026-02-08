@@ -212,3 +212,13 @@ export const getAggregationTime = () => {
         {key:'aggregation', value: '聚合'}
     ]
 }
+
+// getMaterialTheme 获取素材主题
+export const getMaterialTheme = (data) => {
+    data = {dim_type: 'material-theme', ...data}
+    return service({
+        url: baseSearchUrl,
+        method: 'post',
+        data
+    })
+}
