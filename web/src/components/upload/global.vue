@@ -6,12 +6,13 @@
         :on-error="uploadError"
         :on-success="uploadSuccess"
         :show-file-list="false"
-        :data="{'classId': props.classId}"
+        :data="{'classId': props.classId, ...props.data}"
         :headers="{'x-token': token}"
-        multiple
+        :accept="props.accept"
+        :multiple="props.multiple"
         class="upload-btn"
     >
-      <el-button type="primary" :icon="Upload">点击上传</el-button>
+      <el-button type="primary" :icon="Upload">{{ props.label }}</el-button>
     </el-upload>
   </div>
 </template>
@@ -33,6 +34,22 @@ const userStore = useUserStore()
 const token = userStore.token
 
 const props = defineProps({
+  data: {
+    type: Object,
+    default: {}
+  },
+  multiple: {
+    type: Boolean,
+    default: true
+  },
+  accept: {
+    type: String,
+    default: 'image/*'
+  },
+  label: {
+    type: String,
+    default: '点击上传'
+  },
   classId: {
     type: Number,
     default: 0
