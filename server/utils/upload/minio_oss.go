@@ -52,7 +52,7 @@ func GetMinio(endpoint, accessKeyID, secretAccessKey, bucketName string, useSSL 
 	return MinioClient, nil
 }
 
-func (m *Minio) UploadFile(file *multipart.FileHeader) (resp OssUploadFileResp, err error) {
+func (m *Minio) UploadFile(file *multipart.FileHeader, req UploadFileExtReq) (resp OssUploadFileResp, err error) {
 	f, openError := file.Open()
 	// mutipart.File to os.File
 	if openError != nil {

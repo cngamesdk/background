@@ -3,10 +3,16 @@ package upload
 import (
 	"errors"
 	"github.com/duke-git/lancet/v2/cryptor"
+	"github.com/spf13/cast"
+	image2 "image"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -29,7 +35,7 @@ type Local struct{}
 //@param: file *multipart.FileHeader
 //@return: string, string, error
 
-func (*Local) UploadFile(file *multipart.FileHeader) (resp OssUploadFileResp, err error) {
+func (*Local) UploadFile(file *multipart.FileHeader, req UploadFileExtReq) (resp OssUploadFileResp, err error) {
 	// 读取文件后缀
 	ext := filepath.Ext(file.Filename)
 	// 读取文件名并加密
@@ -37,16 +43,25 @@ func (*Local) UploadFile(file *multipart.FileHeader) (resp OssUploadFileResp, er
 	name = utils.MD5V([]byte(name))
 	// 拼接新文件名
 	filename := name + "_" + time.Now().Format("20060102150405") + ext
+
+	// 拼接路径和文件名
+	if req.StoreDir != "" {
+		if !strings.HasSuffix(req.StoreDir, "/") {
+			req.StoreDir += "/"
+		}
+	}
+
 	// 尝试创建此路径
-	mkdirErr := os.MkdirAll(global.GVA_CONFIG.Local.StorePath, os.ModePerm)
+	storePath := global.GVA_CONFIG.Local.StorePath + "/" + req.StoreDir
+	mkdirErr := os.MkdirAll(storePath, os.ModePerm)
 	if mkdirErr != nil {
 		global.GVA_LOG.Error("function os.MkdirAll() failed", zap.Any("err", mkdirErr.Error()))
 		err = errors.New("function os.MkdirAll() failed, err:" + mkdirErr.Error())
 		return
 	}
-	// 拼接路径和文件名
-	p := global.GVA_CONFIG.Local.StorePath + "/" + filename
-	tmpFilepath := global.GVA_CONFIG.Local.Path + "/" + filename
+
+	p := storePath + filename
+	tmpFilepath := global.GVA_CONFIG.Local.Path + "/" + req.StoreDir + filename
 
 	f, openError := file.Open() // 读取文件
 	if openError != nil {
@@ -76,9 +91,46 @@ func (*Local) UploadFile(file *multipart.FileHeader) (resp OssUploadFileResp, er
 		err = errors.New("cal file hash err, err:" + fileHashErr.Error())
 		return
 	}
+
+	image := []string{".jpeg", ".jpg", ".png"}
+	video := []string{".mp4", ".wmv"}
+
+	if slices.Contains(image, ext) {
+		myFile, fileErr := os.Open(p)
+		if fileErr != nil {
+			err = fileErr
+			global.GVA_LOG.Error("打开文件失败!", zap.Error(fileErr))
+			return
+		}
+		defer myFile.Close()
+		fileConfig, _, fileConfigErr := image2.DecodeConfig(myFile)
+		if fileConfigErr != nil {
+			err = fileConfigErr
+			global.GVA_LOG.Error("文件解码失败!", zap.Error(fileConfigErr))
+			return
+		}
+		resp.Width = fileConfig.Width
+		resp.Height = fileConfig.Height
+	} else if slices.Contains(video, ext) {
+		fmpegLib := utils.FfmpegUtil{Url: p}
+		videoInfo, videoErr := fmpegLib.GetVideoMetaInfo()
+		if videoErr != nil {
+			err = videoErr
+			global.GVA_LOG.Error("获取视频信息失败!", zap.Error(videoErr))
+			return
+		}
+		resp.Width = videoInfo.Width
+		resp.Height = videoInfo.Height
+		resp.Duration = cast.ToInt(videoInfo.Duration * 1000)
+		resp.Bitrate = videoInfo.Bitrate
+		resp.Fps = videoInfo.Fps
+	}
+
 	resp.Filepath = tmpFilepath
 	resp.Filename = filename
 	resp.Hash = fileHash
+	resp.Size = file.Size
+
 	return
 }
 
