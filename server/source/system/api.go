@@ -266,6 +266,17 @@ func (i *initApi) InitializeData(ctx context.Context) (context.Context, error) {
 		{ApiGroup: "游戏打包", Method: "POST", Path: "/operation_management/game-packaging/list", Description: "打包日志列表"},
 		{ApiGroup: "游戏打包", Method: "POST", Path: "/operation_management/game-packaging/add", Description: "打包任务提交"},
 
+		//素材管理
+		{ApiGroup: "素材管理", Method: "POST", Path: "/material/theme/list", Description: "题材列表"},
+		{ApiGroup: "素材管理", Method: "POST", Path: "/material/theme/add", Description: "题材修改"},
+		{ApiGroup: "素材管理", Method: "POST", Path: "/material/theme/modify", Description: "题材修改"},
+		{ApiGroup: "素材管理", Method: "POST", Path: "/material/material/list", Description: "素材列表"},
+		{ApiGroup: "素材管理", Method: "POST", Path: "/material/material/add", Description: "素材新增"},
+		{ApiGroup: "素材管理", Method: "POST", Path: "/material/material/modify", Description: "素材修改"},
+		{ApiGroup: "素材管理", Method: "POST", Path: "/material/material-file/list", Description: "素材文件列表"},
+		{ApiGroup: "素材管理", Method: "POST", Path: "/material/material-file/add", Description: "素材文件新增"},
+		{ApiGroup: "素材管理", Method: "POST", Path: "/material/material-file/modify", Description: "素材文件修改"},
+
 		{ApiGroup: "系统管理", Method: "POST", Path: "/system_management/search/search", Description: "维度搜索"},
 	}
 	if err := db.Create(&entities).Error; err != nil {
