@@ -56,9 +56,10 @@ func (i *initMenu) InitializeData(ctx context.Context) (next context.Context, er
 		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "dashboard", Name: "dashboard", Component: "view/dashboard/index.vue", Sort: 1, Meta: Meta{Title: "仪表盘", Icon: "odometer"}},
 
 		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "operationManagement", Name: "operationManagement", Component: "view/operationManagement/index.vue", Sort: 10, Meta: Meta{Title: "运营管理", Icon: "aim"}},
-		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "advertising", Name: "advertising", Component: "view/advertising/index.vue", Sort: 11, Meta: Meta{Title: "广告管理", Icon: "add-location"}},
-		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "cronTask", Name: "cronTask", Component: "view/cronTask/index.vue", Sort: 12, Meta: Meta{Title: "定时任务", Icon: "timer"}},
-		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "dataReport", Name: "dataReport", Component: "view/dataReport/index.vue", Sort: 13, Meta: Meta{Title: "数据报表", Icon: "data-analysis"}},
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "materialManagement", Name: "materialManagement", Component: "view/material/index.vue", Sort: 11, Meta: Meta{Title: "素材管理", Icon: "picture"}},
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "advertising", Name: "advertising", Component: "view/advertising/index.vue", Sort: 12, Meta: Meta{Title: "广告管理", Icon: "add-location"}},
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "cronTask", Name: "cronTask", Component: "view/cronTask/index.vue", Sort: 13, Meta: Meta{Title: "定时任务", Icon: "timer"}},
+		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "dataReport", Name: "dataReport", Component: "view/dataReport/index.vue", Sort: 14, Meta: Meta{Title: "数据报表", Icon: "data-analysis"}},
 
 		{MenuLevel: 0, Hidden: false, ParentId: 0, Path: "admin", Name: "superAdmin", Component: "view/superAdmin/index.vue", Sort: 30, Meta: Meta{Title: "超级管理员", Icon: "user"}},
 		{MenuLevel: 0, Hidden: true, ParentId: 0, Path: "person", Name: "person", Component: "view/person/person.vue", Sort: 40, Meta: Meta{Title: "个人信息", Icon: "message"}},
@@ -142,6 +143,10 @@ func (i *initMenu) InitializeData(ctx context.Context) (next context.Context, er
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["dataReport"], Path: "dayOverviewList", Name: "dayOverviewList", Component: "view/dataReport/dayOverview/list.vue", Sort: 1, Meta: Meta{Title: "每日总览"}},
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["dataReport"], Path: "retentionStatus", Name: "retentionStatus", Component: "view/dataReport/retentionStatus/list.vue", Sort: 1, Meta: Meta{Title: "留存情况"}},
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["dataReport"], Path: "paymentStatus", Name: "paymentStatus", Component: "view/dataReport/paymentStatus/list.vue", Sort: 1, Meta: Meta{Title: "付费情况"}},
+
+		// 「素材管理」子菜单
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["materialManagement"], Path: "materialThemeList", Name: "materialThemeList", Component: "view/material/theme/list.vue", Sort: 1, Meta: Meta{Title: "题材管理"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["materialManagement"], Path: "materialList", Name: "materialList", Component: "view/material/material/list.vue", Sort: 1, Meta: Meta{Title: "素材库"}},
 	}
 
 	// 创建子菜单
