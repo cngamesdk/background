@@ -23,8 +23,8 @@ type AdvertisingMediaAddReq struct {
 
 func (receiver *AdvertisingMediaAddReq) Format() {
 	receiver.Id = 0
-	receiver.AdvertisingMediaName = strings.TrimSpace(receiver.AdvertisingMediaName)
-	receiver.BelongCommonMedia = strings.TrimSpace(receiver.BelongCommonMedia)
+	receiver.MediaName = strings.TrimSpace(receiver.MediaName)
+	receiver.Code = strings.TrimSpace(receiver.Code)
 }
 
 func (receiver *AdvertisingMediaAddReq) Validate() (err error) {
@@ -32,12 +32,12 @@ func (receiver *AdvertisingMediaAddReq) Validate() (err error) {
 		err = errors2.Wrap(error2.ErrorParamEmpty, "platform_id")
 		return
 	}
-	if validateErr := validate.EmptyString(receiver.AdvertisingMediaName); validateErr != nil {
-		err = validateErr
+	if validateErr := validate.EmptyString(receiver.MediaName); validateErr != nil {
+		err = errors2.Wrap(validateErr, "媒体名称")
 		return
 	}
-	if validateErr := validate.EmptyString(receiver.BelongCommonMedia); validateErr != nil {
-		err = validateErr
+	if validateErr := validate.EmptyString(receiver.Code); validateErr != nil {
+		err = errors2.Wrap(validateErr, "媒体码")
 		return
 	}
 	return
@@ -51,8 +51,8 @@ type AdvertisingMediaModifyReq struct {
 }
 
 func (receiver *AdvertisingMediaModifyReq) Format() {
-	receiver.AdvertisingMediaName = strings.TrimSpace(receiver.AdvertisingMediaName)
-	receiver.BelongCommonMedia = strings.TrimSpace(receiver.BelongCommonMedia)
+	receiver.MediaName = strings.TrimSpace(receiver.MediaName)
+	receiver.Code = strings.TrimSpace(receiver.Code)
 }
 
 func (receiver *AdvertisingMediaModifyReq) Validate() (err error) {
@@ -64,12 +64,12 @@ func (receiver *AdvertisingMediaModifyReq) Validate() (err error) {
 		err = errors2.Wrap(error2.ErrorParamEmpty, "platform_id")
 		return
 	}
-	if validateErr := validate.EmptyString(receiver.AdvertisingMediaName); validateErr != nil {
-		err = validateErr
+	if validateErr := validate.EmptyString(receiver.MediaName); validateErr != nil {
+		err = errors2.Wrap(validateErr, "媒体名称")
 		return
 	}
-	if validateErr := validate.EmptyString(receiver.BelongCommonMedia); validateErr != nil {
-		err = validateErr
+	if validateErr := validate.EmptyString(receiver.Code); validateErr != nil {
+		err = errors2.Wrap(validateErr, "媒体码")
 		return
 	}
 	return

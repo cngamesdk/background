@@ -87,6 +87,7 @@ func RegisterTables() {
 		report.DwsDayRootGameBackOverviewLogModel{},
 		report.DwsDayRootGameBackPayActiveLogModel{},
 
+		advertising.DimAdvertisingDeveloperConfigModel{},
 		advertising.DimAdvertisingMediaModel{},
 		advertising.DimAdvertisingMediaManagementAccountModel{},
 		advertising.DimAdvertisingMediaAccountModel{},

@@ -2,7 +2,6 @@ package operation_management
 
 import (
 	"github.com/cngamesdk/go-core/model/sql"
-	"github.com/cngamesdk/go-core/model/sql/advertising"
 	"github.com/cngamesdk/go-core/model/sql/common"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"gorm.io/gorm"
@@ -10,11 +9,11 @@ import (
 
 type DimGamePackagingConfigModel struct {
 	common.DimGamePackagingConfigModel
-	PlatformName    string `json:"platform_name" gorm:"platform_name"`
-	GameName        string `json:"game_name" gorm:"game_name"`
-	CommonMediaName string `json:"common_media_name" gorm:"-"`
-	StatusName      string `json:"status_name" gorm:"-"`
-	UseStatusName   string `json:"use_status_name" gorm:"-"`
+	PlatformName  string `json:"platform_name" gorm:"platform_name"`
+	GameName      string `json:"game_name" gorm:"game_name"`
+	MediaName     string `json:"media_name" gorm:"media_name"`
+	StatusName    string `json:"status_name" gorm:"-"`
+	UseStatusName string `json:"use_status_name" gorm:"-"`
 }
 
 func NewDimGamePackagingConfigModel() *DimGamePackagingConfigModel {
@@ -30,9 +29,6 @@ func (receiver *DimGamePackagingConfigModel) AfterFind(tx *gorm.DB) (err error) 
 }
 
 func (receiver *DimGamePackagingConfigModel) findHook(tx *gorm.DB) (err error) {
-	if name, ok := advertising.CommonMediasMap[receiver.CommonMedia]; ok {
-		receiver.CommonMediaName = name
-	}
 	if name, ok := sql.StatusMap[receiver.Status]; ok {
 		receiver.StatusName = name
 	}

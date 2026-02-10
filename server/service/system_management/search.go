@@ -379,7 +379,7 @@ func (receiver *SearchService) searchSite(ctx context.Context, req *api.SearchRe
 // searchAgent 搜索渠道
 func (receiver *SearchService) searchCommonMedia(ctx context.Context, req *api.SearchReq) (resp interface{}, err error) {
 	var respList []data
-	for key, item := range advertising2.CommonMediasMap {
+	for key, item := range advertising2.MediaCodesMap {
 		respList = append(respList, data{Key: key, Value: item})
 	}
 	resp = respList
@@ -393,7 +393,7 @@ func (receiver *SearchService) searchMedia(ctx context.Context, req *api.SearchR
 		tmpDb.Where("platform_id = ?", req.PlatformId)
 	}
 	if req.Keyword != "" {
-		tmpDb.Where(" id = ? or advertising_media_name like ?", req.Keyword, "%"+req.Keyword+"%")
+		tmpDb.Where(" id = ? or media_name like ?", req.Keyword, "%"+req.Keyword+"%")
 	}
 	var list []advertising.DimAdvertisingMediaModel
 	if findErr := tmpDb.Limit(50).Find(&list).Error; findErr != nil {
@@ -403,7 +403,7 @@ func (receiver *SearchService) searchMedia(ctx context.Context, req *api.SearchR
 	}
 	var respList []data
 	for _, item := range list {
-		respList = append(respList, data{Key: item.Id, Value: item.AdvertisingMediaName})
+		respList = append(respList, data{Key: item.Id, Value: item.MediaName})
 	}
 	resp = respList
 	return
