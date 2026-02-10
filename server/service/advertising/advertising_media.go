@@ -16,8 +16,8 @@ func (receiver *AdvertisingMediaService) List(ctx context.Context, req *api2.Adv
 	alias := "ad"
 	model := advertising.NewDimAdvertisingMediaModel()
 	tmpDb := model.Db().WithContext(ctx).Table(model.TableName() + " as " + alias)
-	if req.AdvertisingMediaName != "" {
-		tmpDb.Where("id = ? or advertising_media_name like ?", req.AdvertisingMediaName, "%"+req.AdvertisingMediaName+"%")
+	if req.MediaName != "" {
+		tmpDb.Where("id = ? or media_name like ?", req.MediaName, "%"+req.MediaName+"%")
 	}
 	if countErr := tmpDb.Count(&total).Error; countErr != nil {
 		err = countErr

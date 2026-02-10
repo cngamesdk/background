@@ -8,8 +8,7 @@ import (
 
 type DimAdvertisingMediaModel struct {
 	advertising.DimAdvertisingMediaModel
-	PlatformName    string `json:"platform_name" gorm:"platform_name"`
-	CommonMediaName string `json:"common_media_name" gorm:"-"`
+	PlatformName string `json:"platform_name" gorm:"platform_name"`
 }
 
 func NewDimAdvertisingMediaModel() *DimAdvertisingMediaModel {
@@ -25,8 +24,5 @@ func (receiver *DimAdvertisingMediaModel) AfterFind(tx *gorm.DB) (err error) {
 }
 
 func (receiver *DimAdvertisingMediaModel) findHook(tx *gorm.DB) (err error) {
-	if name, ok := advertising.CommonMediasMap[receiver.BelongCommonMedia]; ok {
-		receiver.CommonMediaName = name
-	}
 	return
 }
