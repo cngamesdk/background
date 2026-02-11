@@ -7,11 +7,13 @@ type ApiGroup struct {
 	ChannelGroupApi
 	AgentApi
 	SiteApi
+	AdvertisingDeveloperConfigApi
 }
 
 var (
-	advertisingMediaService = service.ServiceGroupApp.AdvertisingServiceGroup.AdvertisingMediaService
-	channelGroupService     = service.ServiceGroupApp.AdvertisingServiceGroup.ChannelGroupService
-	agentService            = service.ServiceGroupApp.AdvertisingServiceGroup.AgentService
-	siteService             = service.ServiceGroupApp.AdvertisingServiceGroup.SiteService
+	advertisingMediaService           = service.ServiceGroupApp.AdvertisingServiceGroup.AdvertisingMediaService
+	channelGroupService               = service.ServiceGroupApp.AdvertisingServiceGroup.ChannelGroupService
+	agentService                      = service.ServiceGroupApp.AdvertisingServiceGroup.AgentService
+	siteService                       = service.ServiceGroupApp.AdvertisingServiceGroup.SiteService
+	advertisingDeveloperConfigService = service.ServiceGroupApp.AdvertisingServiceGroup.AdvertisingDeveloperConfigService
 )

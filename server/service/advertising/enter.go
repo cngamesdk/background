@@ -5,4 +5,5 @@ type ServiceGroup struct {
 	ChannelGroupService
 	AgentService
 	SiteService
+	AdvertisingDeveloperConfigService
 }
