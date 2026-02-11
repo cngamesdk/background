@@ -107,3 +107,30 @@ export const siteModify = (data) => {
         data
     })
 }
+
+// @Router /advertising/developer-config/list [post]
+export const advertisingDeveloperConfigList = (data) => {
+    return service({
+        url: '/advertising/developer-config/list',
+        method: 'post',
+        data
+    })
+}
+
+// @Router /advertising/developer-config/add [post]
+export const advertisingDeveloperConfigAdd = (data) => {
+    return service({
+        url: '/advertising/developer-config/add',
+        method: 'post',
+        data
+    })
+}
+
+// @Router /advertising/developer-config/modify [post]
+export const advertisingDeveloperConfigModify = (data) => {
+    return service({
+        url: '/advertising/developer-config/modify',
+        method: 'post',
+        data
+    })
+}
