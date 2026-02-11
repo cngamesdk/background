@@ -5,6 +5,8 @@
   "/src/view/advertising/agent/index.vue": "Agent",
   "/src/view/advertising/channelGroup/channelGroup/list.vue": "ChannelGroupList",
   "/src/view/advertising/channelGroup/index.vue": "AgentGroup",
+  "/src/view/advertising/developerConfig/index.vue": "AdvertisingDeveloperConfig",
+  "/src/view/advertising/developerConfig/list/list.vue": "AdvertisingDeveloperConfigList",
   "/src/view/advertising/index.vue": "Advertising",
   "/src/view/advertising/site/index.vue": "Site",
   "/src/view/advertising/site/site/list.vue": "SiteList",
