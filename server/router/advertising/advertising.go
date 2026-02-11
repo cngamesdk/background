@@ -36,5 +36,13 @@ func (s *AdvertisingRouter) InitApiRouter(Router *gin.RouterGroup) {
 			siteGroup.POST("add", siteApi.Add)
 			siteGroup.POST("modify", siteApi.Modify)
 		}
+
+		//媒体开发者配置分组
+		developerConfigGroup := apiRouter.Group("developer-config")
+		{
+			developerConfigGroup.POST("list", advertisingDeveloperConfigApi.List)
+			developerConfigGroup.POST("add", advertisingDeveloperConfigApi.Add)
+			developerConfigGroup.POST("modify", advertisingDeveloperConfigApi.Modify)
+		}
 	}
 }

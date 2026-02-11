@@ -19,6 +19,7 @@ import (
 type data struct {
 	Key   interface{} `json:"key"`
 	Value interface{} `json:"value"`
+	Key2  interface{} `json:"key_2"`
 }
 
 type dataNew struct {
@@ -403,7 +404,7 @@ func (receiver *SearchService) searchMedia(ctx context.Context, req *api.SearchR
 	}
 	var respList []data
 	for _, item := range list {
-		respList = append(respList, data{Key: item.Id, Value: item.MediaName})
+		respList = append(respList, data{Key: item.Id, Value: item.MediaName, Key2: item.Code})
 	}
 	resp = respList
 	return

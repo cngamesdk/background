@@ -7,8 +7,9 @@ type RouterGroup struct {
 }
 
 var (
-	advertisingMediaApi = v1.ApiGroupApp.AdvertisingApiGroup.AdvertisingMediaApi
-	channelGroupApi     = v1.ApiGroupApp.AdvertisingApiGroup.ChannelGroupApi
-	agentApi            = v1.ApiGroupApp.AdvertisingApiGroup.AgentApi
-	siteApi             = v1.ApiGroupApp.AdvertisingApiGroup.SiteApi
+	advertisingMediaApi           = v1.ApiGroupApp.AdvertisingApiGroup.AdvertisingMediaApi
+	channelGroupApi               = v1.ApiGroupApp.AdvertisingApiGroup.ChannelGroupApi
+	agentApi                      = v1.ApiGroupApp.AdvertisingApiGroup.AgentApi
+	siteApi                       = v1.ApiGroupApp.AdvertisingApiGroup.SiteApi
+	advertisingDeveloperConfigApi = v1.ApiGroupApp.AdvertisingApiGroup.AdvertisingDeveloperConfigApi
 )
