@@ -22,6 +22,9 @@ type Adapter interface {
 	Name() string
 	Code() string
 
+	//授权
+	Auth()
+
 	// 初始化
 	Init(config AdapterConfig) error
 	RefreshToken(ctx context.Context) error

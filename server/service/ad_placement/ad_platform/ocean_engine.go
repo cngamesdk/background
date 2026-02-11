@@ -45,20 +45,20 @@ func (o *OceanEngineAdapter) Init(config AdapterConfig) error {
 			return r.StatusCode() >= http.StatusInternalServerError
 		})
 
-	return o.refreshToken(context.Background())
+	return o.RefreshToken(context.Background())
 }
 
-func (o *OceanEngineAdapter) refreshToken(ctx context.Context) error {
+func (o *OceanEngineAdapter) RefreshToken(ctx context.Context) error {
 	o.logger.Info("Refreshing OceanEngine token")
 
 	resp, err := o.client.R().
+		SetHeader("Content-Type", "application/json").
 		SetContext(ctx).
 		SetBody(map[string]string{
-			"app_id":     o.config.AppID,
-			"secret":     o.config.AppSecret,
-			"grant_type": "auth_code",
+			"app_id": o.config.AppID,
+			"secret": o.config.AppSecret,
 		}).
-		Post("/oauth2/access_token")
+		Post("/oauth2/app_access_token")
 
 	if err != nil {
 		return fmt.Errorf("refresh token failed: %v", err)
@@ -92,7 +92,7 @@ func (o *OceanEngineAdapter) refreshToken(ctx context.Context) error {
 
 func (o *OceanEngineAdapter) ensureToken(ctx context.Context) error {
 	if time.Now().Add(5 * time.Minute).After(o.tokenExp) {
-		return o.refreshToken(ctx)
+		return o.RefreshToken(ctx)
 	}
 	return nil
 }
