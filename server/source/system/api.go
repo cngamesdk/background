@@ -225,9 +225,13 @@ func (i *initApi) InitializeData(ctx context.Context) (context.Context, error) {
 		{ApiGroup: "平台管理", Method: "POST", Path: "/operation_management/platform/list", Description: "列表"},
 		{ApiGroup: "平台管理", Method: "POST", Path: "/operation_management/platform/add", Description: "添加"},
 		{ApiGroup: "平台管理", Method: "POST", Path: "/operation_management/platform/modify", Description: "修改"},
+
 		{ApiGroup: "广告管理", Method: "POST", Path: "/advertising/media/list", Description: "媒体列表"},
 		{ApiGroup: "广告管理", Method: "POST", Path: "/advertising/media/add", Description: "媒体新增"},
 		{ApiGroup: "广告管理", Method: "POST", Path: "/advertising/media/modify", Description: "媒体修改"},
+		{ApiGroup: "广告管理", Method: "POST", Path: "/advertising/developer-config/list", Description: "媒体开发配置列表"},
+		{ApiGroup: "广告管理", Method: "POST", Path: "/advertising/developer-config/add", Description: "媒体开发配置新增"},
+		{ApiGroup: "广告管理", Method: "POST", Path: "/advertising/developer-config/modify", Description: "媒体开发配置修改"},
 		{ApiGroup: "广告管理", Method: "POST", Path: "/advertising/channel-group/list", Description: "渠道组列表"},
 		{ApiGroup: "广告管理", Method: "POST", Path: "/advertising/channel-group/add", Description: "渠道组新增"},
 		{ApiGroup: "广告管理", Method: "POST", Path: "/advertising/channel-group/modify", Description: "渠道组修改"},
