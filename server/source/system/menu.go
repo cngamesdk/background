@@ -131,10 +131,11 @@ func (i *initMenu) InitializeData(ctx context.Context) (next context.Context, er
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["operationManagement"], Path: "gamePackagingLogList", Name: "gamePackagingLogList", Component: "view/operationManagement/gamePackaging/log/list.vue", Sort: 13, Meta: Meta{Title: "游戏打包"}},
 
 		// 「广告管理」子菜单
-		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "advertisingMediaList", Name: "advertisingMediaList", Component: "view/advertising/advertisingMedia/media/list.vue", Sort: 1, Meta: Meta{Title: "媒体"}},
-		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "channelGroupList", Name: "channelGroupList", Component: "view/advertising/channelGroup/channelGroup/list.vue", Sort: 2, Meta: Meta{Title: "渠道组"}},
-		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "agentList", Name: "agentList", Component: "view/advertising/agent/agent/list.vue", Sort: 3, Meta: Meta{Title: "渠道"}},
-		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "siteList", Name: "siteList", Component: "view/advertising/site/site/list.vue", Sort: 4, Meta: Meta{Title: "广告位"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "advertisingMediaList", Name: "advertisingMediaList", Component: "view/advertising/advertisingMedia/media/list.vue", Sort: 10, Meta: Meta{Title: "媒体"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "advertisingDeveloperConfigList", Name: "advertisingDeveloperConfigList", Component: "view/advertising/developerConfig/list/list.vue", Sort: 20, Meta: Meta{Title: "开发者管理"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "channelGroupList", Name: "channelGroupList", Component: "view/advertising/channelGroup/channelGroup/list.vue", Sort: 30, Meta: Meta{Title: "渠道组"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "agentList", Name: "agentList", Component: "view/advertising/agent/agent/list.vue", Sort: 40, Meta: Meta{Title: "渠道"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "siteList", Name: "siteList", Component: "view/advertising/site/site/list.vue", Sort: 50, Meta: Meta{Title: "广告位"}},
 
 		// 「定时任务」子菜单
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["cronTask"], Path: "cronTaskConfigList", Name: "cronTaskConfigList", Component: "view/cronTask/config/list.vue", Sort: 1, Meta: Meta{Title: "任务列表"}},
