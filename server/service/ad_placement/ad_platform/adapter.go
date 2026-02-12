@@ -2,8 +2,11 @@ package ad_platform
 
 import (
 	"context"
+	error2 "github.com/cngamesdk/go-core/model/error"
 	"github.com/cngamesdk/go-core/model/sql/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising/api"
+	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"time"
 )
 
@@ -15,6 +18,18 @@ type AdapterConfig struct {
 	AccessToken  string        `json:"access_token"`
 	BaseURL      string        `json:"base_url"`
 	Timeout      time.Duration `json:"timeout"`
+}
+
+// GetAdapterFactory 获取适配器工厂
+func GetAdapterFactory(code string, logger *zap.Logger) (resp Adapter, err error) {
+	switch code {
+	case advertising.MediaCodeOceanengine:
+		resp = NewOceanEngineAdapter(logger)
+		return
+	default:
+		err = errors.Wrap(error2.ErrorParamEmpty, code)
+		return
+	}
 }
 
 // Adapter 平台适配器接口
