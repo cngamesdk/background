@@ -3,6 +3,7 @@ package ad_platform
 import (
 	"context"
 	"github.com/cngamesdk/go-core/model/sql/advertising"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising/api"
 	"time"
 )
 
@@ -23,7 +24,7 @@ type Adapter interface {
 	Code() string
 
 	//授权
-	Auth()
+	AuthRedirect(ctx context.Context, req api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error)
 
 	// 初始化
 	Init(config AdapterConfig) error
