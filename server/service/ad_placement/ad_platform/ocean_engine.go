@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/cngamesdk/go-core/model/sql/advertising"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising/api"
 	"github.com/go-resty/resty/v2"
 	"go.uber.org/zap"
 	"net/http"
@@ -30,7 +31,11 @@ func (o *OceanEngineAdapter) Name() string {
 }
 
 func (o *OceanEngineAdapter) Code() string {
-	return "ocean_engine"
+	return "oceanengine"
+}
+
+func (o *OceanEngineAdapter) AuthRedirect(ctx context.Context, req api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error) {
+	return
 }
 
 func (o *OceanEngineAdapter) Init(config AdapterConfig) error {
