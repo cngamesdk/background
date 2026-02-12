@@ -31,7 +31,7 @@ func (o *OceanEngineAdapter) Name() string {
 }
 
 func (o *OceanEngineAdapter) Code() string {
-	return "oceanengine"
+	return advertising.MediaCodeOceanengine
 }
 
 func (o *OceanEngineAdapter) AuthRedirect(ctx context.Context, req api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error) {
@@ -203,4 +203,40 @@ func (o *OceanEngineAdapter) convertLocation(locations []string) []map[string]in
 		})
 	}
 	return result
+}
+
+func (o *OceanEngineAdapter) UpdateCampaign(ctx context.Context, externalID string, req *UpdateCampaignRequest) (resp *CampaignResponse, err error) {
+	return
+}
+
+func (o *OceanEngineAdapter) PauseCampaign(ctx context.Context, externalID string) (err error) {
+	return
+}
+
+func (o *OceanEngineAdapter) ResumeCampaign(ctx context.Context, externalID string) (err error) {
+	return
+}
+
+func (o *OceanEngineAdapter) DeleteCampaign(ctx context.Context, externalID string) (err error) {
+	return
+}
+
+func (o *OceanEngineAdapter) GetCampaign(ctx context.Context, externalID string) (resp *CampaignResponse, err error) {
+	return
+}
+
+func (o *OceanEngineAdapter) SyncCampaigns(ctx context.Context, startTime, endTime time.Time) (resp []*CampaignResponse, err error) {
+	return
+}
+
+func (o *OceanEngineAdapter) GetMetrics(ctx context.Context, externalID string, startDate, endDate string) (resp []*DailyMetrics, err error) {
+	return
+}
+
+func (o *OceanEngineAdapter) GetBalance(ctx context.Context) (resp float64, err error) {
+	return
+}
+
+func (o OceanEngineAdapter) GetDailyReport(ctx context.Context, date string) (resp []*DailyMetrics, err error) {
+	return
 }
