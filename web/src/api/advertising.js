@@ -134,3 +134,12 @@ export const advertisingDeveloperConfigModify = (data) => {
         data
     })
 }
+
+// @Router /advertising/auth/redirect [post]
+export const advertisingAuthRedirect = (data) => {
+    return service({
+        url: '/advertising/auth/redirect',
+        method: 'post',
+        data
+    })
+}
