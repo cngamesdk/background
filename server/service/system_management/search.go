@@ -53,6 +53,7 @@ func (receiver *SearchService) Search(ctx context.Context, req *api.SearchReq) (
 		"channel-group":          receiver.searchChannelGroup,
 		"settlement-type":        receiver.searchSettlementType,
 		"material-theme":         receiver.searchMaterialTheme,
+		"advertising-developer":  receiver.searchAdvertisingDeveloper,
 	}
 	searchFun, ok := dimTypes[req.DimType]
 	if !ok {
@@ -485,5 +486,26 @@ func (receiver *SearchService) searchMaterialTheme(ctx context.Context, req *api
 		}
 	}
 	resp = formatData
+	return
+}
+
+func (receiver *SearchService) searchAdvertisingDeveloper(ctx context.Context, req *api.SearchReq) (resp interface{}, err error) {
+	var respList []data
+	model := advertising.DimAdvertisingDeveloperConfigModel{}
+	var list []advertising.DimAdvertisingDeveloperConfigModel
+	listErr := global.GVA_DB.
+		WithContext(ctx).
+		Table(model.TableName()).
+		Select("id,name").
+		Where("platform_id = ? and code = ?", req.PlatformId, req.Keyword).Find(&list).Error
+	if listErr != nil {
+		err = errors.Wrap(listErr, "获取列表")
+		global.GVA_LOG.Error("获取列表异常", zap.Error(listErr))
+		return
+	}
+	for _, item := range list {
+		respList = append(respList, data{Key: item.Id, Value: item.Name})
+	}
+	resp = respList
 	return
 }
