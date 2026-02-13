@@ -3,6 +3,8 @@
   "/src/view/advertising/advertisingMedia/media/list.vue": "AdvertisingMediaList",
   "/src/view/advertising/agent/agent/list.vue": "AgentList",
   "/src/view/advertising/agent/index.vue": "Agent",
+  "/src/view/advertising/auth/index.vue": "AdvertisingAuth",
+  "/src/view/advertising/auth/redirect/redirect.vue": "AdvertisingAuthRedirect",
   "/src/view/advertising/channelGroup/channelGroup/list.vue": "ChannelGroupList",
   "/src/view/advertising/channelGroup/index.vue": "AgentGroup",
   "/src/view/advertising/developerConfig/index.vue": "AdvertisingDeveloperConfig",

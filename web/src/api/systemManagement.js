@@ -222,3 +222,14 @@ export const getMaterialTheme = (data) => {
         data
     })
 }
+
+// getAdvertisingDeveloper 获取开发者
+export const getAdvertisingDeveloper = (data) => {
+    data = {dim_type: 'advertising-developer', ...data}
+    return service({
+        url: baseSearchUrl,
+        method: 'post',
+        data
+    })
+}
+

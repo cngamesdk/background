@@ -334,9 +334,3 @@ const submitConfigInfo = async () => {
 }
 
 </script>
-
-<style lang="scss">
-.header-img-box {
-  @apply w-52 h-52 border border-solid border-gray-300 rounded-xl flex justify-center items-center cursor-pointer;
-}
-</style>
