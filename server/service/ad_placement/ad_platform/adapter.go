@@ -39,7 +39,7 @@ type Adapter interface {
 	Code() string
 
 	//授权
-	AuthRedirect(ctx context.Context, req api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error)
+	AuthRedirect(ctx context.Context, req *api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error)
 
 	// 初始化
 	Init(config AdapterConfig) error

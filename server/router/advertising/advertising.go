@@ -44,5 +44,11 @@ func (s *AdvertisingRouter) InitApiRouter(Router *gin.RouterGroup) {
 			developerConfigGroup.POST("add", advertisingDeveloperConfigApi.Add)
 			developerConfigGroup.POST("modify", advertisingDeveloperConfigApi.Modify)
 		}
+
+		//媒体授权分组
+		authGroup := apiRouter.Group("auth")
+		{
+			authGroup.POST("redirect", advertisingAuthApi.Redirect)
+		}
 	}
 }
