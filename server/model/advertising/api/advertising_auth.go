@@ -18,7 +18,7 @@ type AdvertisingAuthRedirectReq struct {
 	State string `json:"state"`
 }
 
-func (receiver *AdvertisingAuthRedirectReq) Format(ctx context.Context) {
+func (receiver *AdvertisingAuthRedirectReq) Format() {
 	receiver.State = ""
 }
 

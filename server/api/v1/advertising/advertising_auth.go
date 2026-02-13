@@ -18,6 +18,11 @@ func (receiver *AdvertisingAuthApi) Redirect(ctx *gin.Context) {
 		response.FailWithMessage(translator.DealErr(err).Error(), ctx)
 		return
 	}
+	req.Format()
+	if err := req.Validate(ctx); err != nil {
+		response.FailWithMessage(err.Error(), ctx)
+		return
+	}
 	resp, respErr := advertisingAuthService.Redirect(ctx, &req)
 	if respErr != nil {
 		global.GVA_LOG.Error("获取失败", zap.Error(respErr))

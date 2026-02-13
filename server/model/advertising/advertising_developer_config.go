@@ -20,3 +20,7 @@ func NewDimAdvertisingDeveloperConfigModel() *DimAdvertisingDeveloperConfigModel
 	}
 	return model
 }
+
+func (receiver *DimAdvertisingDeveloperConfigModel) AfterFind(tx *gorm.DB) (err error) {
+	return receiver.DimAdvertisingDeveloperConfigModel.AfterFind(tx)
+}
