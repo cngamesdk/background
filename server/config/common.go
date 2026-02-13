@@ -5,6 +5,7 @@ import "github.com/cngamesdk/go-core/config"
 type CommonConfig struct {
 	config.CommonConfig `yaml:",inline" mapstructure:",squash"`
 	GamePackaging       GamePackaging `mapstructure:"game_packaging" json:"game_packaging" yaml:"game_packaging"` // 游戏打包配置
+	Endpoint            string        `mapstructure:"endpoint" json:"endpoint" yaml:"endpoint"`                   // 接入点
 }
 
 type GamePackaging struct {

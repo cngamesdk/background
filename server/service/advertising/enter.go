@@ -6,4 +6,5 @@ type ServiceGroup struct {
 	AgentService
 	SiteService
 	AdvertisingDeveloperConfigService
+	AdvertisingAuthService
 }

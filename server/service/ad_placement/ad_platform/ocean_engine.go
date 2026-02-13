@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/cngamesdk/go-core/model/sql/advertising"
+	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising/api"
 	"github.com/go-resty/resty/v2"
 	"go.uber.org/zap"
@@ -34,7 +35,13 @@ func (o *OceanEngineAdapter) Code() string {
 	return advertising.MediaCodeOceanengine
 }
 
-func (o *OceanEngineAdapter) AuthRedirect(ctx context.Context, req api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error) {
+func (o *OceanEngineAdapter) GetAuthCallbackUrl() string {
+	return global.GVA_CONFIG.Common.Endpoint + "/advertising/auth/callback"
+}
+
+func (o *OceanEngineAdapter) AuthRedirect(ctx context.Context, req *api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error) {
+	url := fmt.Sprintf("https://ad.oceanengine.com/openapi/audit/oauth.html?app_id=%s&material_auth=1&state=%s&redirect_uri=%s", req.AppId, req.State, o.GetAuthCallbackUrl())
+	resp.Url = url
 	return
 }
 

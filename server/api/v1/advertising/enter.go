@@ -8,6 +8,7 @@ type ApiGroup struct {
 	AgentApi
 	SiteApi
 	AdvertisingDeveloperConfigApi
+	AdvertisingAuthApi
 }
 
 var (
@@ -16,4 +17,5 @@ var (
 	agentService                      = service.ServiceGroupApp.AdvertisingServiceGroup.AgentService
 	siteService                       = service.ServiceGroupApp.AdvertisingServiceGroup.SiteService
 	advertisingDeveloperConfigService = service.ServiceGroupApp.AdvertisingServiceGroup.AdvertisingDeveloperConfigService
+	advertisingAuthService            = service.ServiceGroupApp.AdvertisingServiceGroup.AdvertisingAuthService
 )
