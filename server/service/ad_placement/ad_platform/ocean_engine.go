@@ -13,6 +13,12 @@ import (
 	"time"
 )
 
+const (
+	OceanEngineApiUrl  = "https://api.oceanengine.com"
+	OceanEngineOpenUrl = "https://open.oceanengine.com"
+	OceanEngineAdUrl   = "https://ad.oceanengine.com"
+)
+
 type OceanEngineAdapter struct {
 	config   AdapterConfig
 	client   *resty.Client
