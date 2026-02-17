@@ -15,7 +15,8 @@ import (
 
 type AdvertisingAuthRedirectReq struct {
 	advertising.DimAdvertisingDeveloperConfigModel
-	State string `json:"state"`
+	State    string `json:"state"`
+	AuthType string `json:"auth_type"`
 }
 
 func (receiver *AdvertisingAuthRedirectReq) Format() {
