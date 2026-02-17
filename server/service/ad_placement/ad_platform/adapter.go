@@ -29,6 +29,9 @@ func GetAdapterFactory(code string, logger *zap.Logger) (resp Adapter, err error
 	case advertising.MediaCodeTencent:
 		resp = NewTencentAdAdapter(logger)
 		return
+	case advertising.MediaCodeKuaishou:
+		resp = NewKuaiShouAdapter(logger)
+		return
 	default:
 		err = errors.Wrap(error2.ErrorParamEmpty, code)
 		return
