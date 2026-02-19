@@ -46,6 +46,7 @@ type Adapter interface {
 
 	//授权
 	AuthRedirect(ctx context.Context, req *api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error)
+	AuthCallback(ctx context.Context, req map[string]interface{}) (resp AuthCallbackResp, err error)
 
 	// 初始化
 	Init(config AdapterConfig) error
@@ -66,6 +67,13 @@ type Adapter interface {
 	// 账户管理
 	GetBalance(ctx context.Context) (float64, error)
 	GetDailyReport(ctx context.Context, date string) ([]*DailyMetrics, error)
+}
+
+type AuthCallbackResp struct {
+	AccessToken           string `json:"access_token"`
+	RefreshToken          string `json:"refresh_token"`
+	ExpiresIn             int    `json:"expires_in"`
+	RefreshTokenExpiresIn int    `json:"refresh_token_expires_in"`
 }
 
 // CreateCampaignRequest 创建投放请求

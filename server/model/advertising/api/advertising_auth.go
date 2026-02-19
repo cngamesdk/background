@@ -13,10 +13,15 @@ import (
 	"net/url"
 )
 
+type AuthStateData struct {
+	UserId      uint  `json:"user_id"`
+	DeveloperId int64 `json:"developer_id"`
+}
+
 type AdvertisingAuthRedirectReq struct {
 	advertising.DimAdvertisingDeveloperConfigModel
 	State    string `json:"state"`
-	AuthType string `json:"auth_type"`
+	AuthType string `json:"auth_type"` // 磁力引擎引擎存在授权类型
 }
 
 func (receiver *AdvertisingAuthRedirectReq) Format() {
@@ -38,8 +43,15 @@ func (receiver *AdvertisingAuthRedirectReq) Validate(ctx context.Context) (err e
 		err = errors2.Wrap(claimsErr, "获取登录信息异常")
 		return
 	}
-	stateData := map[string]interface{}{
-		"user_id": claims.BaseClaims.ID,
+
+	model := advertising.NewDimAdvertisingDeveloperConfigModel()
+	if takeErr := model.Take(ctx, "*", "id = ?", receiver.Id); takeErr != nil {
+		err = errors2.Wrap(error2.ErrorRecordIsNotFind, "配置不存在")
+		return
+	}
+	stateData := AuthStateData{
+		UserId:      claims.BaseClaims.ID,
+		DeveloperId: receiver.Id,
 	}
 	stateDataByte, stateDataErr := json.Marshal(stateData)
 	if stateDataErr != nil {
@@ -48,12 +60,6 @@ func (receiver *AdvertisingAuthRedirectReq) Validate(ctx context.Context) (err e
 	}
 	cryptStateData := cryptor.AesEcbEncrypt(stateDataByte, []byte(global.GVA_CONFIG.Common.AesCryptKey))
 	receiver.State = url.QueryEscape(string(cryptStateData))
-
-	model := advertising.NewDimAdvertisingDeveloperConfigModel()
-	if takeErr := model.Take(ctx, "*", "id = ?", receiver.Id); takeErr != nil {
-		err = errors2.Wrap(error2.ErrorRecordIsNotFind, "配置不存在")
-		return
-	}
 
 	receiver.DimAdvertisingDeveloperConfigModel = *model
 
