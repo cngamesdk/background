@@ -55,7 +55,7 @@ func (o *KuaiShouAdapter) Code() string {
 }
 
 func (o *KuaiShouAdapter) GetAuthCallbackUrl() string {
-	return global.GVA_CONFIG.Common.Endpoint + "/advertising/auth/callback"
+	return global.GVA_CONFIG.Common.Endpoint + "/advertising/auth/callback" + o.Code()
 }
 
 func (o *KuaiShouAdapter) AuthRedirect(ctx context.Context, req *api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error) {
