@@ -40,7 +40,7 @@ func (o *TencentAdAdapter) Code() string {
 }
 
 func (o *TencentAdAdapter) GetAuthCallbackUrl() string {
-	return global.GVA_CONFIG.Common.Endpoint + "/advertising/auth/callback"
+	return global.GVA_CONFIG.Common.Endpoint + "/advertising/auth/callback" + o.Code()
 }
 
 func (o *TencentAdAdapter) AuthRedirect(ctx context.Context, req *api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error) {

@@ -45,7 +45,7 @@ func (o *OceanEngineAdapter) Code() string {
 }
 
 func (o *OceanEngineAdapter) GetAuthCallbackUrl() string {
-	return global.GVA_CONFIG.Common.Endpoint + "/advertising/auth/callback"
+	return global.GVA_CONFIG.Common.Endpoint + "/advertising/auth/callback/" + o.Code()
 }
 
 func (o *OceanEngineAdapter) AuthRedirect(ctx context.Context, req *api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error) {
