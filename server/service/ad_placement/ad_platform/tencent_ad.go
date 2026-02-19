@@ -49,6 +49,10 @@ func (o *TencentAdAdapter) AuthRedirect(ctx context.Context, req *api.Advertisin
 	return
 }
 
+func (o *TencentAdAdapter) AuthCallback(ctx context.Context, req map[string]interface{}) (resp AuthCallbackResp, err error) {
+	return
+}
+
 func (o *TencentAdAdapter) Init(config AdapterConfig) error {
 	o.config = config
 	o.client = resty.New().

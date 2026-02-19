@@ -8,6 +8,8 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising/api"
 	"github.com/go-resty/resty/v2"
+	"github.com/pkg/errors"
+	"github.com/spf13/cast"
 	"go.uber.org/zap"
 	"net/http"
 	"time"
@@ -20,6 +22,7 @@ const (
 )
 
 type OceanEngineAdapter struct {
+	baseAd
 	config   AdapterConfig
 	client   *resty.Client
 	logger   *zap.Logger
@@ -51,6 +54,50 @@ func (o *OceanEngineAdapter) AuthRedirect(ctx context.Context, req *api.Advertis
 	return
 }
 
+func (o *OceanEngineAdapter) AuthCallback(ctx context.Context, req map[string]interface{}) (resp AuthCallbackResp, err error) {
+	authCode, ok := req["auth_code"]
+	if !ok {
+		err = errors.New("auth code is not exists")
+		return
+	}
+	state, okState := req["state"]
+	if !okState {
+		err = errors.New("state is not exists")
+		return
+	}
+	formatState, formatStateErr := o.formatState(cast.ToString(state))
+	if formatStateErr != nil {
+		err = formatStateErr
+		o.logger.Error("format state error", zap.Error(formatStateErr))
+		return
+	}
+	developerInfo, infoErr := o.getDeveloperInfo(ctx, formatState.DeveloperId)
+	if infoErr != nil {
+		err = infoErr
+		o.logger.Error("get developer info error", zap.Error(infoErr))
+	}
+	response, responseErr := o.client.
+		SetBaseURL(OceanEngineApiUrl).
+		R().
+		SetHeader("Content-Type", "application/json").
+		SetContext(ctx).SetBody(map[string]interface{}{
+		"app_id":    developerInfo.AppId,
+		"secret":    developerInfo.Secret,
+		"auth_code": authCode,
+	}).Post("/open_api/oauth2/access_token/")
+	if responseErr != nil {
+		err = responseErr
+		o.logger.Error("request token error", zap.Error(responseErr))
+		return
+	}
+	if dealErr := o.dealResponse(response, &resp); dealErr != nil {
+		err = dealErr
+		o.logger.Error("deal response error", zap.Error(dealErr))
+		return
+	}
+	return
+}
+
 func (o *OceanEngineAdapter) Init(config AdapterConfig) error {
 	o.config = config
 	o.client = resty.New().
@@ -64,6 +111,42 @@ func (o *OceanEngineAdapter) Init(config AdapterConfig) error {
 		})
 
 	return o.RefreshToken(context.Background())
+}
+
+func (o *OceanEngineAdapter) dealResponse(req *resty.Response, dst interface{}) (err error) {
+	if req == nil {
+		err = errors.New("the response is nil")
+		return
+	}
+	var result struct {
+		Code      int                    `json:"code"`
+		Message   string                 `json:"message"`
+		RequestId string                 `json:"request_id"`
+		Data      map[string]interface{} `json:"data"`
+	}
+	if errJson := json.Unmarshal(req.Body(), &result); errJson != nil {
+		err = errJson
+		return
+	}
+	if result.Code != 0 {
+		err = errors.New(fmt.Sprintf("code: %d, message: %s, request_id: %s", result.Code, result.Message, result.RequestId))
+		o.logger.Error("return error",
+			zap.Any("header", req.Request.Header),
+			zap.Any("url", req.Request.URL),
+			zap.Any("body", req.Request.Body),
+			zap.Any("response", req.Body()))
+		return
+	}
+	tempData, tempErr := json.Marshal(result.Data)
+	if tempErr != nil {
+		err = errors.Wrap(tempErr, "json marshal error")
+		return
+	}
+	if unmarshalErr := json.Unmarshal(tempData, dst); unmarshalErr != nil {
+		err = unmarshalErr
+		return
+	}
+	return
 }
 
 func (o *OceanEngineAdapter) RefreshToken(ctx context.Context) error {

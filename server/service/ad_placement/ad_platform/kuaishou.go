@@ -77,6 +77,10 @@ func (o *KuaiShouAdapter) AuthRedirect(ctx context.Context, req *api.Advertising
 	return
 }
 
+func (o *KuaiShouAdapter) AuthCallback(ctx context.Context, req map[string]interface{}) (resp AuthCallbackResp, err error) {
+	return
+}
+
 func (o *KuaiShouAdapter) Init(config AdapterConfig) error {
 	o.config = config
 	o.client = resty.New().
