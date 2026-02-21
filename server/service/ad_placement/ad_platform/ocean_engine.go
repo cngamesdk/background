@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/cngamesdk/go-core/model/sql/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	advertising2 "github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising/api"
 	"github.com/go-resty/resty/v2"
 	"github.com/pkg/errors"
@@ -93,6 +94,43 @@ func (o *OceanEngineAdapter) AuthCallback(ctx context.Context, req map[string]in
 	if dealErr := o.dealResponse(response, &resp); dealErr != nil {
 		err = dealErr
 		o.logger.Error("deal response error", zap.Error(dealErr))
+		return
+	}
+	resp.State = formatState
+	resp.ExpiresAt = time.Now().Add(time.Duration(resp.ExpiresIn) * time.Second)
+	resp.RefreshTokenExpiresAt = time.Now().Add(time.Duration(resp.RefreshTokenExpiresIn) * time.Second)
+	return
+}
+
+// AuthAdvertiserGet 授权后获取广告主
+func (o *OceanEngineAdapter) AuthAdvertiserGet(ctx context.Context) (resp []advertising2.DimAdvertisingMediaAccountModel, err error) {
+	response, responseErr := o.client.
+		SetBaseURL(OceanEngineApiUrl).
+		R().
+		SetContext(ctx).
+		SetQueryParam("access_token", o.config.AccessToken).
+		Get("/open_api/oauth2/advertiser/get/")
+	if responseErr != nil {
+		err = responseErr
+		o.logger.Error("授权后获取广告主信息异常", zap.Error(responseErr))
+		return
+	}
+	type result struct {
+		AdvertiserId   int64  `json:"advertiser_id"`
+		AdvertiserName string `json:"advertiser_name"`
+		AccountRole    string `json:"account_role"`
+		IsValid        bool   `json:"is_valid"`
+		CompanyList    []struct {
+			CustomerCompanyId   int64  `json:"customer_company_id"`
+			CustomerCompanyName string `json:"customer_company_name"`
+		} `json:"company_list"`
+		AccountStringId string `json:"account_string_id"`
+	}
+	var list []result
+	formatResponseErr := o.dealResponse(response, &list)
+	if formatResponseErr != nil {
+		err = formatResponseErr
+		o.logger.Error("处理返回异常", zap.Error(formatResponseErr))
 		return
 	}
 	return

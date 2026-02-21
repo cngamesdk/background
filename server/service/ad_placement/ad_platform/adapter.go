@@ -70,10 +70,13 @@ type Adapter interface {
 }
 
 type AuthCallbackResp struct {
-	AccessToken           string `json:"access_token"`
-	RefreshToken          string `json:"refresh_token"`
-	ExpiresIn             int    `json:"expires_in"`
-	RefreshTokenExpiresIn int    `json:"refresh_token_expires_in"`
+	State                 api.AuthStateData
+	AccessToken           string    `json:"access_token"`
+	RefreshToken          string    `json:"refresh_token"`
+	ExpiresIn             int       `json:"expires_in"`
+	ExpiresAt             time.Time `json:"expires_at"`
+	RefreshTokenExpiresIn int       `json:"refresh_token_expires_in"`
+	RefreshTokenExpiresAt time.Time `json:"refresh_token_expires_at"`
 }
 
 // CreateCampaignRequest 创建投放请求

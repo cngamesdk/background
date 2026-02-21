@@ -2,7 +2,9 @@ package advertising
 
 import (
 	"context"
+	"github.com/cngamesdk/go-core/model/sql"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising/api"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/ad_placement/ad_platform"
 	"github.com/pkg/errors"
@@ -45,5 +47,17 @@ func (a *AdvertisingAuthService) Callback(ctx context.Context, req map[string]in
 		return
 	}
 	//授权回调入库
+	model := advertising.NewDimAdvertisingMediaAccountModel()
+	model.PlatformId = respAuthCallback.State.PlatformId
+	model.AccessToken = respAuthCallback.AccessToken
+	model.RefreshToken = respAuthCallback.RefreshToken
+	model.ExpiresAt = sql.MyCustomDatetime(respAuthCallback.ExpiresAt)
+	model.RefreshTokenExpiresAt = sql.MyCustomDatetime(respAuthCallback.RefreshTokenExpiresAt)
+	model.DeveloperId = respAuthCallback.State.DeveloperId
+	if createErr := model.Create(ctx); createErr != nil {
+		err = createErr
+		global.GVA_LOG.Error("保存TOKEN异常", zap.Error(createErr))
+		return
+	}
 	return
 }
