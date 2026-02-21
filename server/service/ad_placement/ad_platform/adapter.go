@@ -4,6 +4,7 @@ import (
 	"context"
 	error2 "github.com/cngamesdk/go-core/model/error"
 	"github.com/cngamesdk/go-core/model/sql/advertising"
+	advertising2 "github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising/api"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
@@ -47,6 +48,7 @@ type Adapter interface {
 	//授权
 	AuthRedirect(ctx context.Context, req *api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error)
 	AuthCallback(ctx context.Context, req map[string]interface{}) (resp AuthCallbackResp, err error)
+	AuthAdvertiserGet(ctx context.Context, token string) (resp []advertising2.DimAdvertisingMediaAccountModel, err error)
 
 	// 初始化
 	Init(config AdapterConfig) error

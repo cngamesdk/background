@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/cngamesdk/go-core/model/sql/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	advertising2 "github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising/api"
 	"github.com/go-resty/resty/v2"
 	"github.com/pkg/errors"
@@ -78,6 +79,11 @@ func (o *KuaiShouAdapter) AuthRedirect(ctx context.Context, req *api.Advertising
 }
 
 func (o *KuaiShouAdapter) AuthCallback(ctx context.Context, req map[string]interface{}) (resp AuthCallbackResp, err error) {
+	return
+}
+
+// AuthAdvertiserGet 授权后获取广告主
+func (o *KuaiShouAdapter) AuthAdvertiserGet(ctx context.Context, token string) (resp []advertising2.DimAdvertisingMediaAccountModel, err error) {
 	return
 }
 
