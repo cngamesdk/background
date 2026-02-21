@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
 	"go.uber.org/zap"
+	"gorm.io/gorm/clause"
 )
 
 type AdvertisingAuthService struct {
@@ -46,18 +47,43 @@ func (a *AdvertisingAuthService) Callback(ctx context.Context, req map[string]in
 		global.GVA_LOG.Error("授权回调异常", zap.Error(respAuthCallbackErr))
 		return
 	}
-	//授权回调入库
-	model := advertising.NewDimAdvertisingMediaAccountModel()
-	model.PlatformId = respAuthCallback.State.PlatformId
-	model.AccessToken = respAuthCallback.AccessToken
-	model.RefreshToken = respAuthCallback.RefreshToken
-	model.ExpiresAt = sql.MyCustomDatetime(respAuthCallback.ExpiresAt)
-	model.RefreshTokenExpiresAt = sql.MyCustomDatetime(respAuthCallback.RefreshTokenExpiresAt)
-	model.DeveloperId = respAuthCallback.State.DeveloperId
-	if createErr := model.Create(ctx); createErr != nil {
-		err = createErr
-		global.GVA_LOG.Error("保存TOKEN异常", zap.Error(createErr))
+
+	//拉取帐户信息
+	accounts, accountsErr := adapter.AuthAdvertiserGet(ctx, respAuthCallback.AccessToken)
+	if accountsErr != nil {
+		err = accountsErr
+		global.GVA_LOG.Error("拉取帐户列表异常", zap.Error(accountsErr))
 		return
 	}
+
+	var sqlData []advertising.DimAdvertisingMediaAccountModel
+	for _, item := range accounts {
+		insertModel := advertising.DimAdvertisingMediaAccountModel{}
+		insertModel.Code = cast.ToString(code)
+		insertModel.PlatformId = respAuthCallback.State.PlatformId
+		insertModel.AccessToken = respAuthCallback.AccessToken
+		insertModel.RefreshToken = respAuthCallback.RefreshToken
+		insertModel.ExpiresAt = sql.MyCustomDatetime(respAuthCallback.ExpiresAt)
+		insertModel.RefreshTokenExpiresAt = sql.MyCustomDatetime(respAuthCallback.RefreshTokenExpiresAt)
+		insertModel.DeveloperId = respAuthCallback.State.DeveloperId
+		insertModel.AccountId = item.AccountId
+		insertModel.AccountName = item.AccountName
+		insertModel.Role = item.Role
+		insertModel.Status = sql.StatusNormal
+		insertModel.Extension = item.Extension
+		sqlData = append(sqlData, insertModel)
+	}
+	batchErr := global.GVA_DB.WithContext(ctx).
+		Table((&advertising.DimAdvertisingMediaAccountModel{}).TableName()).
+		Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "code"}, {Name: "account_id"}},
+			UpdateAll: true, // 更新除主键外的所有字段
+		}).CreateInBatches(&sqlData, 100).Error
+	if batchErr != nil {
+		err = batchErr
+		global.GVA_LOG.Error("批量操作异常", zap.Error(batchErr), zap.Any("data", sqlData))
+		return
+	}
+
 	return
 }

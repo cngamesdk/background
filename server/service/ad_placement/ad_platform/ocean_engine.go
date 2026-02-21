@@ -103,12 +103,12 @@ func (o *OceanEngineAdapter) AuthCallback(ctx context.Context, req map[string]in
 }
 
 // AuthAdvertiserGet 授权后获取广告主
-func (o *OceanEngineAdapter) AuthAdvertiserGet(ctx context.Context) (resp []advertising2.DimAdvertisingMediaAccountModel, err error) {
+func (o *OceanEngineAdapter) AuthAdvertiserGet(ctx context.Context, token string) (resp []advertising2.DimAdvertisingMediaAccountModel, err error) {
 	response, responseErr := o.client.
 		SetBaseURL(OceanEngineApiUrl).
 		R().
 		SetContext(ctx).
-		SetQueryParam("access_token", o.config.AccessToken).
+		SetQueryParam("access_token", token).
 		Get("/open_api/oauth2/advertiser/get/")
 	if responseErr != nil {
 		err = responseErr
@@ -132,6 +132,19 @@ func (o *OceanEngineAdapter) AuthAdvertiserGet(ctx context.Context) (resp []adve
 		err = formatResponseErr
 		o.logger.Error("处理返回异常", zap.Error(formatResponseErr))
 		return
+	}
+	for _, item := range list {
+		extension, extensionErr := json.Marshal(item)
+		if extensionErr != nil {
+			o.logger.Error("JSON item 异常", zap.Error(extensionErr))
+		}
+		accountModel := advertising2.DimAdvertisingMediaAccountModel{}
+		accountModel.AccountId = cast.ToUint64(item.AdvertiserId)
+		accountModel.AccountName = item.AdvertiserName
+		accountModel.Role = item.AccountRole
+		accountModel.Extension = string(extension)
+
+		resp = append(resp, accountModel)
 	}
 	return
 }
