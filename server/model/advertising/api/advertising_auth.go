@@ -14,6 +14,7 @@ import (
 )
 
 type AuthStateData struct {
+	PlatformId  int64 `json:"platform_id"`
 	UserId      uint  `json:"user_id"`
 	DeveloperId int64 `json:"developer_id"`
 }
@@ -43,7 +44,7 @@ func (receiver *AdvertisingAuthRedirectReq) Validate(ctx context.Context) (err e
 		err = errors2.Wrap(claimsErr, "获取登录信息异常")
 		return
 	}
-
+	platformId := receiver.PlatformId
 	model := advertising.NewDimAdvertisingDeveloperConfigModel()
 	if takeErr := model.Take(ctx, "*", "id = ?", receiver.Id); takeErr != nil {
 		err = errors2.Wrap(error2.ErrorRecordIsNotFind, "配置不存在")
@@ -52,6 +53,7 @@ func (receiver *AdvertisingAuthRedirectReq) Validate(ctx context.Context) (err e
 	stateData := AuthStateData{
 		UserId:      claims.BaseClaims.ID,
 		DeveloperId: receiver.Id,
+		PlatformId:  platformId,
 	}
 	stateDataByte, stateDataErr := json.Marshal(stateData)
 	if stateDataErr != nil {
