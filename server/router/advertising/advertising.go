@@ -8,7 +8,16 @@ import (
 type AdvertisingRouter struct {
 }
 
-func (s *AdvertisingRouter) InitApiRouter(Router *gin.RouterGroup) {
+func (s *AdvertisingRouter) InitApiRouter(Router *gin.RouterGroup, publicRouter *gin.RouterGroup) {
+	publicApiRouter := publicRouter.Group("pub-advertising")
+	publicApiRouter.Use(middleware.OperationRecord())
+	{
+		authGroup := publicApiRouter.Group("auth")
+		{
+			authGroup.GET("callback/:code", advertisingAuthApi.Callback)
+		}
+	}
+
 	apiRouter := Router.Group("advertising")
 	apiRouter.Use(middleware.OperationRecord())
 	{
