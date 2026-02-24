@@ -35,17 +35,11 @@ const (
 )
 
 type KuaiShouAdapter struct {
-	config   AdapterConfig
-	client   *resty.Client
-	logger   *zap.Logger
-	token    string
-	tokenExp time.Time
+	baseAd
 }
 
 func NewKuaiShouAdapter(logger *zap.Logger) *KuaiShouAdapter {
-	return &KuaiShouAdapter{
-		logger: logger,
-	}
+	return &KuaiShouAdapter{baseAd{logger: logger}}
 }
 
 func (o *KuaiShouAdapter) Name() string {
@@ -85,7 +79,7 @@ func (o *KuaiShouAdapter) AuthCallback(ctx context.Context, req map[string]inter
 }
 
 // AuthAdvertiserGet 授权后获取广告主
-func (o *KuaiShouAdapter) AuthAdvertiserGet(ctx context.Context, token string) (resp []advertising2.DimAdvertisingMediaAccountModel, err error) {
+func (o *KuaiShouAdapter) AuthAdvertiserGet(ctx context.Context) (resp []advertising2.DimAdvertisingMediaAccountModel, err error) {
 	return
 }
 

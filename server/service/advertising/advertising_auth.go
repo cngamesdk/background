@@ -49,7 +49,8 @@ func (a *AdvertisingAuthService) Callback(ctx context.Context, req map[string]in
 	}
 
 	//拉取帐户信息
-	accounts, accountsErr := adapter.AuthAdvertiserGet(ctx, respAuthCallback.AccessToken)
+	adapter.Init(ad_platform.AdapterConfig{AccessToken: respAuthCallback.AccessToken, AdvertiserID: cast.ToString(respAuthCallback.AccountId)})
+	accounts, accountsErr := adapter.AuthAdvertiserGet(ctx)
 	if accountsErr != nil {
 		err = accountsErr
 		global.GVA_LOG.Error("拉取帐户列表异常", zap.Error(accountsErr))
@@ -69,7 +70,10 @@ func (a *AdvertisingAuthService) Callback(ctx context.Context, req map[string]in
 		insertModel.AccountId = item.AccountId
 		insertModel.AccountName = item.AccountName
 		insertModel.Role = item.Role
-		insertModel.Status = sql.StatusNormal
+		if item.AccountId == respAuthCallback.AccountId {
+			insertModel.Role = respAuthCallback.RoleType
+		}
+		insertModel.Status = item.Status
 		insertModel.Extension = item.Extension
 		sqlData = append(sqlData, insertModel)
 	}
