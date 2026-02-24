@@ -10,6 +10,7 @@ import (
 	"github.com/go-resty/resty/v2"
 	"go.uber.org/zap"
 	"net/http"
+	url2 "net/url"
 	"time"
 )
 
@@ -45,7 +46,7 @@ func (o *TencentAdAdapter) GetAuthCallbackUrl() string {
 }
 
 func (o *TencentAdAdapter) AuthRedirect(ctx context.Context, req *api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error) {
-	url := fmt.Sprintf("%s/oauth/authorize?client_id=%s&state=%s&redirect_uri=%s", TencentAdDevelopersUrl, req.AppId, req.State, o.GetAuthCallbackUrl())
+	url := fmt.Sprintf("%s/oauth/authorize?client_id=%s&state=%s&redirect_uri=%s", TencentAdDevelopersUrl, req.AppId, req.State, url2.QueryEscape(o.GetAuthCallbackUrl()))
 	resp.Url = url
 	return
 }

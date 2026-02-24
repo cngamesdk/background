@@ -11,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"net/http"
+	url2 "net/url"
 	"slices"
 	"strings"
 	"time"
@@ -72,8 +73,9 @@ func (o *KuaiShouAdapter) AuthRedirect(ctx context.Context, req *api.Advertising
 		err = errors.New("授权类型未知" + req.AuthType)
 		return
 	}
+	scopesEscape := url2.QueryEscape("[" + strings.Join(scopes, ",") + "]")
 	url := fmt.Sprintf("%s/tools/authorize?app_id=%s&scope=%s&redirect_uri=%s&state=%s&oauth_type=%s",
-		KuaiShouDevelopersUrl, req.AppId, "["+strings.Join(scopes, ",")+"]", o.GetAuthCallbackUrl(), req.State, req.AuthType)
+		KuaiShouDevelopersUrl, req.AppId, scopesEscape, url2.QueryEscape(o.GetAuthCallbackUrl()), req.State, req.AuthType)
 	resp.Url = url
 	return
 }
