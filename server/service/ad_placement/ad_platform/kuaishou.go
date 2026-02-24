@@ -69,7 +69,7 @@ func (o *KuaiShouAdapter) AuthRedirect(ctx context.Context, req *api.Advertising
 	}
 	scopesEscape := url2.QueryEscape("[" + strings.Join(scopes, ",") + "]")
 	url := fmt.Sprintf("%s/tools/authorize?app_id=%s&scope=%s&redirect_uri=%s&state=%s&oauth_type=%s",
-		KuaiShouDevelopersUrl, req.AppId, scopesEscape, url2.QueryEscape(o.GetAuthCallbackUrl()), req.State, req.AuthType)
+		KuaiShouDevelopersUrl, req.AppId, scopesEscape, url2.QueryEscape(o.GetAuthCallbackUrl()+"?state="+req.State), req.State, req.AuthType)
 	resp.Url = url
 	return
 }
