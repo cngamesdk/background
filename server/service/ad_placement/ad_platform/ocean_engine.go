@@ -25,17 +25,10 @@ const (
 
 type OceanEngineAdapter struct {
 	baseAd
-	config   AdapterConfig
-	client   *resty.Client
-	logger   *zap.Logger
-	token    string
-	tokenExp time.Time
 }
 
 func NewOceanEngineAdapter(logger *zap.Logger) *OceanEngineAdapter {
-	return &OceanEngineAdapter{
-		logger: logger,
-	}
+	return &OceanEngineAdapter{baseAd{logger: logger}}
 }
 
 func (o *OceanEngineAdapter) Name() string {
@@ -104,12 +97,12 @@ func (o *OceanEngineAdapter) AuthCallback(ctx context.Context, req map[string]in
 }
 
 // AuthAdvertiserGet 授权后获取广告主
-func (o *OceanEngineAdapter) AuthAdvertiserGet(ctx context.Context, token string) (resp []advertising2.DimAdvertisingMediaAccountModel, err error) {
+func (o *OceanEngineAdapter) AuthAdvertiserGet(ctx context.Context) (resp []advertising2.DimAdvertisingMediaAccountModel, err error) {
 	response, responseErr := o.client.
 		SetBaseURL(OceanEngineApiUrl).
 		R().
 		SetContext(ctx).
-		SetQueryParam("access_token", token).
+		SetQueryParam("access_token", o.config.AccessToken).
 		Get("/open_api/oauth2/advertiser/get/")
 	if responseErr != nil {
 		err = responseErr
@@ -140,7 +133,7 @@ func (o *OceanEngineAdapter) AuthAdvertiserGet(ctx context.Context, token string
 			o.logger.Error("JSON item 异常", zap.Error(extensionErr))
 		}
 		accountModel := advertising2.DimAdvertisingMediaAccountModel{}
-		accountModel.AccountId = cast.ToUint64(item.AdvertiserId)
+		accountModel.AccountId = item.AdvertiserId
 		accountModel.AccountName = item.AdvertiserName
 		accountModel.Role = item.AccountRole
 		accountModel.Extension = string(extension)

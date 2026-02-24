@@ -48,7 +48,7 @@ type Adapter interface {
 	//授权
 	AuthRedirect(ctx context.Context, req *api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error)
 	AuthCallback(ctx context.Context, req map[string]interface{}) (resp AuthCallbackResp, err error)
-	AuthAdvertiserGet(ctx context.Context, token string) (resp []advertising2.DimAdvertisingMediaAccountModel, err error)
+	AuthAdvertiserGet(ctx context.Context) (resp []advertising2.DimAdvertisingMediaAccountModel, err error)
 
 	// 初始化
 	Init(config AdapterConfig) error
@@ -73,12 +73,16 @@ type Adapter interface {
 
 type AuthCallbackResp struct {
 	State                 api.AuthStateData
+	AccountId             int64     `json:"account_id"`
 	AccessToken           string    `json:"access_token"`
 	RefreshToken          string    `json:"refresh_token"`
 	ExpiresIn             int       `json:"expires_in"`
 	ExpiresAt             time.Time `json:"expires_at"`
 	RefreshTokenExpiresIn int       `json:"refresh_token_expires_in"`
 	RefreshTokenExpiresAt time.Time `json:"refresh_token_expires_at"`
+	AccountRoleType       string    `json:"account_role_type"` //授权账号身份类型
+	AccountType           string    `json:"account_type"`      //账号类型
+	RoleType              string    `json:"role_type"`         //角色
 }
 
 // CreateCampaignRequest 创建投放请求
