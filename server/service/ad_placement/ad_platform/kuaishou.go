@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	error2 "github.com/cngamesdk/go-core/model/error"
+	"github.com/cngamesdk/go-core/model/sql"
 	"github.com/cngamesdk/go-core/model/sql/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	advertising2 "github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
@@ -174,6 +175,48 @@ func (o *KuaiShouAdapter) AuthCallback(ctx context.Context, req map[string]inter
 
 // AuthAdvertiserGet 授权后获取广告主
 func (o *KuaiShouAdapter) AuthAdvertiserGet(ctx context.Context) (resp []advertising2.DimAdvertisingMediaAccountModel, err error) {
+	page := 1
+	pageSize := 100
+	type result struct {
+		IsEnd   bool    `json:"isEnd"`
+		Details []int64 `json:"details"`
+	}
+	for {
+		response, responseErr := o.getRestyClient().
+			SetBaseURL(KuaiShouAdUrl).
+			R().
+			SetHeader("Content-Type", "application/json").
+			SetBody(map[string]interface{}{
+				"app_id":       o.config.AppID,
+				"secret":       o.config.AppSecret,
+				"access_token": o.config.AccessToken,
+				"page_no":      page,
+				"page_size":    pageSize,
+			}).
+			Post("/rest/openapi/oauth2/authorize/approval/list")
+		if responseErr != nil {
+			err = responseErr
+			o.logger.Error("获取列表异常", zap.Error(responseErr))
+			return
+		}
+		var responseResult result
+		if err = o.dealResponse(response, &responseResult); err != nil {
+			o.logger.Error("解析response异常", zap.Error(err))
+			return
+		}
+		for _, item := range responseResult.Details {
+			tempModel := advertising2.DimAdvertisingMediaAccountModel{}
+			tempModel.AccountId = item
+			tempModel.AccountName = cast.ToString(item)
+			tempModel.Status = sql.StatusNormal
+			resp = append(resp, tempModel)
+		}
+		if responseResult.IsEnd {
+			return
+		}
+		page++
+	}
+
 	return
 }
 
