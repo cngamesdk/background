@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cast"
 	"go.uber.org/zap"
 	"gorm.io/gorm/clause"
+	"time"
 )
 
 type AdvertisingAuthService struct {
@@ -49,7 +50,13 @@ func (a *AdvertisingAuthService) Callback(ctx context.Context, req map[string]in
 	}
 
 	//拉取帐户信息
-	adapter.Init(ad_platform.AdapterConfig{AccessToken: respAuthCallback.AccessToken, AdvertiserID: cast.ToString(respAuthCallback.AccountId)})
+	adapter.Init(ad_platform.AdapterConfig{
+		AppID:        respAuthCallback.State.DeveloperInfo.AppId,
+		AppSecret:    respAuthCallback.State.DeveloperInfo.Secret,
+		AdvertiserID: cast.ToString(respAuthCallback.AccountId),
+		AccessToken:  respAuthCallback.AccessToken,
+		Timeout:      5 * time.Second,
+	})
 	accounts, accountsErr := adapter.AuthAdvertiserGet(ctx)
 	if accountsErr != nil {
 		err = accountsErr

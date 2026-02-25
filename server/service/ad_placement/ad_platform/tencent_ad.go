@@ -63,24 +63,18 @@ func (o *TencentAdAdapter) AuthCallback(ctx context.Context, req map[string]inte
 		err = errors.Wrap(error2.ErrorParamEmpty, "state为空")
 		return
 	}
-	stateResult, stateResultErr := o.formatState(cast.ToString(state))
+	stateResult, stateResultErr := o.formatState(ctx, cast.ToString(state))
 	if stateResultErr != nil {
 		err = stateResultErr
 		o.logger.Error("格式化state异常", zap.Error(stateResultErr))
 		return
 	}
 	resp.State = stateResult
-	developerModel, developerModelErr := o.getDeveloperInfo(ctx, stateResult.DeveloperId)
-	if developerModelErr != nil {
-		err = developerModelErr
-		o.logger.Error("获取开发信息异常", zap.Error(developerModelErr))
-		return
-	}
 	response, responseErr := o.getNewRestyClient().
 		SetBaseURL(TencentAdApiUrl).
 		SetQueryParams(map[string]string{
-			"client_id":          developerModel.AppId,
-			"client_secret":      developerModel.Secret,
+			"client_id":          stateResult.DeveloperInfo.AppId,
+			"client_secret":      stateResult.DeveloperInfo.Secret,
 			"grant_type":         "authorization_code",
 			"authorization_code": cast.ToString(authorizationCode),
 			"redirect_uri":       url2.QueryEscape(o.GetAuthCallbackUrl()),

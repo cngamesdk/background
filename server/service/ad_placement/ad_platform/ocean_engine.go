@@ -60,24 +60,19 @@ func (o *OceanEngineAdapter) AuthCallback(ctx context.Context, req map[string]in
 		err = errors.New("state is not exists")
 		return
 	}
-	formatState, formatStateErr := o.formatState(cast.ToString(state))
+	formatState, formatStateErr := o.formatState(ctx, cast.ToString(state))
 	if formatStateErr != nil {
 		err = formatStateErr
 		o.logger.Error("format state error", zap.Error(formatStateErr))
 		return
-	}
-	developerInfo, infoErr := o.getDeveloperInfo(ctx, formatState.DeveloperId)
-	if infoErr != nil {
-		err = infoErr
-		o.logger.Error("get developer info error", zap.Error(infoErr))
 	}
 	response, responseErr := o.client.
 		SetBaseURL(OceanEngineApiUrl).
 		R().
 		SetHeader("Content-Type", "application/json").
 		SetContext(ctx).SetBody(map[string]interface{}{
-		"app_id":    developerInfo.AppId,
-		"secret":    developerInfo.Secret,
+		"app_id":    formatState.DeveloperInfo.AppId,
+		"secret":    formatState.DeveloperInfo.Secret,
 		"auth_code": authCode,
 	}).Post("/open_api/oauth2/access_token/")
 	if responseErr != nil {
