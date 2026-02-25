@@ -2,13 +2,16 @@ package ad_platform
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	error2 "github.com/cngamesdk/go-core/model/error"
 	"github.com/cngamesdk/go-core/model/sql/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	advertising2 "github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising/api"
 	"github.com/go-resty/resty/v2"
 	"github.com/pkg/errors"
+	"github.com/spf13/cast"
 	"go.uber.org/zap"
 	"net/http"
 	url2 "net/url"
@@ -74,7 +77,98 @@ func (o *KuaiShouAdapter) AuthRedirect(ctx context.Context, req *api.Advertising
 	return
 }
 
+func (o *KuaiShouAdapter) dealResponse(req *resty.Response, dst interface{}) (err error) {
+	if req == nil {
+		err = errors.New("the response is nil")
+		return
+	}
+	var result struct {
+		Code    int                    `json:"code"`
+		Message string                 `json:"message"`
+		Data    map[string]interface{} `json:"data"`
+	}
+	if errJson := json.Unmarshal(req.Body(), &result); errJson != nil {
+		err = errJson
+		return
+	}
+	if result.Code != 0 {
+		err = errors.New(fmt.Sprintf("code: %d, message: %s", result.Code, result.Message))
+		o.logger.Error("return error",
+			zap.Any("header", req.Request.Header),
+			zap.Any("url", req.Request.URL),
+			zap.Any("body", req.Request.Body),
+			zap.Any("response", req.Body()))
+		return
+	}
+	tempData, tempErr := json.Marshal(result.Data)
+	if tempErr != nil {
+		err = errors.Wrap(tempErr, "json marshal error")
+		return
+	}
+	if unmarshalErr := json.Unmarshal(tempData, dst); unmarshalErr != nil {
+		err = unmarshalErr
+		return
+	}
+	return
+}
+
 func (o *KuaiShouAdapter) AuthCallback(ctx context.Context, req map[string]interface{}) (resp AuthCallbackResp, err error) {
+	authCode, authCodeOk := req["auth_code"]
+	if !authCodeOk {
+		err = errors.Wrap(error2.ErrorParamEmpty, "auth_code为空")
+		return
+	}
+	state, stateOk := req["state"]
+	if !stateOk {
+		err = errors.Wrap(error2.ErrorParamEmpty, "state为空")
+		return
+	}
+	stateData, stateErr := o.formatState(cast.ToString(state))
+	if stateErr != nil {
+		err = stateErr
+		o.logger.Error("解析state异常", zap.Error(stateErr))
+		return
+	}
+	developerInfo, developerInfoErr := o.getDeveloperInfo(ctx, stateData.DeveloperId)
+	if developerInfoErr != nil {
+		err = developerInfoErr
+		o.logger.Error("获取开发者信息异常", zap.Error(developerInfoErr))
+		return
+	}
+	response, responseErr := o.getNewRestyClient().
+		SetBaseURL(KuaiShouAdUrl).
+		R().
+		SetHeader("Content-Type", "application/json").
+		SetBody(map[string]interface{}{
+			"app_id":    developerInfo.AppId,
+			"secret":    developerInfo.Secret,
+			"auth_code": cast.ToString(authCode),
+		}).
+		Post("/rest/openapi/oauth2/authorize/access_token")
+	if responseErr != nil {
+		err = responseErr
+		o.logger.Error("请求token异常", zap.Error(responseErr))
+		return
+	}
+	var result struct {
+		AccessToken           string `json:"access_token"`
+		AccessTokenExpiresIn  int64  `json:"access_token_expires_in"`
+		RefreshToken          string `json:"refresh_token"`
+		RefreshTokenExpiresIn int64  `json:"refresh_token_expires_in"`
+	}
+	handleResponseErr := o.dealResponse(response, &result)
+	if handleResponseErr != nil {
+		err = handleResponseErr
+		o.logger.Error("解析response异常", zap.Error(handleResponseErr))
+		return
+	}
+	resp.State = stateData
+	resp.AccessToken = result.AccessToken
+	resp.ExpiresIn = cast.ToInt(result.AccessTokenExpiresIn)
+	resp.ExpiresAt = time.Now().Add(time.Duration(result.AccessTokenExpiresIn) * time.Second)
+	resp.RefreshToken = result.RefreshToken
+	resp.RefreshTokenExpiresIn = cast.ToInt(result.RefreshTokenExpiresIn)
+	resp.RefreshTokenExpiresAt = time.Now().Add(time.Duration(result.RefreshTokenExpiresIn) * time.Second)
 	return
 }
 
