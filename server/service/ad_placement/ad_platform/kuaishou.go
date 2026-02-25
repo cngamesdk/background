@@ -124,16 +124,10 @@ func (o *KuaiShouAdapter) AuthCallback(ctx context.Context, req map[string]inter
 		err = errors.Wrap(error2.ErrorParamEmpty, "state为空")
 		return
 	}
-	stateData, stateErr := o.formatState(cast.ToString(state))
+	stateData, stateErr := o.formatState(ctx, cast.ToString(state))
 	if stateErr != nil {
 		err = stateErr
 		o.logger.Error("解析state异常", zap.Error(stateErr))
-		return
-	}
-	developerInfo, developerInfoErr := o.getDeveloperInfo(ctx, stateData.DeveloperId)
-	if developerInfoErr != nil {
-		err = developerInfoErr
-		o.logger.Error("获取开发者信息异常", zap.Error(developerInfoErr))
 		return
 	}
 	response, responseErr := o.getNewRestyClient().
@@ -141,8 +135,8 @@ func (o *KuaiShouAdapter) AuthCallback(ctx context.Context, req map[string]inter
 		R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(map[string]interface{}{
-			"app_id":    developerInfo.AppId,
-			"secret":    developerInfo.Secret,
+			"app_id":    stateData.DeveloperInfo.AppId,
+			"secret":    stateData.DeveloperInfo.Secret,
 			"auth_code": cast.ToString(authCode),
 		}).
 		Post("/rest/openapi/oauth2/authorize/access_token")

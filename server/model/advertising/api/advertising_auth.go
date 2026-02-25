@@ -14,9 +14,10 @@ import (
 )
 
 type AuthStateData struct {
-	PlatformId  int64 `json:"platform_id"`
-	UserId      uint  `json:"user_id"`
-	DeveloperId int64 `json:"developer_id"`
+	PlatformId    int64 `json:"platform_id"`
+	UserId        uint  `json:"user_id"`
+	DeveloperId   int64 `json:"developer_id"`
+	DeveloperInfo advertising.DimAdvertisingDeveloperConfigModel
 }
 
 type AdvertisingAuthRedirectReq struct {

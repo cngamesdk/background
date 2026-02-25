@@ -44,8 +44,17 @@ func (b *baseAd) Init(config AdapterConfig) (err error) {
 	return
 }
 
-func (b *baseAd) formatState(state string) (resp api.AuthStateData, err error) {
+func (b *baseAd) formatState(ctx context.Context, state string) (resp api.AuthStateData, err error) {
 	err = json.Unmarshal([]byte(state), &resp)
+	if err != nil {
+		return
+	}
+	developerInfo, infoErr := b.getDeveloperInfo(ctx, resp.DeveloperId)
+	if infoErr != nil {
+		err = infoErr
+		return
+	}
+	resp.DeveloperInfo = developerInfo
 	return
 }
 
