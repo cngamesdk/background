@@ -12,7 +12,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
 	"go.uber.org/zap"
-	"net/http"
 	url2 "net/url"
 	"time"
 )
@@ -140,17 +139,9 @@ func (o *OceanEngineAdapter) AuthAdvertiserGet(ctx context.Context) (resp []adve
 
 func (o *OceanEngineAdapter) Init(config AdapterConfig) error {
 	o.config = config
-	o.client = resty.New().
-		SetBaseURL(config.BaseURL).
-		SetTimeout(config.Timeout).
-		SetRetryCount(3).
-		SetRetryWaitTime(1 * time.Second).
-		SetRetryMaxWaitTime(5 * time.Second).
-		AddRetryCondition(func(r *resty.Response, err error) bool {
-			return r.StatusCode() >= http.StatusInternalServerError
-		})
+	o.client = o.getNewRestyClient()
 
-	return o.RefreshToken(context.Background())
+	return nil
 }
 
 func (o *OceanEngineAdapter) dealResponse(req *resty.Response, dst interface{}) (err error) {
@@ -189,60 +180,38 @@ func (o *OceanEngineAdapter) dealResponse(req *resty.Response, dst interface{}) 
 	return
 }
 
-func (o *OceanEngineAdapter) RefreshToken(ctx context.Context) error {
-	o.logger.Info("Refreshing OceanEngine token")
+func (o *OceanEngineAdapter) RefreshToken(ctx context.Context, refreshToken string) (resp AuthCallbackResp, err error) {
+	o.logger.Info("Refreshing token")
 
-	resp, err := o.client.R().
+	response, respErr := o.getRestyClient().
+		SetBaseURL(OceanEngineApiUrl).
+		R().
 		SetHeader("Content-Type", "application/json").
 		SetContext(ctx).
 		SetBody(map[string]string{
-			"app_id": o.config.AppID,
-			"secret": o.config.AppSecret,
+			"app_id":        o.config.AppID,
+			"secret":        o.config.AppSecret,
+			"refresh_token": refreshToken,
 		}).
-		Post("/oauth2/app_access_token")
+		Post("/open_api/oauth2/refresh_token/")
 
-	if err != nil {
-		return fmt.Errorf("refresh token failed: %v", err)
+	if respErr != nil {
+		o.logger.Error("刷新token异常", zap.Error(respErr))
+		err = fmt.Errorf("refresh token failed: %v", respErr)
+		return
 	}
-
-	var result struct {
-		Code    int    `json:"code"`
-		Message string `json:"message"`
-		Data    struct {
-			AccessToken string `json:"access_token"`
-			ExpiresIn   int    `json:"expires_in"`
-		} `json:"data"`
+	handleErr := o.dealResponse(response, &resp)
+	if handleErr != nil {
+		o.logger.Error("解析response异常", zap.Error(handleErr))
+		err = fmt.Errorf("refresh token failed: %v", respErr)
+		return
 	}
-
-	if err := json.Unmarshal(resp.Body(), &result); err != nil {
-		return err
-	}
-
-	if result.Code != 0 {
-		return fmt.Errorf("refresh token error: %s", result.Message)
-	}
-
-	o.token = result.Data.AccessToken
-	o.tokenExp = time.Now().Add(time.Duration(result.Data.ExpiresIn) * time.Second)
-
-	o.logger.Info("OceanEngine token refreshed",
-		zap.Time("expires_at", o.tokenExp))
-
-	return nil
-}
-
-func (o *OceanEngineAdapter) ensureToken(ctx context.Context) error {
-	if time.Now().Add(5 * time.Minute).After(o.tokenExp) {
-		return o.RefreshToken(ctx)
-	}
-	return nil
+	resp.ExpiresAt = time.Now().Add(time.Duration(resp.ExpiresIn) * time.Second)
+	resp.RefreshTokenExpiresAt = time.Now().Add(time.Duration(resp.RefreshTokenExpiresIn) * time.Second)
+	return
 }
 
 func (o *OceanEngineAdapter) CreateCampaign(ctx context.Context, req *CreateCampaignRequest) (*CampaignResponse, error) {
-	if err := o.ensureToken(ctx); err != nil {
-		return nil, err
-	}
-
 	// 转换为巨量引擎格式
 	oeCampaign := o.convertToOceanEngine(req)
 

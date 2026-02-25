@@ -52,7 +52,7 @@ type Adapter interface {
 
 	// 初始化
 	Init(config AdapterConfig) error
-	RefreshToken(ctx context.Context) error
+	RefreshToken(ctx context.Context, refreshToken string) (resp AuthCallbackResp, err error)
 
 	// 投放管理
 	CreateCampaign(ctx context.Context, req *CreateCampaignRequest) (*CampaignResponse, error)
