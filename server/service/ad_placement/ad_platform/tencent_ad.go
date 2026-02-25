@@ -310,16 +310,9 @@ func (o *TencentAdAdapter) convertStatus(status string) string {
 	return sql.StatusFail
 }
 
-func (o *TencentAdAdapter) RefreshToken(ctx context.Context) error {
+func (o *TencentAdAdapter) RefreshToken(ctx context.Context, refreshToken string) (resp AuthCallbackResp, err error) {
 	o.logger.Info("Refreshing token")
-	return nil
-}
-
-func (o *TencentAdAdapter) ensureToken(ctx context.Context) error {
-	if time.Now().Add(5 * time.Minute).After(o.tokenExp) {
-		return o.RefreshToken(ctx)
-	}
-	return nil
+	return
 }
 
 func (o *TencentAdAdapter) CreateCampaign(ctx context.Context, req *CreateCampaignRequest) (*CampaignResponse, error) {

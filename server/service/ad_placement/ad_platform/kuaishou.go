@@ -14,7 +14,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
 	"go.uber.org/zap"
-	"net/http"
 	url2 "net/url"
 	"slices"
 	"strings"
@@ -216,29 +215,13 @@ func (o *KuaiShouAdapter) AuthAdvertiserGet(ctx context.Context) (resp []adverti
 
 func (o *KuaiShouAdapter) Init(config AdapterConfig) error {
 	o.config = config
-	o.client = resty.New().
-		SetBaseURL(config.BaseURL).
-		SetTimeout(config.Timeout).
-		SetRetryCount(3).
-		SetRetryWaitTime(1 * time.Second).
-		SetRetryMaxWaitTime(5 * time.Second).
-		AddRetryCondition(func(r *resty.Response, err error) bool {
-			return r.StatusCode() >= http.StatusInternalServerError
-		})
-
-	return o.RefreshToken(context.Background())
+	o.client = o.getNewRestyClient()
+	return nil
 }
 
-func (o *KuaiShouAdapter) RefreshToken(ctx context.Context) error {
+func (o *KuaiShouAdapter) RefreshToken(ctx context.Context, refreshToken string) (resp AuthCallbackResp, err error) {
 	o.logger.Info("Refreshing token")
-	return nil
-}
-
-func (o *KuaiShouAdapter) ensureToken(ctx context.Context) error {
-	if time.Now().Add(5 * time.Minute).After(o.tokenExp) {
-		return o.RefreshToken(ctx)
-	}
-	return nil
+	return
 }
 
 func (o *KuaiShouAdapter) CreateCampaign(ctx context.Context, req *CreateCampaignRequest) (*CampaignResponse, error) {
