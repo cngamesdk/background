@@ -12,11 +12,9 @@ import (
 )
 
 type baseAd struct {
-	config   AdapterConfig
-	client   *resty.Client
-	logger   *zap.Logger
-	token    string
-	tokenExp time.Time
+	config AdapterConfig
+	client *resty.Client
+	logger *zap.Logger
 }
 
 func (b *baseAd) getNewRestyClient() *resty.Client {

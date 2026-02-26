@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"time"
 )
@@ -120,6 +121,32 @@ func (a *AdvertisingAuthService) GetAdvertiser(ctx context.Context, req advertis
 	return
 }
 
-func (a *AdvertisingAuthService) RefreshToken(ctx context.Context) (err error) {
+func (a *AdvertisingAuthService) RefreshToken(ctx context.Context, req advertising.DimAdvertisingMediaAuthModel) (err error) {
+	adapter, adapterErr := ad_platform.GetAdapterFactory(req.Code, global.GVA_LOG)
+	if adapterErr != nil {
+		err = adapterErr
+		global.GVA_LOG.Error("获取媒体适配器异常", zap.Error(adapterErr))
+		return
+	}
+	developerInfo := advertising.NewDimAdvertisingDeveloperConfigModel()
+	if err = developerInfo.Take(ctx, "*", "id = ?", req.DeveloperId); err != nil {
+		global.GVA_LOG.Error("获取开发者信息异常", zap.Error(err))
+		return
+	}
+	adapter.Init(ad_platform.AdapterConfig{Auth: req, Developer: *developerInfo})
+	refreshResult, refreshErr := adapter.RefreshToken(ctx)
+	if refreshErr != nil {
+		err = refreshErr
+		global.GVA_LOG.Error("刷新token异常", zap.Error(refreshErr))
+		return
+	}
+	refreshResult.Db = func() *gorm.DB {
+		return global.GVA_DB
+	}
+	if updateErr := refreshResult.Updates(ctx, "id = ?", req.Id); updateErr != nil {
+		err = updateErr
+		global.GVA_LOG.Error("更新token异常", zap.Error(updateErr))
+		return
+	}
 	return
 }

@@ -201,7 +201,7 @@ func (o *OceanEngineAdapter) dealResponse(req *resty.Response, dst interface{}) 
 	return
 }
 
-func (o *OceanEngineAdapter) RefreshToken(ctx context.Context, refreshToken string) (resp AuthCallbackResp, err error) {
+func (o *OceanEngineAdapter) RefreshToken(ctx context.Context) (resp advertising2.DimAdvertisingMediaAuthModel, err error) {
 	o.logger.Info("Refreshing token")
 
 	response, respErr := o.getRestyClient().
@@ -212,7 +212,7 @@ func (o *OceanEngineAdapter) RefreshToken(ctx context.Context, refreshToken stri
 		SetBody(map[string]string{
 			"app_id":        o.config.Developer.AppId,
 			"secret":        o.config.Developer.Secret,
-			"refresh_token": refreshToken,
+			"refresh_token": o.config.Auth.RefreshToken,
 		}).
 		Post("/open_api/oauth2/refresh_token/")
 
@@ -221,14 +221,17 @@ func (o *OceanEngineAdapter) RefreshToken(ctx context.Context, refreshToken stri
 		err = fmt.Errorf("refresh token failed: %v", respErr)
 		return
 	}
-	handleErr := o.dealResponse(response, &resp)
+	var tokenResponse oceanEngineToken
+	handleErr := o.dealResponse(response, &tokenResponse)
 	if handleErr != nil {
 		o.logger.Error("解析response异常", zap.Error(handleErr))
 		err = fmt.Errorf("refresh token failed: %v", respErr)
 		return
 	}
-	resp.ExpiresAt = time.Now().Add(time.Duration(resp.ExpiresIn) * time.Second)
-	resp.RefreshTokenExpiresAt = time.Now().Add(time.Duration(resp.RefreshTokenExpiresIn) * time.Second)
+	resp.AccessToken = tokenResponse.AccessToken
+	resp.RefreshToken = tokenResponse.RefreshToken
+	resp.ExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(tokenResponse.ExpiresIn) * time.Second))
+	resp.RefreshTokenExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(tokenResponse.RefreshTokenExpiresIn) * time.Second))
 	return
 }
 
@@ -238,7 +241,7 @@ func (o *OceanEngineAdapter) CreateCampaign(ctx context.Context, req *CreateCamp
 
 	resp, err := o.client.R().
 		SetContext(ctx).
-		SetHeader("Access-Token", o.token).
+		SetHeader("Access-Token", o.config.Auth.AccessToken).
 		SetBody(oeCampaign).
 		Post("/2/campaign/create")
 
