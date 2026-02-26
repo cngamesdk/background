@@ -52,7 +52,7 @@ func (o *TencentAdAdapter) AuthRedirect(ctx context.Context, req *api.Advertisin
 	return
 }
 
-func (o *TencentAdAdapter) AuthCallback(ctx context.Context, req map[string]interface{}) (resp AuthCallbackResp, err error) {
+func (o *TencentAdAdapter) AuthCallback(ctx context.Context, req map[string]interface{}) (resp advertising2.DimAdvertisingMediaAuthModel, err error) {
 	authorizationCode, ok := req["authorization_code"]
 	if !ok {
 		err = errors.Wrap(error2.ErrorParamEmpty, "authorization_code为空")
@@ -69,7 +69,6 @@ func (o *TencentAdAdapter) AuthCallback(ctx context.Context, req map[string]inte
 		o.logger.Error("格式化state异常", zap.Error(stateResultErr))
 		return
 	}
-	resp.State = stateResult
 	response, responseErr := o.getNewRestyClient().
 		SetBaseURL(TencentAdApiUrl).
 		SetQueryParams(map[string]string{
@@ -105,16 +104,28 @@ func (o *TencentAdAdapter) AuthCallback(ctx context.Context, req map[string]inte
 		o.logger.Error("处理返回异常", zap.Error(dealErr))
 		return
 	}
+	responseJson, responseJsonErr := json.Marshal(tokenResponse)
+	if responseJsonErr != nil {
+		err = responseJsonErr
+		o.logger.Error("json response异常", zap.Error(responseJsonErr))
+		return
+	}
+	var extensionMap sql.CustomMapType
+	if responseJsonUnErr := json.Unmarshal(responseJson, &extensionMap); responseJsonUnErr != nil {
+		err = responseJsonUnErr
+		o.logger.Error("json response反序列化异常", zap.Error(responseJsonUnErr))
+		return
+	}
+	resp.PlatformId = stateResult.PlatformId
+	resp.AccountId = tokenResponse.AuthorizerInfo.AccountId
+	resp.Status = sql.StatusNormal
+	resp.Extension = extensionMap
 	resp.AccessToken = tokenResponse.AccessToken
 	resp.RefreshToken = tokenResponse.RefreshToken
-	resp.ExpiresIn = tokenResponse.AccessTokenExpiresIn
-	resp.ExpiresAt = time.Now().Add(time.Duration(tokenResponse.AccessTokenExpiresIn) * time.Second)
-	resp.RefreshTokenExpiresIn = tokenResponse.RefreshTokenExpiresIn
-	resp.RefreshTokenExpiresAt = time.Now().Add(time.Duration(tokenResponse.RefreshTokenExpiresIn) * time.Second)
-	resp.AccountRoleType = tokenResponse.AuthorizerInfo.AccountRoleType
-	resp.AccountType = tokenResponse.AuthorizerInfo.AccountType
-	resp.RoleType = tokenResponse.AuthorizerInfo.RoleType
-	resp.AccountId = tokenResponse.AuthorizerInfo.AccountId
+	resp.ExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(tokenResponse.AccessTokenExpiresIn) * time.Second))
+	resp.RefreshTokenExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(tokenResponse.RefreshTokenExpiresIn) * time.Second))
+	resp.DeveloperId = stateResult.DeveloperId
+	resp.Code = o.Code()
 	return
 }
 
@@ -158,7 +169,7 @@ func (o *TencentAdAdapter) dealResponse(req *resty.Response, dst interface{}) (e
 func (o *TencentAdAdapter) buildGlobalParams() string {
 	nonce, _ := random.UUIdV4()
 	globalParams := []string{
-		"access_token=" + o.config.AccessToken,
+		"access_token=" + o.config.Auth.AccessToken,
 		"timestamp=" + cast.ToString(time.Now().Unix()),
 		"nonce=" + cryptor.Md5String(nonce),
 	}
@@ -285,11 +296,18 @@ func (o *TencentAdAdapter) AuthAdvertiserGet(ctx context.Context) (resp []advert
 			if extensionErr != nil {
 				o.logger.Error("item序列化异常", zap.Error(extensionErr))
 			}
+			var extensionMap sql.CustomMapType
+			if extensionMapUnJsonErr := json.Unmarshal(extension, &extensionMap); extensionMapUnJsonErr != nil {
+				o.logger.Error("item反序列化异常", zap.Error(extensionMapUnJsonErr))
+			}
 			tempModel := advertising2.DimAdvertisingMediaAccountModel{}
 			tempModel.AccountName = cast.ToString(item.AccountId)
 			tempModel.AccountId = item.AccountId
 			tempModel.Status = o.convertStatus(item.SystemStatus)
-			tempModel.Extension = string(extension)
+			tempModel.AuthId = o.config.Auth.Id
+			tempModel.Role = ""
+			tempModel.Extension = extensionMap
+			tempModel.Code = o.Code()
 			resp = append(resp, tempModel)
 		}
 

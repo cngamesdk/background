@@ -89,7 +89,7 @@ func RegisterTables() {
 
 		advertising.DimAdvertisingDeveloperConfigModel{},
 		advertising.DimAdvertisingMediaModel{},
-		advertising.DimAdvertisingMediaManagementAccountModel{},
+		advertising.DimAdvertisingMediaAuthModel{},
 		advertising.DimAdvertisingMediaAccountModel{},
 		advertising.DimChannelGroupModel{},
 

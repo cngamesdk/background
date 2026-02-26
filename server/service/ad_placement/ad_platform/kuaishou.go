@@ -112,7 +112,7 @@ func (o *KuaiShouAdapter) dealResponse(req *resty.Response, dst interface{}) (er
 	return
 }
 
-func (o *KuaiShouAdapter) AuthCallback(ctx context.Context, req map[string]interface{}) (resp AuthCallbackResp, err error) {
+func (o *KuaiShouAdapter) AuthCallback(ctx context.Context, req map[string]interface{}) (resp advertising2.DimAdvertisingMediaAuthModel, err error) {
 	authCode, authCodeOk := req["auth_code"]
 	if !authCodeOk {
 		err = errors.Wrap(error2.ErrorParamEmpty, "auth_code为空")
@@ -156,13 +156,14 @@ func (o *KuaiShouAdapter) AuthCallback(ctx context.Context, req map[string]inter
 		o.logger.Error("解析response异常", zap.Error(handleResponseErr))
 		return
 	}
-	resp.State = stateData
+	resp.PlatformId = stateData.PlatformId
+	resp.Status = sql.StatusNormal
 	resp.AccessToken = result.AccessToken
-	resp.ExpiresIn = cast.ToInt(result.AccessTokenExpiresIn)
-	resp.ExpiresAt = time.Now().Add(time.Duration(result.AccessTokenExpiresIn) * time.Second)
 	resp.RefreshToken = result.RefreshToken
-	resp.RefreshTokenExpiresIn = cast.ToInt(result.RefreshTokenExpiresIn)
-	resp.RefreshTokenExpiresAt = time.Now().Add(time.Duration(result.RefreshTokenExpiresIn) * time.Second)
+	resp.ExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(result.AccessTokenExpiresIn) * time.Second))
+	resp.RefreshTokenExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(result.RefreshTokenExpiresIn) * time.Second))
+	resp.DeveloperId = stateData.DeveloperId
+	resp.Code = o.Code()
 	return
 }
 
@@ -180,9 +181,9 @@ func (o *KuaiShouAdapter) AuthAdvertiserGet(ctx context.Context) (resp []adverti
 			R().
 			SetHeader("Content-Type", "application/json").
 			SetBody(map[string]interface{}{
-				"app_id":       o.config.AppID,
-				"secret":       o.config.AppSecret,
-				"access_token": o.config.AccessToken,
+				"app_id":       o.config.Developer.AppId,
+				"secret":       o.config.Developer.Secret,
+				"access_token": o.config.Auth.AccessToken,
 				"page_no":      page,
 				"page_size":    pageSize,
 			}).
@@ -199,9 +200,12 @@ func (o *KuaiShouAdapter) AuthAdvertiserGet(ctx context.Context) (resp []adverti
 		}
 		for _, item := range responseResult.Details {
 			tempModel := advertising2.DimAdvertisingMediaAccountModel{}
-			tempModel.AccountId = item
+			tempModel.PlatformId = o.config.Auth.PlatformId
 			tempModel.AccountName = cast.ToString(item)
+			tempModel.AccountId = item
+			tempModel.AuthId = o.config.Auth.Id
 			tempModel.Status = sql.StatusNormal
+			tempModel.Code = o.Code()
 			resp = append(resp, tempModel)
 		}
 		if responseResult.IsEnd {
