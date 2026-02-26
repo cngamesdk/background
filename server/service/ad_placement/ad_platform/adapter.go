@@ -51,7 +51,7 @@ type Adapter interface {
 
 	// 初始化
 	Init(config AdapterConfig) error
-	RefreshToken(ctx context.Context, refreshToken string) (resp AuthCallbackResp, err error)
+	RefreshToken(ctx context.Context) (resp advertising2.DimAdvertisingMediaAuthModel, err error)
 
 	// 投放管理
 	CreateCampaign(ctx context.Context, req *CreateCampaignRequest) (*CampaignResponse, error)

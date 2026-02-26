@@ -328,8 +328,9 @@ func (o *TencentAdAdapter) convertStatus(status string) string {
 	return sql.StatusFail
 }
 
-func (o *TencentAdAdapter) RefreshToken(ctx context.Context, refreshToken string) (resp AuthCallbackResp, err error) {
+func (o *TencentAdAdapter) RefreshToken(ctx context.Context) (resp advertising2.DimAdvertisingMediaAuthModel, err error) {
 	o.logger.Info("Refreshing token")
+
 	return
 }
 

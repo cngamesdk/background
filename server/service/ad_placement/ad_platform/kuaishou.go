@@ -223,7 +223,7 @@ func (o *KuaiShouAdapter) Init(config AdapterConfig) error {
 	return nil
 }
 
-func (o *KuaiShouAdapter) RefreshToken(ctx context.Context, refreshToken string) (resp AuthCallbackResp, err error) {
+func (o *KuaiShouAdapter) RefreshToken(ctx context.Context) (resp advertising2.DimAdvertisingMediaAuthModel, err error) {
 	o.logger.Info("Refreshing token")
 	return
 }
