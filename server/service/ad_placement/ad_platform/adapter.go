@@ -13,12 +13,11 @@ import (
 
 // AdapterConfig 广告平台适配器配置
 type AdapterConfig struct {
-	AppID        string        `json:"app_id"`
-	AppSecret    string        `json:"app_secret"`
-	AdvertiserID string        `json:"advertiser_id"`
-	AccessToken  string        `json:"access_token"`
-	BaseURL      string        `json:"base_url"`
-	Timeout      time.Duration `json:"timeout"`
+	Developer    advertising2.DimAdvertisingDeveloperConfigModel `json:"developer"`
+	Auth         advertising2.DimAdvertisingMediaAuthModel       `json:"auth"`
+	AdvertiserID string                                          `json:"advertiser_id"`
+	BaseURL      string                                          `json:"base_url"`
+	Timeout      time.Duration                                   `json:"timeout"`
 }
 
 // GetAdapterFactory 获取适配器工厂
@@ -47,7 +46,7 @@ type Adapter interface {
 
 	//授权
 	AuthRedirect(ctx context.Context, req *api.AdvertisingAuthRedirectReq) (resp api.AdvertisingAuthRedirectResp, err error)
-	AuthCallback(ctx context.Context, req map[string]interface{}) (resp AuthCallbackResp, err error)
+	AuthCallback(ctx context.Context, req map[string]interface{}) (resp advertising2.DimAdvertisingMediaAuthModel, err error)
 	AuthAdvertiserGet(ctx context.Context) (resp []advertising2.DimAdvertisingMediaAccountModel, err error)
 
 	// 初始化

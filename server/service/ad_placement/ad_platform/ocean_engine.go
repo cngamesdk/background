@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/cngamesdk/go-core/model/sql"
 	"github.com/cngamesdk/go-core/model/sql/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	advertising2 "github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
@@ -21,6 +22,13 @@ const (
 	OceanEngineOpenUrl = "https://open.oceanengine.com"
 	OceanEngineAdUrl   = "https://ad.oceanengine.com"
 )
+
+type oceanEngineToken struct {
+	AccessToken           string `json:"access_token"`
+	RefreshToken          string `json:"refresh_token"`
+	ExpiresIn             int64  `json:"expires_in"`
+	RefreshTokenExpiresIn int64  `json:"refresh_token_expires_in"`
+}
 
 type OceanEngineAdapter struct {
 	baseAd
@@ -48,7 +56,7 @@ func (o *OceanEngineAdapter) AuthRedirect(ctx context.Context, req *api.Advertis
 	return
 }
 
-func (o *OceanEngineAdapter) AuthCallback(ctx context.Context, req map[string]interface{}) (resp AuthCallbackResp, err error) {
+func (o *OceanEngineAdapter) AuthCallback(ctx context.Context, req map[string]interface{}) (resp advertising2.DimAdvertisingMediaAuthModel, err error) {
 	authCode, ok := req["auth_code"]
 	if !ok {
 		err = errors.New("auth code is not exists")
@@ -79,14 +87,20 @@ func (o *OceanEngineAdapter) AuthCallback(ctx context.Context, req map[string]in
 		o.logger.Error("request token error", zap.Error(responseErr))
 		return
 	}
-	if dealErr := o.dealResponse(response, &resp); dealErr != nil {
+	var result oceanEngineToken
+	if dealErr := o.dealResponse(response, &result); dealErr != nil {
 		err = dealErr
 		o.logger.Error("deal response error", zap.Error(dealErr))
 		return
 	}
-	resp.State = formatState
-	resp.ExpiresAt = time.Now().Add(time.Duration(resp.ExpiresIn) * time.Second)
-	resp.RefreshTokenExpiresAt = time.Now().Add(time.Duration(resp.RefreshTokenExpiresIn) * time.Second)
+	resp.PlatformId = formatState.PlatformId
+	resp.Status = sql.StatusNormal
+	resp.AccessToken = result.AccessToken
+	resp.RefreshToken = result.RefreshToken
+	resp.ExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(result.ExpiresIn) * time.Second))
+	resp.RefreshTokenExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(result.RefreshTokenExpiresIn) * time.Second))
+	resp.DeveloperId = formatState.DeveloperId
+	resp.Code = o.Code()
 	return
 }
 
@@ -96,7 +110,7 @@ func (o *OceanEngineAdapter) AuthAdvertiserGet(ctx context.Context) (resp []adve
 		SetBaseURL(OceanEngineApiUrl).
 		R().
 		SetContext(ctx).
-		SetQueryParam("access_token", o.config.AccessToken).
+		SetQueryParam("access_token", o.config.Auth.AccessToken).
 		Get("/open_api/oauth2/advertiser/get/")
 	if responseErr != nil {
 		err = responseErr
@@ -126,11 +140,18 @@ func (o *OceanEngineAdapter) AuthAdvertiserGet(ctx context.Context) (resp []adve
 		if extensionErr != nil {
 			o.logger.Error("JSON item 异常", zap.Error(extensionErr))
 		}
+		var sqlExtension sql.CustomMapType
+		if unmarshalExtensionErr := json.Unmarshal(extension, &sqlExtension); unmarshalExtensionErr != nil {
+			o.logger.Error("unmarshal item 异常", zap.Error(unmarshalExtensionErr))
+		}
 		accountModel := advertising2.DimAdvertisingMediaAccountModel{}
-		accountModel.AccountId = item.AdvertiserId
 		accountModel.AccountName = item.AdvertiserName
+		accountModel.AccountId = item.AdvertiserId
+		accountModel.Status = sql.StatusNormal
+		accountModel.AuthId = o.config.Auth.Id
 		accountModel.Role = item.AccountRole
-		accountModel.Extension = string(extension)
+		accountModel.Extension = sqlExtension
+		accountModel.Code = o.Code()
 
 		resp = append(resp, accountModel)
 	}
@@ -189,8 +210,8 @@ func (o *OceanEngineAdapter) RefreshToken(ctx context.Context, refreshToken stri
 		SetHeader("Content-Type", "application/json").
 		SetContext(ctx).
 		SetBody(map[string]string{
-			"app_id":        o.config.AppID,
-			"secret":        o.config.AppSecret,
+			"app_id":        o.config.Developer.AppId,
+			"secret":        o.config.Developer.Secret,
 			"refresh_token": refreshToken,
 		}).
 		Post("/open_api/oauth2/refresh_token/")
