@@ -38,5 +38,18 @@ func Timer() {
 			global.GVA_LOG.Info("添加游戏打包定时任务启动成功", zap.Any("id", gamePackagingEntryID))
 		}
 
+		//刷新媒体token
+		refreshTokenEntryID, refreshTokenErr := global.GVA_Timer.AddTaskByFunc("RefreshToken", "@every 1h", func() {
+			taskErr := task.RefreshToken(global.GVA_DB)
+			if taskErr != nil {
+				global.GVA_LOG.Error("执行任务异常", zap.Error(taskErr))
+			}
+		}, "刷新媒体Token任务", option...)
+		if refreshTokenErr != nil {
+			global.GVA_LOG.Error("添加刷新Token任务失败", zap.Error(refreshTokenErr))
+		} else {
+			global.GVA_LOG.Info("添加刷新Token成功", zap.Any("id", refreshTokenEntryID))
+		}
+
 	}()
 }
