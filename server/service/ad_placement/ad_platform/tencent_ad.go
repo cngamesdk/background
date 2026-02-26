@@ -26,6 +26,22 @@ const (
 	TencentAdApiUrl        = "https://api.e.qq.com"
 )
 
+type tencentAdTokenResponse struct {
+	AuthorizerInfo struct {
+		AccountUin      int64    `json:"account_uin"`
+		AccountId       int64    `json:"account_id"`
+		ScopeList       []string `json:"scope_list"`
+		WechatAccountId string   `json:"wechat_account_id"`
+		AccountRoleType string   `json:"account_role_type"`
+		AccountType     string   `json:"account_type"`
+		RoleType        string   `json:"role_type"`
+	} `json:"authorizer_info"`
+	AccessToken           string `json:"access_token"`
+	RefreshToken          string `json:"refresh_token"`
+	AccessTokenExpiresIn  int    `json:"access_token_expires_in"`
+	RefreshTokenExpiresIn int    `json:"refresh_token_expires_in"`
+}
+
 type TencentAdAdapter struct {
 	baseAd
 }
@@ -83,21 +99,7 @@ func (o *TencentAdAdapter) AuthCallback(ctx context.Context, req map[string]inte
 		o.logger.Error("获取token异常", zap.Error(responseErr))
 		return
 	}
-	var tokenResponse struct {
-		AuthorizerInfo struct {
-			AccountUin      int64    `json:"account_uin"`
-			AccountId       int64    `json:"account_id"`
-			ScopeList       []string `json:"scope_list"`
-			WechatAccountId string   `json:"wechat_account_id"`
-			AccountRoleType string   `json:"account_role_type"`
-			AccountType     string   `json:"account_type"`
-			RoleType        string   `json:"role_type"`
-		} `json:"authorizer_info"`
-		AccessToken           string `json:"access_token"`
-		RefreshToken          string `json:"refresh_token"`
-		AccessTokenExpiresIn  int    `json:"access_token_expires_in"`
-		RefreshTokenExpiresIn int    `json:"refresh_token_expires_in"`
-	}
+	var tokenResponse tencentAdTokenResponse
 	dealErr := o.dealResponse(response, &tokenResponse)
 	if dealErr != nil {
 		err = dealErr
@@ -330,7 +332,34 @@ func (o *TencentAdAdapter) convertStatus(status string) string {
 
 func (o *TencentAdAdapter) RefreshToken(ctx context.Context) (resp advertising2.DimAdvertisingMediaAuthModel, err error) {
 	o.logger.Info("Refreshing token")
+	response, respErr := o.getRestyClient().
+		SetBaseURL(TencentAdApiUrl).
+		R().
+		SetContext(ctx).
+		SetQueryParams(map[string]string{
+			"client_id":     o.config.Developer.AppId,
+			"client_secret": o.config.Developer.Secret,
+			"refresh_token": o.config.Auth.RefreshToken,
+		}).
+		Get("/oauth/refresh_token")
 
+	if respErr != nil {
+		o.logger.Error("刷新token异常", zap.Error(respErr))
+		err = fmt.Errorf("refresh token failed: %v", respErr)
+		return
+	}
+	var tokenResponse tencentAdTokenResponse
+	handleErr := o.dealResponse(response, &tokenResponse)
+	if handleErr != nil {
+		o.logger.Error("解析response异常", zap.Error(handleErr))
+		err = fmt.Errorf("refresh token failed: %v", respErr)
+		return
+	}
+	resp.AccessToken = tokenResponse.AccessToken
+	resp.RefreshToken = tokenResponse.RefreshToken
+	resp.ExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(tokenResponse.AccessTokenExpiresIn) * time.Second))
+	resp.RefreshTokenExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(tokenResponse.RefreshTokenExpiresIn) * time.Second))
+	return
 	return
 }
 
