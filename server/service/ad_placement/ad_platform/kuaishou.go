@@ -37,6 +37,13 @@ const (
 	KuaiShouAuthTypeSeries     = "series"     //短剧广告主
 )
 
+type tokenResp struct {
+	AccessToken           string `json:"access_token"`
+	AccessTokenExpiresIn  int64  `json:"access_token_expires_in"`
+	RefreshToken          string `json:"refresh_token"`
+	RefreshTokenExpiresIn int64  `json:"refresh_token_expires_in"`
+}
+
 type KuaiShouAdapter struct {
 	baseAd
 }
@@ -144,12 +151,7 @@ func (o *KuaiShouAdapter) AuthCallback(ctx context.Context, req map[string]inter
 		o.logger.Error("请求token异常", zap.Error(responseErr))
 		return
 	}
-	var result struct {
-		AccessToken           string `json:"access_token"`
-		AccessTokenExpiresIn  int64  `json:"access_token_expires_in"`
-		RefreshToken          string `json:"refresh_token"`
-		RefreshTokenExpiresIn int64  `json:"refresh_token_expires_in"`
-	}
+	var result tokenResp
 	handleResponseErr := o.dealResponse(response, &result)
 	if handleResponseErr != nil {
 		err = handleResponseErr
@@ -209,11 +211,10 @@ func (o *KuaiShouAdapter) AuthAdvertiserGet(ctx context.Context) (resp []adverti
 			resp = append(resp, tempModel)
 		}
 		if responseResult.IsEnd {
-			return
+			break
 		}
 		page++
 	}
-
 	return
 }
 
@@ -225,6 +226,33 @@ func (o *KuaiShouAdapter) Init(config AdapterConfig) error {
 
 func (o *KuaiShouAdapter) RefreshToken(ctx context.Context) (resp advertising2.DimAdvertisingMediaAuthModel, err error) {
 	o.logger.Info("Refreshing token")
+	response, respErr := o.getRestyClient().
+		SetBaseURL(KuaiShouAdUrl).
+		R().
+		SetContext(ctx).
+		SetQueryParams(map[string]string{
+			"app_id":        o.config.Developer.AppId,
+			"secret":        o.config.Developer.Secret,
+			"refresh_token": o.config.Auth.RefreshToken,
+		}).
+		Get("/rest/openapi/oauth2/authorize/refresh_token")
+
+	if respErr != nil {
+		o.logger.Error("刷新token异常", zap.Error(respErr))
+		err = fmt.Errorf("refresh token failed: %v", respErr)
+		return
+	}
+	var result tokenResp
+	handleErr := o.dealResponse(response, &result)
+	if handleErr != nil {
+		o.logger.Error("解析response异常", zap.Error(handleErr))
+		err = fmt.Errorf("refresh token failed: %v", respErr)
+		return
+	}
+	resp.AccessToken = result.AccessToken
+	resp.RefreshToken = result.RefreshToken
+	resp.ExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(result.AccessTokenExpiresIn) * time.Second))
+	resp.RefreshTokenExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(result.RefreshTokenExpiresIn) * time.Second))
 	return
 }
 
