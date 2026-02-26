@@ -360,7 +360,6 @@ func (o *TencentAdAdapter) RefreshToken(ctx context.Context) (resp advertising2.
 	resp.ExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(tokenResponse.AccessTokenExpiresIn) * time.Second))
 	resp.RefreshTokenExpiresAt = sql.MyCustomDatetime(time.Now().Add(time.Duration(tokenResponse.RefreshTokenExpiresIn) * time.Second))
 	return
-	return
 }
 
 func (o *TencentAdAdapter) CreateCampaign(ctx context.Context, req *CreateCampaignRequest) (*CampaignResponse, error) {
