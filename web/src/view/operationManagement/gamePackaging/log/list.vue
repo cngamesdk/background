@@ -224,11 +224,12 @@
         </el-form-item>
         <el-form-item label="广告位" prop="site_id">
           <el-select
+              multiple
               filterable
               remote
               :remote-method="handleRemoteSearchSiteId"
               v-model="configInfo.site_id"
-              placeholder="请选择媒体" style="width: 240px">
+              placeholder="请选择广告位" style="width: 240px">
             <el-option
                 v-for="item in sites"
                 :key="item.key"
@@ -271,7 +272,7 @@ const defaultSearchInfo = {
   site_id: 0,
 }
 
-const searchInfo = ref(defaultSearchInfo)
+const searchInfo = ref(Object.assign({}, defaultSearchInfo))
 
 //游戏对话框
 const configDialog = ref({
@@ -287,7 +288,7 @@ const defaultConfigInfo = {
 }
 
 //游戏信息
-const configInfo = ref(defaultConfigInfo)
+const configInfo = ref(Object.assign({}, defaultConfigInfo))
 
 const openAddConfigDialog = () => {
   configDialog.value.show = true
@@ -301,7 +302,7 @@ const openConfigEditDialog = (row) => {
 }
 
 const closeConfigDialog = () => {
-  configInfo.value = defaultConfigdefaultConfigInfoInfo
+  configInfo.value = Object.assign({}, defaultConfigInfo)
   configDialog.value.show = false
 }
 
@@ -311,7 +312,7 @@ const onSearchSubmit = () => {
 }
 
 const onReset = () => {
-  searchInfo.value = defaultSearchInfo
+  searchInfo.value = Object.assign({}, defaultSearchInfo)
   getTableData()
 }
 
