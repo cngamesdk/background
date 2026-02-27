@@ -116,10 +116,10 @@ func dealGamePackaging(req operation_management.OdsGamePackagingLogModel) (err e
 		return
 	}
 	gamePackagingConfig := operation_management.NewDimGamePackagingConfigModel()
-	if takeErr := gamePackagingConfig.Take(ctx, "*", "platform_id = ? and game_id = ? and common_media = ? and status = ? and use_status = ?",
+	if takeErr := gamePackagingConfig.Take(ctx, "*", "platform_id = ? and game_id = ? and code = ? and status = ? and use_status = ?",
 		req.PlatformId,
 		req.GameId,
-		agentDetailModel.CommonMedia,
+		agentDetailModel.Code,
 		sql.StatusNormal,
 		common.UseStatusNormal,
 	); takeErr != nil {

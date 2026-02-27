@@ -25,8 +25,8 @@ func (receiver *GamePackagingConfigService) List(ctx context.Context, req *api.G
 	if req.GameId > 0 {
 		tmpDb.Where("game_id = ?", req.GameId)
 	}
-	if req.MediaCode != "" {
-		tmpDb.Where("media_code = ?", req.MediaCode)
+	if req.Code != "" {
+		tmpDb.Where("code = ?", req.Code)
 	}
 	if countErr := tmpDb.Count(&total).Error; countErr != nil {
 		err = countErr
@@ -60,8 +60,8 @@ func (receiver *GamePackagingConfigService) Add(ctx context.Context, req *api.Ga
 			updateModel.DimGamePackagingConfigModel.Db = func() *gorm.DB {
 				return tx
 			}
-			if updateErr := updateModel.Updates(ctx, "platform_id = ? and game_id = ? and media_code = ? and use_status = ? ",
-				req.PlatformId, req.GameId, req.MediaCode, common.UseStatusNormal); updateErr != nil {
+			if updateErr := updateModel.Updates(ctx, "platform_id = ? and game_id = ? and code = ? and use_status = ? ",
+				req.PlatformId, req.GameId, req.Code, common.UseStatusNormal); updateErr != nil {
 				global.GVA_LOG.Error("更新异常", zap.Error(updateErr))
 				return updateErr
 			}
@@ -94,8 +94,8 @@ func (receiver *GamePackagingConfigService) Modify(ctx context.Context, req *api
 			updateModel.DimGamePackagingConfigModel.Db = func() *gorm.DB {
 				return tx
 			}
-			if updateErr := updateModel.Updates(ctx, "platform_id = ? and game_id = ? and media_code = ? and use_status = ? ",
-				req.PlatformId, req.GameId, req.MediaCode, common.UseStatusNormal); updateErr != nil {
+			if updateErr := updateModel.Updates(ctx, "platform_id = ? and game_id = ? and code = ? and use_status = ? ",
+				req.PlatformId, req.GameId, req.Code, common.UseStatusNormal); updateErr != nil {
 				global.GVA_LOG.Error("更新异常", zap.Error(updateErr))
 				return updateErr
 			}

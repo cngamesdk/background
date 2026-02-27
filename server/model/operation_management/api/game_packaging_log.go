@@ -83,8 +83,8 @@ func (receiver *GamePackagingAddReq) Validate(ctx context.Context) (err error) {
 	}
 	//验证游戏对应的媒体是否存在可使用的母包
 	gamePackagingConfigModel := operation_management.NewDimGamePackagingConfigModel()
-	if takeErr := gamePackagingConfigModel.Take(ctx, "*", "platform_id = ? and game_id = ? and common_media = ? and use_status = ?",
-		receiver.PlatformId, receiver.GameId, agentModel.CommonMedia, common.UseStatusNormal); takeErr != nil {
+	if takeErr := gamePackagingConfigModel.Take(ctx, "*", "platform_id = ? and game_id = ? and code = ? and use_status = ?",
+		receiver.PlatformId, receiver.GameId, agentModel.Code, common.UseStatusNormal); takeErr != nil {
 		err = takeErr
 		global.GVA_LOG.Error("获取信息异常", zap.Error(takeErr))
 		return
