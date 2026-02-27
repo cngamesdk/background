@@ -28,7 +28,7 @@ func (receiver *ChannelGroupService) List(ctx context.Context, req *api2.Channel
 	model2.JoinMedia(tmpDb, alias)
 	var list []advertising.DimChannelGroupModel
 	if listErr := tmpDb.
-		Select(alias + ".*,platform_name,advertising_media_name as media_name").
+		Select(alias + ".*,platform_name,media_name").
 		Limit(req.PageSize).
 		Offset((req.Page - 1) * req.PageSize).
 		Find(&list).Error; listErr != nil {

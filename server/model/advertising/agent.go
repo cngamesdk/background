@@ -34,10 +34,10 @@ func (receiver *DimAgentModel) findHook(tx *gorm.DB) (err error) {
 
 type DimAgentDetailInfoModel struct {
 	DimAgentModel
-	ChannelGroupName     string `json:"channel_group_name"`
-	AdvertisingMediaName string `json:"advertising_media_name"`
-	AdvertisingMediaId   int64  `json:"advertising_media_id"`
-	CommonMedia          string `json:"common_media"`
+	ChannelGroupName   string `json:"channel_group_name"`
+	MediaName          string `json:"media_name"`
+	AdvertisingMediaId int64  `json:"advertising_media_id"`
+	Code               string `json:"code"`
 }
 
 func (receiver *DimAgentDetailInfoModel) GetAgentDetailInfoByAgentId(ctx context.Context, agentId int64) (err error) {

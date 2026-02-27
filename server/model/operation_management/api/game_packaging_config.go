@@ -22,14 +22,14 @@ type GamePackagingConfigAddReq struct {
 
 func (receiver *GamePackagingConfigAddReq) Format() {
 	receiver.Id = 0
-	receiver.MediaCode = strings.TrimSpace(receiver.MediaCode)
+	receiver.Code = strings.TrimSpace(receiver.Code)
 	receiver.GamePackagePath = strings.TrimSpace(receiver.GamePackagePath)
 	receiver.Status = strings.TrimSpace(receiver.Status)
 	receiver.UseStatus = strings.TrimSpace(receiver.UseStatus)
 }
 
 func (receiver *GamePackagingConfigAddReq) Validate() (err error) {
-	if validateErr := validate.EmptyString(receiver.MediaCode); validateErr != nil {
+	if validateErr := validate.EmptyString(receiver.Code); validateErr != nil {
 		err = errors.Wrap(validateErr, "媒体码")
 		return
 	}
@@ -60,7 +60,7 @@ type GamePackagingConfigModifyReq struct {
 }
 
 func (receiver *GamePackagingConfigModifyReq) Format() {
-	receiver.MediaCode = strings.TrimSpace(receiver.MediaCode)
+	receiver.Code = strings.TrimSpace(receiver.Code)
 	receiver.GamePackagePath = strings.TrimSpace(receiver.GamePackagePath)
 	receiver.Status = strings.TrimSpace(receiver.Status)
 	receiver.UseStatus = strings.TrimSpace(receiver.UseStatus)
@@ -71,7 +71,7 @@ func (receiver *GamePackagingConfigModifyReq) Validate() (err error) {
 		err = errors.New("主键ID不能为空")
 		return
 	}
-	if validateErr := validate.EmptyString(receiver.MediaCode); validateErr != nil {
+	if validateErr := validate.EmptyString(receiver.Code); validateErr != nil {
 		err = errors.Wrap(validateErr, "媒体码")
 		return
 	}
