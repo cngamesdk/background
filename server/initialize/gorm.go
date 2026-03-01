@@ -93,6 +93,7 @@ func RegisterTables() {
 		advertising.DimAdvertisingMediaAccountModel{},
 		advertising.DimChannelGroupModel{},
 		advertising.OdsAdvertisingMixLogModel{},
+		advertising.OdsAdvertisingTargetingPackageLogModel{},
 
 		material.DimMaterialThemeModel{},
 		material.OdsMaterialLogModel{},
