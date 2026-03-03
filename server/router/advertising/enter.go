@@ -13,4 +13,5 @@ var (
 	siteApi                       = v1.ApiGroupApp.AdvertisingApiGroup.SiteApi
 	advertisingDeveloperConfigApi = v1.ApiGroupApp.AdvertisingApiGroup.AdvertisingDeveloperConfigApi
 	advertisingAuthApi            = v1.ApiGroupApp.AdvertisingApiGroup.AdvertisingAuthApi
+	advertisingMixApi             = v1.ApiGroupApp.AdvertisingApiGroup.AdvertisingMixApi
 )

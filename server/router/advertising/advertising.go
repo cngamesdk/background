@@ -59,5 +59,13 @@ func (s *AdvertisingRouter) InitApiRouter(Router *gin.RouterGroup, publicRouter 
 		{
 			authGroup.POST("redirect", advertisingAuthApi.Redirect)
 		}
+
+		//广告组合分组
+		mixGroup := apiRouter.Group("mix")
+		{
+			mixGroup.POST("list", advertisingMixApi.List)
+			mixGroup.POST("add", advertisingMixApi.Add)
+			mixGroup.POST("modify", advertisingMixApi.Modify)
+		}
 	}
 }
