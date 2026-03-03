@@ -7,4 +7,5 @@ type ServiceGroup struct {
 	SiteService
 	AdvertisingDeveloperConfigService
 	AdvertisingAuthService
+	AdvertisingMixService
 }
