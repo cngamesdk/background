@@ -10,6 +10,8 @@
   "/src/view/advertising/developerConfig/index.vue": "AdvertisingDeveloperConfig",
   "/src/view/advertising/developerConfig/list/list.vue": "AdvertisingDeveloperConfigList",
   "/src/view/advertising/index.vue": "Advertising",
+  "/src/view/advertising/mix/list.vue": "AdvertisingMixList",
+  "/src/view/advertising/mix/mix.vue": "AdvertisingMixConfig",
   "/src/view/advertising/site/index.vue": "Site",
   "/src/view/advertising/site/site/list.vue": "SiteList",
   "/src/view/cronTask/config/list.vue": "CronTaskConfigList",
