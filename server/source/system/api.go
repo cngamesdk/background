@@ -241,6 +241,8 @@ func (i *initApi) InitializeData(ctx context.Context) (context.Context, error) {
 		{ApiGroup: "广告管理", Method: "POST", Path: "/advertising/site/list", Description: "广告位列表"},
 		{ApiGroup: "广告管理", Method: "POST", Path: "/advertising/site/add", Description: "广告位新增"},
 		{ApiGroup: "广告管理", Method: "POST", Path: "/advertising/site/modify", Description: "广告位修改"},
+		{ApiGroup: "广告管理", Method: "POST", Path: "/advertising/auth/redirect", Description: "媒体帐户授权"},
+
 		{ApiGroup: "支付渠道管理", Method: "POST", Path: "/operation_management/pay_channel/list", Description: "列表"},
 		{ApiGroup: "支付渠道管理", Method: "POST", Path: "/operation_management/pay_channel/add", Description: "新增"},
 		{ApiGroup: "支付渠道管理", Method: "POST", Path: "/operation_management/pay_channel/modify", Description: "修改"},
