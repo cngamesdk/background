@@ -136,6 +136,7 @@ func (i *initMenu) InitializeData(ctx context.Context) (next context.Context, er
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "channelGroupList", Name: "channelGroupList", Component: "view/advertising/channelGroup/channelGroup/list.vue", Sort: 30, Meta: Meta{Title: "渠道组"}},
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "agentList", Name: "agentList", Component: "view/advertising/agent/agent/list.vue", Sort: 40, Meta: Meta{Title: "渠道"}},
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "siteList", Name: "siteList", Component: "view/advertising/site/site/list.vue", Sort: 50, Meta: Meta{Title: "广告位"}},
+		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["advertising"], Path: "advertisingAuthRedirect", Name: "advertisingAuthRedirect", Component: "view/advertising/auth/redirect/redirect.vue", Sort: 60, Meta: Meta{Title: "帐户授权"}},
 
 		// 「定时任务」子菜单
 		{MenuLevel: 1, Hidden: false, ParentId: menuNameMap["cronTask"], Path: "cronTaskConfigList", Name: "cronTaskConfigList", Component: "view/cronTask/config/list.vue", Sort: 1, Meta: Meta{Title: "任务列表"}},
