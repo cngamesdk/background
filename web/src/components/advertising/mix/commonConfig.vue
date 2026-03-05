@@ -239,7 +239,7 @@ initData()
 
 </script>
 
-<style>
+<style scoped>
 .nav-left{
   width: 25rem;
 }
