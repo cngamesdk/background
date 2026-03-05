@@ -143,3 +143,30 @@ export const advertisingAuthRedirect = (data) => {
         data
     })
 }
+
+// @Router /advertising/mix/list [post]
+export const advertisingMixList = (data) => {
+    return service({
+        url: '/advertising/mix/list',
+        method: 'post',
+        data
+    })
+}
+
+// @Router /advertising/mix/add [post]
+export const advertisingMixAdd = (data) => {
+    return service({
+        url: '/advertising/mix/add',
+        method: 'post',
+        data
+    })
+}
+
+// @Router /advertising/mix/modify [post]
+export const advertisingMixModify = (data) => {
+    return service({
+        url: '/advertising/mix/modify',
+        method: 'post',
+        data
+    })
+}
