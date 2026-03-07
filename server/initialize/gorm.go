@@ -96,6 +96,7 @@ func RegisterTables() {
 		advertising.OdsAdvertisingTargetingPackageLogModel{},
 		advertising.OdsAdvertisingCopyPackageLogModel{},
 		advertising.OdsAdvertisingMaterialPackageLogModel{},
+		advertising.OdsAdvertisingOceanengineAppLogModel{},
 
 		material.DimMaterialThemeModel{},
 		material.OdsMaterialLogModel{},
