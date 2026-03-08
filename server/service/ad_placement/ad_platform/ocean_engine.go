@@ -9,6 +9,8 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	advertising2 "github.com/flipped-aurora/gin-vue-admin/server/model/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/advertising/api"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/ad_placement/ad_platform/model/ocean_engine"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/go-resty/resty/v2"
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
@@ -366,6 +368,39 @@ func (o *OceanEngineAdapter) GetBalance(ctx context.Context) (resp float64, err 
 	return
 }
 
-func (o OceanEngineAdapter) GetDailyReport(ctx context.Context, date string) (resp []*DailyMetrics, err error) {
+func (o *OceanEngineAdapter) GetDailyReport(ctx context.Context, date string) (resp []*DailyMetrics, err error) {
+	return
+}
+
+// GetAppList 获取安卓应用列表
+func (o *OceanEngineAdapter) GetAppList(ctx context.Context, req ocean_engine.AppListReq) (resp ocean_engine.AppListResp, err error) {
+	if req.AccountId <= 0 {
+		req.AccountId = cast.ToInt64(o.config.AdvertiserID)
+	}
+	reqString, reqMapErr := utils.ConvertStructToQueryString(req)
+	if reqMapErr != nil {
+		err = reqMapErr
+		o.logger.Error("入参转为字符串异常", zap.Error(reqMapErr), zap.Any("data", req))
+		return
+	}
+	response, respErr := o.getRestyClient().
+		SetBaseURL(OceanEngineApiUrl).
+		R().
+		SetHeader("Access-Token", o.config.Auth.AccessToken).
+		SetContext(ctx).
+		SetQueryString(reqString).
+		Get("/open_api/v3.0/tools/ebp/app/list/")
+
+	if respErr != nil {
+		o.logger.Error("刷新token异常", zap.Error(respErr))
+		err = fmt.Errorf("refresh token failed: %v", respErr)
+		return
+	}
+	handleErr := o.dealResponse(response, &resp)
+	if handleErr != nil {
+		err = handleErr
+		o.logger.Error("解析response异常", zap.Error(handleErr))
+		return
+	}
 	return
 }
