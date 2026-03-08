@@ -220,6 +220,14 @@ github.com/cngamesdk/go-core v1.0.9-0.20260303084431-a196cd077617 h1:o0BIghp50qw
 github.com/cngamesdk/go-core v1.0.9-0.20260303084431-a196cd077617/go.mod h1:M3AtsgPw4kA+Bq0l2vRXIrET6LYbN+eY3JUuT0/TO/E=
 github.com/cngamesdk/go-core v1.0.9-0.20260306111855-7c619f24068a h1:hlJbAsap89+imwL7z/Wokl0JBOExCJqctjsbLUcHccc=
 github.com/cngamesdk/go-core v1.0.9-0.20260306111855-7c619f24068a/go.mod h1:M3AtsgPw4kA+Bq0l2vRXIrET6LYbN+eY3JUuT0/TO/E=
+github.com/cngamesdk/go-core v1.0.9-0.20260307011334-e817ec81359b h1:W/YfK9mdEmL3gnzZwFWpiQzlVpG8F1V/TNMJd+KnJ8Y=
+github.com/cngamesdk/go-core v1.0.9-0.20260307011334-e817ec81359b/go.mod h1:M3AtsgPw4kA+Bq0l2vRXIrET6LYbN+eY3JUuT0/TO/E=
+github.com/cngamesdk/go-core v1.0.9-0.20260307015924-e7a29d8a8908 h1:Vg3W/8jCzhk2f75B35t8L8ZXyxIvyv/Tp3yxR2r4WLc=
+github.com/cngamesdk/go-core v1.0.9-0.20260307015924-e7a29d8a8908/go.mod h1:M3AtsgPw4kA+Bq0l2vRXIrET6LYbN+eY3JUuT0/TO/E=
+github.com/cngamesdk/go-core v1.0.9-0.20260308033440-8b2fdb356cdd h1:WX6WFCxxNYGWLc+lcfsQxf+VLkW735lXr3KFxV7Q44Q=
+github.com/cngamesdk/go-core v1.0.9-0.20260308033440-8b2fdb356cdd/go.mod h1:M3AtsgPw4kA+Bq0l2vRXIrET6LYbN+eY3JUuT0/TO/E=
+github.com/cngamesdk/go-core v1.0.9-0.20260308101706-9044a4edec09 h1:TI3Q3f02ZyLEhuDLEi860nQcy3z6hrUj+vd/PpBm6lw=
+github.com/cngamesdk/go-core v1.0.9-0.20260308101706-9044a4edec09/go.mod h1:M3AtsgPw4kA+Bq0l2vRXIrET6LYbN+eY3JUuT0/TO/E=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/dave/jennifer v1.6.1/go.mod h1:nXbxhEmQfOZhWml3D1cDK5M1FLnMSozpbFN/m3RmGZc=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

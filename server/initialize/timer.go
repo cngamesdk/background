@@ -3,6 +3,7 @@ package initialize
 import (
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/task"
+	"github.com/flipped-aurora/gin-vue-admin/server/task/media"
 	"go.uber.org/zap"
 
 	"github.com/robfig/cron/v3"
@@ -49,6 +50,20 @@ func Timer() {
 			global.GVA_LOG.Error("添加刷新Token任务失败", zap.Error(refreshTokenErr))
 		} else {
 			global.GVA_LOG.Info("添加刷新Token成功", zap.Any("id", refreshTokenEntryID))
+		}
+
+		//获取头条安卓应用列表
+		oceanengineAppTask := &task.Task{}
+		oceanengineAppEntryID, oceanengineAppErr := global.GVA_Timer.AddTaskByFunc("OceanengineApp", "@every 1h", func() {
+			taskErr := oceanengineAppTask.Run(global.GVA_DB, media.OceanengineAppList)
+			if taskErr != nil {
+				global.GVA_LOG.Error("执行任务异常", zap.Error(taskErr))
+			}
+		}, "获取头条安卓应用列表", option...)
+		if oceanengineAppErr != nil {
+			global.GVA_LOG.Error("获取头条安卓应用列表异常", zap.Error(oceanengineAppErr))
+		} else {
+			global.GVA_LOG.Info("获取头条安卓应用列表成功", zap.Any("id", oceanengineAppEntryID))
 		}
 
 	}()
