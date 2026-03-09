@@ -135,7 +135,7 @@ func (receiver *EbpAdvertiserListReq) Validate() (err error) {
 }
 
 type EbpAdvertiserListResp struct {
-	AccountList struct {
+	AccountList []struct {
 		AccountId   int64  `json:"account_id"`
 		AccountType string `json:"account_type"`
 		AccountName string `json:"account_name"`
