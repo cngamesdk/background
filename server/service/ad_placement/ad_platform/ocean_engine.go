@@ -160,6 +160,41 @@ func (o *OceanEngineAdapter) AuthAdvertiserGet(ctx context.Context) (resp []adve
 	return
 }
 
+// EbpAdvertiserList 获取升级版巨量引擎工作台下账户列表
+func (o *OceanEngineAdapter) EbpAdvertiserList(ctx context.Context, req *ocean_engine.EbpAdvertiserListReq) (
+	resp ocean_engine.EbpAdvertiserListResp, err error) {
+	req.Format()
+	if validateErr := req.Validate(); validateErr != nil {
+		err = validateErr
+		o.logger.Error("验证异常", zap.Error(validateErr))
+		return
+	}
+	queryString, queryStringErr := utils.ConvertStructToQueryString(req)
+	if queryStringErr != nil {
+		err = queryStringErr
+		o.logger.Error("转换为GET参数异常", zap.Error(queryStringErr))
+		return
+	}
+	response, responseErr := o.client.
+		SetBaseURL(OceanEngineApiUrl).
+		R().
+		SetHeader("Access-Token", o.config.Auth.AccessToken).
+		SetContext(ctx).
+		SetQueryString(queryString).
+		Get("/open_api/2/ebp/advertiser/list/")
+	if responseErr != nil {
+		err = responseErr
+		o.logger.Error("获取接口返回异常", zap.Error(responseErr))
+		return
+	}
+	if dealErr := o.dealResponse(response, &resp); dealErr != nil {
+		err = dealErr
+		o.logger.Error("解析返回异常", zap.Error(dealErr))
+		return
+	}
+	return
+}
+
 func (o *OceanEngineAdapter) Init(config AdapterConfig) error {
 	o.config = config
 	o.client = o.getNewRestyClient()

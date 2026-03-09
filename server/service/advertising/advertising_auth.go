@@ -18,6 +18,7 @@ import (
 type AdvertisingAuthService struct {
 }
 
+// Redirect 授权跳转
 func (a *AdvertisingAuthService) Redirect(ctx context.Context, req *api.AdvertisingAuthRedirectReq) (
 	resp api.AdvertisingAuthRedirectResp, err error) {
 	adapter, adapterErr := ad_platform.GetAdapterFactory(req.Code, global.GVA_LOG)
@@ -30,6 +31,7 @@ func (a *AdvertisingAuthService) Redirect(ctx context.Context, req *api.Advertis
 	return
 }
 
+// Callback 授权回调
 func (a *AdvertisingAuthService) Callback(ctx context.Context, req map[string]interface{}) (
 	resp string, err error) {
 	code, ok := req["code"]

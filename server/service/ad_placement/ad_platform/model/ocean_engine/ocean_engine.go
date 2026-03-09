@@ -36,6 +36,9 @@ const (
 	AccountRolePlatformRoleLife                 = "PLATFORM_ROLE_LIFE"                   // 账户类型 - 抖音来客账户
 	AccountRolePlatformRoleEnterpriseBpAdmin    = "PLATFORM_ROLE_ENTERPRISE_BP_ADMIN"    // 账户类型 - 升级版工作台管理员
 	AccountRolePlatformRoleEnterpriseBpOperator = "PLATFORM_ROLE_ENTERPRISE_BP_OPERATOR" // 账户类型 - 升级版工作台协作者
+
+	AccountSourceAd    = "AD"    // 账户类型 - AD 巨量营销客户账号
+	AccountSourceLocal = "LOCAL" // 账户类型 - LOCAL 本地推
 )
 
 type PageInfo struct {
@@ -94,4 +97,48 @@ func (receiver *AppListReq) Validate() (err error) {
 type AppListResp struct {
 	BasicAppList []advertising.OdsAdvertisingOceanengineAppLogModel `json:"basic_app_list"`
 	PageInfo     PageInfo                                           `json:"page_info"`
+}
+
+type EbpAdvertiserListReq struct {
+	EnterpriseOrganizationId int64  `json:"enterprise_organization_id"`
+	AccountSource            string `json:"account_source"`
+	Filtering                struct {
+		AccountName   string `json:"account_name"`
+		ActiveAccount bool   `json:"active_account"`
+	} `json:"filtering"`
+	Page     int `json:"page"`
+	PageSize int `json:"page_size"`
+}
+
+func (receiver *EbpAdvertiserListReq) Format() {
+	if receiver.Page <= 0 {
+		receiver.Page = 1
+	}
+	if receiver.PageSize <= 0 || receiver.PageSize > 100 {
+		receiver.PageSize = 100
+	}
+}
+
+func (receiver *EbpAdvertiserListReq) Validate() (err error) {
+	if receiver.EnterpriseOrganizationId <= 0 {
+		err = errors.New("enterprise_organization_id 为空")
+		return
+	}
+	if !slices.Contains([]string{
+		AccountSourceAd,
+		AccountSourceLocal,
+	}, receiver.AccountSource) {
+		err = errors.New("AccountSource 非法." + receiver.AccountSource)
+		return
+	}
+	return
+}
+
+type EbpAdvertiserListResp struct {
+	AccountList struct {
+		AccountId   int64  `json:"account_id"`
+		AccountType string `json:"account_type"`
+		AccountName string `json:"account_name"`
+	} `json:"account_list"`
+	PageInfo PageInfo `json:"page_info"`
 }
