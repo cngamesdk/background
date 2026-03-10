@@ -31,13 +31,13 @@
             align="left"
             label="媒体名称"
             min-width="150"
-            prop="advertising_media_name"
+            prop="media_name"
         />
         <el-table-column
             align="left"
-            label="所属系统媒体"
+            label="媒体码"
             min-width="180"
-            prop="common_media_name"
+            prop="code"
         />
         <el-table-column
             align="left"
@@ -100,11 +100,11 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="媒体名称" prop="advertising_media_name">
-          <el-input v-model="configInfo.advertising_media_name" placeholder="请输入媒体名称"/>
+        <el-form-item label="媒体名称" prop="media_name">
+          <el-input v-model="configInfo.media_name" placeholder="请输入媒体名称"/>
         </el-form-item>
-        <el-form-item label="归属媒体" prop="belong_common_media">
-          <el-select v-model="configInfo.belong_common_media" placeholder="请选择归属媒体" style="width: 240px">
+        <el-form-item label="媒体代码" prop="code">
+          <el-select v-model="configInfo.code" placeholder="请选择媒体码" style="width: 240px">
             <el-option
                 v-for="item in commonMedias"
                 :key="item.key"
@@ -141,7 +141,7 @@ defineOptions({
 const appStore = useAppStore()
 
 const searchInfo = ref({
-  advertising_media_name: '',
+  media_name: '',
 })
 
 //游戏对话框
@@ -153,8 +153,8 @@ const configDialog = ref({
 const configInfo = ref({
   id: 0,
   platform_id: 0,
-  advertising_media_name: '',
-  belong_common_media: '',
+  media_name: '',
+  code: '',
 })
 
 const platforms = ref([])
@@ -182,7 +182,7 @@ const onSearchSubmit = () => {
 
 const onReset = () => {
   searchInfo.value = {
-    advertising_media_name: '',
+    media_name: '',
   }
   getTableData()
 }
