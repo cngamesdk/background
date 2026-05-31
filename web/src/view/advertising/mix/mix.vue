@@ -6,8 +6,12 @@
         <AdvertisingMixCommonConfig></AdvertisingMixCommonConfig>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="账号" name="account" style="padding: 20px 55px;">账号</el-tab-pane>
-      <el-tab-pane label="一级" name="ad1">一级</el-tab-pane>
+      <el-tab-pane label="账号" name="account">
+        <AdvertisingMixAccountConfig></AdvertisingMixAccountConfig>
+      </el-tab-pane>
+      <el-tab-pane label="一级" name="ad1">
+        <AdvertisingMixAd1ConfigOceanengine></AdvertisingMixAd1ConfigOceanengine>
+      </el-tab-pane>
       <el-tab-pane label="二级" name="ad2">二级</el-tab-pane>
       <el-tab-pane label="三级" name="ad3">三级</el-tab-pane>
       <el-tab-pane label="组合" name="mix">组合</el-tab-pane>
@@ -21,6 +25,8 @@
 import { ref, defineModel } from 'vue'
 import { getAggregationTime } from '@/api/systemManagement'
 import AdvertisingMixCommonConfig from '../../../components/advertising/mix/commonConfig.vue'
+import AdvertisingMixAccountConfig from '../../../components/advertising/mix/accountConfig.vue'
+import AdvertisingMixAd1ConfigOceanengine from '../../../components/advertising/mix/ad1ConfigOceanengine.vue'
 
 defineOptions({
   name: 'AdvertisingMixConfig',

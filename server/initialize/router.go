@@ -119,6 +119,7 @@ func Routers() *gin.Engine {
 		router.RouterGroupApp.CronTask.InitApiRouter(PrivateGroup)
 		router.RouterGroupApp.DataReport.InitApiRouter(PrivateGroup)
 		router.RouterGroupApp.Material.InitApiRouter(PrivateGroup)
+		router.RouterGroupApp.ChatMonitor.InitChatMonitorRouter(PrivateGroup, PublicGroup)
 	}
 
 	//插件路由安装

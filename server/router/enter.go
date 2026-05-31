@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/router/advertising"
+	"github.com/flipped-aurora/gin-vue-admin/server/router/chat_monitor"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/cron_task"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/data_report"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/example"
@@ -22,4 +23,5 @@ type RouterGroup struct {
 	CronTask            cron_task.RouterGroup
 	DataReport          data_report.RouterGroup
 	Material            material.RouterGroup
+	ChatMonitor         chat_monitor.RouterGroup
 }

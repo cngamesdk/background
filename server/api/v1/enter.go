@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/advertising"
+	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/chat_monitor"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/cron_task"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/data_report"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/example"
@@ -22,4 +23,5 @@ type ApiGroup struct {
 	CronTaskApiGroup            cron_task.ApiGroup
 	DataReportApiGroup          data_report.ApiGroup
 	MaterialApiGroup            material.ApiGroup
+	ChatMonitorApiGroup         chat_monitor.ApiGroup
 }
