@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/service/advertising"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/chat_monitor"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/cron_task"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/data_report"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/example"
@@ -22,4 +23,5 @@ type ServiceGroup struct {
 	CronTaskServiceGroup            cron_task.ServiceGroup
 	DataReportServiceGroup          data_report.ServiceGroup
 	MaterialGroup                   material.ServiceGroup
+	ChatMonitorServiceGroup         chat_monitor.ServiceGroup
 }
