@@ -6,6 +6,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/service/cron_task"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/data_report"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/example"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/live_chat"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/material"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/operation_management"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/system"
@@ -24,4 +25,5 @@ type ServiceGroup struct {
 	DataReportServiceGroup          data_report.ServiceGroup
 	MaterialGroup                   material.ServiceGroup
 	ChatMonitorServiceGroup         chat_monitor.ServiceGroup
+	LiveChatServiceGroup            live_chat.ServiceGroup
 }

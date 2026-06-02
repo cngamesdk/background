@@ -6,6 +6,7 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/cron_task"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/data_report"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/example"
+	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/live_chat"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/material"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/operation_management"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/system"
@@ -24,4 +25,5 @@ type ApiGroup struct {
 	DataReportApiGroup          data_report.ApiGroup
 	MaterialApiGroup            material.ApiGroup
 	ChatMonitorApiGroup         chat_monitor.ApiGroup
+	LiveChatApiGroup            live_chat.ApiGroup
 }
