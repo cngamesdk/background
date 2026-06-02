@@ -11,6 +11,7 @@ import (
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/example"
+	lcModel "github.com/flipped-aurora/gin-vue-admin/server/model/live_chat"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 
 	"go.uber.org/zap"
@@ -118,6 +119,13 @@ func RegisterTables() {
 
 		cron_task.DimCronTaskConfigModel{},
 		cron_task.OdsCronTaskLogModel{},
+
+		lcModel.Product{},
+		lcModel.Faq{},
+		lcModel.Agent{},
+		lcModel.ChatSession{},
+		lcModel.ChatMessage{},
+		lcModel.DailyReport{},
 	)
 	if err != nil {
 		global.GVA_LOG.Error("register table failed", zap.Error(err))
