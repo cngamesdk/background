@@ -121,6 +121,7 @@ func Routers() *gin.Engine {
 		router.RouterGroupApp.Material.InitApiRouter(PrivateGroup)
 		router.RouterGroupApp.ChatMonitor.InitChatMonitorRouter(PrivateGroup, PublicGroup)
 		router.RouterGroupApp.LiveChat.InitLiveChatRouter(PrivateGroup, PublicGroup)
+		router.RouterGroupApp.ActivityEngine.InitApiRouter(PrivateGroup)
 	}
 
 	//插件路由安装

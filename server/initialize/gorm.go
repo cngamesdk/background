@@ -10,6 +10,7 @@ import (
 	"os"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	activityModel "github.com/flipped-aurora/gin-vue-admin/server/model/activity_engine"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/example"
 	lcModel "github.com/flipped-aurora/gin-vue-admin/server/model/live_chat"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
@@ -126,6 +127,11 @@ func RegisterTables() {
 		lcModel.ChatSession{},
 		lcModel.ChatMessage{},
 		lcModel.DailyReport{},
+
+		// 活动引擎
+		activityModel.OdsActivityConfig{},
+		activityModel.OdsActivityTemplate{},
+		activityModel.OdsActivityRewardItem{},
 	)
 	if err != nil {
 		global.GVA_LOG.Error("register table failed", zap.Error(err))
