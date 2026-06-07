@@ -3,6 +3,7 @@ package initialize
 import (
 	"context"
 	adapter "github.com/casbin/gorm-adapter/v3"
+	activityModel "github.com/flipped-aurora/gin-vue-admin/server/model/activity_engine"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/example"
 	sysModel "github.com/flipped-aurora/gin-vue-admin/server/model/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/plugin/announcement/model"
@@ -63,6 +64,11 @@ func (e *ensureTables) MigrateTable(ctx context.Context) (context.Context, error
 		example.ExaAttachmentCategory{},
 
 		model.Info{},
+
+		// 活动引擎
+		activityModel.OdsActivityConfig{},
+		activityModel.OdsActivityTemplate{},
+		activityModel.OdsActivityRewardItem{},
 	}
 	for _, t := range tables {
 		_ = db.AutoMigrate(&t)
@@ -104,6 +110,11 @@ func (e *ensureTables) TableCreated(ctx context.Context) bool {
 		example.ExaAttachmentCategory{},
 
 		model.Info{},
+
+		// 活动引擎
+		activityModel.OdsActivityConfig{},
+		activityModel.OdsActivityTemplate{},
+		activityModel.OdsActivityRewardItem{},
 	}
 	yes := true
 	for _, t := range tables {

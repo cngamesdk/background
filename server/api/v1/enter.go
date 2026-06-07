@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/activity_engine"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/chat_monitor"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/cron_task"
@@ -26,4 +27,5 @@ type ApiGroup struct {
 	MaterialApiGroup            material.ApiGroup
 	ChatMonitorApiGroup         chat_monitor.ApiGroup
 	LiveChatApiGroup            live_chat.ApiGroup
+	ActivityEngineApiGroup      activity_engine.ApiGroup
 }

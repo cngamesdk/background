@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/flipped-aurora/gin-vue-admin/server/router/activity_engine"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/advertising"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/chat_monitor"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/cron_task"
@@ -26,4 +27,5 @@ type RouterGroup struct {
 	Material            material.RouterGroup
 	ChatMonitor         chat_monitor.RouterGroup
 	LiveChat            live_chat.RouterGroup
+	ActivityEngine      activity_engine.RouterGroup
 }
