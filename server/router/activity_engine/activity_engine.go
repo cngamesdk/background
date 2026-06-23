@@ -19,6 +19,8 @@ func (r *ActivityEngineRouter) InitApiRouter(Router *gin.RouterGroup) {
 		ctx := context.Background()
 		initialize.Menu(ctx)
 		initialize.Api(ctx)
+		initialize.SeedActivityData(ctx)
+		initialize.SeedActivityExamples(ctx)
 	})
 
 	apiRouter := Router.Group("activity_engine")

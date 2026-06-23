@@ -10,8 +10,10 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/live_chat"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/material"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/operation_management"
+	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/short_link"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/system_management"
+	"github.com/flipped-aurora/gin-vue-admin/server/api/v1/model_transfer"
 )
 
 var ApiGroupApp = new(ApiGroup)
@@ -28,4 +30,6 @@ type ApiGroup struct {
 	ChatMonitorApiGroup         chat_monitor.ApiGroup
 	LiveChatApiGroup            live_chat.ApiGroup
 	ActivityEngineApiGroup      activity_engine.ApiGroup
+	ShortLinkApiGroup           short_link.ApiGroup
+	ModelTransferApiGroup       model_transfer.ApiGroup
 }

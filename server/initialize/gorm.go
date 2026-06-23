@@ -13,6 +13,7 @@ import (
 	activityModel "github.com/flipped-aurora/gin-vue-admin/server/model/activity_engine"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/example"
 	lcModel "github.com/flipped-aurora/gin-vue-admin/server/model/live_chat"
+	shortLinkModel "github.com/flipped-aurora/gin-vue-admin/server/model/short_link"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
 
 	"go.uber.org/zap"
@@ -132,6 +133,10 @@ func RegisterTables() {
 		activityModel.OdsActivityConfig{},
 		activityModel.OdsActivityTemplate{},
 		activityModel.OdsActivityRewardItem{},
+
+		// 短链接
+		shortLinkModel.DimShortLink{},
+		shortLinkModel.OdsClickLog{},
 	)
 	if err != nil {
 		global.GVA_LOG.Error("register table failed", zap.Error(err))

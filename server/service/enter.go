@@ -9,7 +9,9 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/service/example"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/live_chat"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/material"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/model_transfer"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/operation_management"
+	"github.com/flipped-aurora/gin-vue-admin/server/service/short_link"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/service/system_management"
 )
@@ -28,4 +30,6 @@ type ServiceGroup struct {
 	ChatMonitorServiceGroup         chat_monitor.ServiceGroup
 	LiveChatServiceGroup            live_chat.ServiceGroup
 	ActivityEngineServiceGroup      activity_engine.ServiceGroup
+	ShortLinkServiceGroup           short_link.ServiceGroup
+	ModelTransferServiceGroup		model_transfer.ServiceGroup
 }

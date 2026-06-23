@@ -10,8 +10,10 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/router/live_chat"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/material"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/operation_management"
+	"github.com/flipped-aurora/gin-vue-admin/server/router/short_link"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/system"
 	"github.com/flipped-aurora/gin-vue-admin/server/router/system_management"
+	"github.com/flipped-aurora/gin-vue-admin/server/router/model_transfer"
 )
 
 var RouterGroupApp = new(RouterGroup)
@@ -28,4 +30,6 @@ type RouterGroup struct {
 	ChatMonitor         chat_monitor.RouterGroup
 	LiveChat            live_chat.RouterGroup
 	ActivityEngine      activity_engine.RouterGroup
+	ShortLink           short_link.RouterGroup
+	ModelTransfer       model_transfer.RouterGroup
 }
