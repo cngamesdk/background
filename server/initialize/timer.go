@@ -80,5 +80,18 @@ func Timer() {
 			global.GVA_LOG.Info("获取升级版巨量引擎工作台下账户列表成功", zap.Any("id", oceanengineEbpAdvertiserEntryID))
 		}
 
+		//AI中转平台
+		aiModelTransferEntryID, aiModelTransferErr := global.GVA_Timer.AddTaskByFunc("aiModelTransfer", "@every 10m", func() {
+			taskErr := task.DailyReport(global.GVA_DB)
+			if taskErr != nil {
+				global.GVA_LOG.Error("执行任务异常", zap.Error(taskErr))
+			}
+		}, "AI中转平台获取日报表", option...)
+		if aiModelTransferErr != nil {
+			global.GVA_LOG.Error("AI中转平台获取日报表异常", zap.Error(aiModelTransferErr))
+		} else {
+			global.GVA_LOG.Info("AI中转平台获取日报表成功", zap.Any("id", aiModelTransferEntryID))
+		}
+
 	}()
 }

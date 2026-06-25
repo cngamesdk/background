@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/duke-git/lancet/v2/cryptor"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/model_transfer"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/model_transfer/api"
@@ -172,7 +173,7 @@ func (s *TokenService) Detail(ctx context.Context, id int64) (*api.TokenDetailRe
 
 // Regenerate 重新生成Token
 func (s *TokenService) Regenerate(ctx context.Context, req *api.TokenRegenerateReq) (string, error) {
-	newToken := uuid.New().String()
+	newToken := "sk-" + cryptor.HmacSha256(uuid.New().String(), global.GVA_CONFIG.Common.CommonHashKey)
 
 	if err := global.GVA_DB.WithContext(ctx).Model(&model_transfer.AiToken{}).
 		Where("id = ?", req.ID).
