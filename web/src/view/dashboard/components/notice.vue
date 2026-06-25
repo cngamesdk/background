@@ -22,7 +22,7 @@
     {
       type: 'primary',
       typeTitle: '公告',
-      title: '梅花互娱上线，欢迎新老用户试用'
+      title: '沐风网络上线，欢迎新老用户试用'
     }
   ]
 </script>
